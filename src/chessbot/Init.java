@@ -17,6 +17,10 @@ public class Init {
 		
 		Board test = new Board(list);
 		System.out.println(test);
+		
+		// TODO Auto-generated method stub
+		System.out.print("muahahhahahahahaha");
+
 	}
 
 }
