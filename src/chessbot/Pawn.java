@@ -5,8 +5,7 @@ import java.util.ArrayList;
 public class Pawn extends Pieces {
 
 	// Finds all moves for the Pawn piece
-	// Looks directly in front, diagonally left, and diagonally right. Needs to
-	// include En Passant still.
+	// Looks directly in front, diagonally left, and diagonally right. Needs to include En Passant still.
 	
 	public ArrayList<int[]> findMoves(Board b) {
 		
@@ -54,18 +53,18 @@ public class Pawn extends Pieces {
 	}
 
 	// Constructor
-	public Pawn(int x, int y, Boolean player) {
+	public Pawn(int x, int y, boolean player) {
 
 		// Setting base values for the Pawn piece
 		worth = 1;
 		isPlayer = player;
 		
 		//Draw distinctions between players
-				if(player){
-					symbol = "P";
-				}else{
-					symbol = "p";
-				}
+		if(player){
+			symbol = "P";
+		}else{
+			symbol = "p";
+		}
 
 		// Using accessory method for clarity; not strictly necessary
 		setPosition(x, y);

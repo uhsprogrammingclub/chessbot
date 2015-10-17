@@ -14,7 +14,7 @@ public abstract class Pieces {
 	String symbol;
 	
 	//Variable indicates whether or not the piece belongs to the player
-	Boolean isPlayer;
+	boolean isPlayer;
 	
 	//Abstract methods
 	public abstract ArrayList<int[]> findMoves(Board b);

@@ -26,6 +26,11 @@ public class Init {
 		for (int[] n : p.findMoves(test)){
 			System.out.println(Arrays.toString(n));
 		}
+		
+		
+		//Fundamental ideas - getting list of all possible moves for the computer
+		
+		
 	}
 
 }

@@ -32,7 +32,7 @@ public class Board {
 	}
 	
 	//Function that returns true if a certain square is empty
-	public Boolean isEmptySquare(int x, int y){
+	public boolean isEmptySquare(int x, int y){
 		
 		//Load the piece into variable spot
 		Pieces spot = locations[x][y];
@@ -46,7 +46,7 @@ public class Board {
 	}
 	
 	//Function that determines whether a square exists
-	public Boolean squareExists(int x, int y){
+	public boolean squareExists(int x, int y){
 		
 		if( x >= 0 && x < 8 && y >= 0 && y <= 8){
 			return true;
@@ -59,7 +59,7 @@ public class Board {
 	//Function that returns the team of the piece at the specified locations. 
 	//True = player; False = computer
 	/** Function does not validate square, so it MUST EXIST OR WILL THROW ARRAY INDEX OUT OF BOUNDS **/
-	public Boolean getTeam(int x, int y){
+	public boolean getTeam(int x, int y){
 		Pieces p = locations[x][y];
 		return p.isPlayer;
 	}
@@ -78,7 +78,16 @@ public class Board {
 		//Place the pieces passed in the list
 		for(Pieces piece: list){
 			locations[piece.x][piece.y] = piece;
-		}
-		
+		}		
 	}
+		
+	public int evaluateBoard(){
+		int score = scoreBoard(true) - scoreBoard(false);
+		return score;
+	}
+	
+	public int scoreBoard(boolean isPlayer){
+		return 5;
+	}
+	
 }
