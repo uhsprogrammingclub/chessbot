@@ -1,5 +1,7 @@
 package chessbot;
 
+import java.util.ArrayList;
+
 //General
 public abstract class Pieces {
 	
@@ -7,11 +9,15 @@ public abstract class Pieces {
 	int x;
 	int y;
 	
+	//Value of the piece; can potentially change depending on context
+	int worth;
+	String symbol;
+	
 	//Variable indicates whether or not the piece belongs to the player
-	Boolean player;
+	Boolean isPlayer;
 	
 	//Abstract methods
-	public abstract int[][] findMoves();
+	public abstract ArrayList<int[]> findMoves(Board b);
 	public abstract int getWorth();
 	public abstract String getSymbol();
 	

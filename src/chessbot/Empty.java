@@ -1,5 +1,7 @@
 package chessbot;
 
+import java.util.ArrayList;
+
 public class Empty extends Pieces{
 	
 	//Empty squares have no worth
@@ -8,7 +10,7 @@ public class Empty extends Pieces{
 
 	@Override
 	//Empty squares have no possible moves; therefore, return null.
-	public int[][] findMoves() {
+	public ArrayList<int[]> findMoves(Board b) {
 		return null;
 	}
 
