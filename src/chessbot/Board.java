@@ -8,7 +8,7 @@ public class Board {
 	/** Note about board: the 7th and 8th rows are for the Player, the 1st and 2nd rows are for the computer. **/
 	
 	//Two-dimensional array to hold the locations of all of the pieces
-	Pieces[][] locations = new Pieces[8][8];
+	Piece[][] locations = new Piece[8][8];
 	
 	//Override java.lang.Object.toString method to create easier to read output in the form of a table
 	@Override
@@ -35,7 +35,7 @@ public class Board {
 	public boolean isEmptySquare(int x, int y){
 		
 		//Load the piece into variable spot
-		Pieces spot = locations[x][y];
+		Piece spot = locations[x][y];
 		
 		//If the piece has a value of 0, it has to be empty
 		if(spot.getWorth() == 0){
@@ -60,12 +60,12 @@ public class Board {
 	//True = player; False = computer
 	/** Function does not validate square, so it MUST EXIST OR WILL THROW ARRAY INDEX OUT OF BOUNDS **/
 	public boolean getTeam(int x, int y){
-		Pieces p = locations[x][y];
+		Piece p = locations[x][y];
 		return p.isPlayer;
 	}
 		
 	//Constructor for the Board class
-	public Board(ArrayList<Pieces> list){
+	public Board(ArrayList<Piece> list){
 		
 		//Fill the locations array with empty squares
 		for(int i = 0; i < locations.length; i++){
@@ -76,7 +76,7 @@ public class Board {
 		}
 		
 		//Place the pieces passed in the list
-		for(Pieces piece: list){
+		for(Piece piece: list){
 			locations[piece.x][piece.y] = piece;
 		}		
 	}

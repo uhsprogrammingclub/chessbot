@@ -3,7 +3,7 @@ package chessbot;
 import java.util.ArrayList;
 
 //Methods for the Queen Piece
-public class Queen extends Pieces{
+public class Queen extends Piece{
 	
 	@Override
 	//findMoves() method which identifies possible moves

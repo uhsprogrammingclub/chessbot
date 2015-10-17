@@ -3,7 +3,7 @@ package chessbot;
 import java.util.ArrayList;
 
 //General
-public abstract class Pieces {
+public abstract class Piece {
 	
 	//Variables to determine position on the board
 	int x;

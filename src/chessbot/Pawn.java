@@ -2,7 +2,7 @@ package chessbot;
 
 import java.util.ArrayList;
 
-public class Pawn extends Pieces {
+public class Pawn extends Piece {
 
 	// Finds all moves for the Pawn piece
 	// Looks directly in front, diagonally left, and diagonally right. Needs to include En Passant still.
