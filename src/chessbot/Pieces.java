@@ -6,30 +6,34 @@ import java.util.ArrayList;
 public abstract class Pieces {
 	
 	//Variables to determine position on the board
-	int x;
-	int y;
+	Point position = new Point(0,0);
 	
 	//Value of the piece; can potentially change depending on context
 	int worth;
 	String symbol;
 	
 	//Variable indicates whether or not the piece belongs to the player
-	Boolean isPlayer;
+	Boolean isPlayer = false;
 	
 	//Abstract methods
-	public abstract ArrayList<int[]> findMoves(Board b);
+	public abstract ArrayList<Point> findMoves(Board b);
 	public abstract int getWorth();
-	public abstract String getSymbol();
 	
 	//Common methods
-	public void setPosition(int newX, int newY){
-		x = newX;
-		y = newY;
+	public void setPosition(int x, int y){
+		position.setXY(x, y);
 	}
 	
-	public int[] getPosition(){
-		int[] position = {x, y};
-		return position;
+	public int getX(){
+		return position.x;
 	}
 	
+	public int getY(){
+		return position.y;
+	}
+	
+	@Override
+	public String toString() {
+		return isPlayer? symbol.toUpperCase() : symbol; 
+	}
 }

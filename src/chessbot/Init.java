@@ -23,8 +23,8 @@ public class Init {
 		Board test = new Board(list);
 		System.out.println(test);
 		
-		for (int[] n : p.findMoves(test)){
-			System.out.println(Arrays.toString(n));
+		for (Point n : p.findMoves(test)){
+			System.out.println(n);
 		}
 	}
 

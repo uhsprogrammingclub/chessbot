@@ -8,9 +8,9 @@ public class Queen extends Pieces{
 	@Override
 	//findMoves() method which identifies possible moves
 	//The Queen Piece can move vertically, horizontally, or diagonally as far as it can
-	public ArrayList<int[]> findMoves(Board b){
+	public ArrayList<Point> findMoves(Board b){
 		
-		ArrayList<int[]> moves = new ArrayList<int[]>();
+		ArrayList<Point> moves = new ArrayList<Point>();
 		
 		//Variables to keep track of pieces blocking
 		Boolean upBlock = false;
@@ -26,13 +26,13 @@ public class Queen extends Pieces{
 		for(int i = 1; i < 8; i++){
 			
 			//Ensure no array index out of bounds for moving UP
-			if( (this.x + i < 8) && !upBlock){
+			if( (this.getX() + i < 8) && !upBlock){
 				
 				//Create move - may or may not add
-				int[] move = {this.x + i, this.y};
+				Point move = new Point(this.getX() + i, this.getY());
 				
 				//Check if the square is empty
-				if(b.isEmptySquare(this.x + i, this.y)){
+				if(b.isEmptySquare(this.getX() + i, this.getY())){
 					moves.add(move);
 				}else{
 					upBlock = true;
@@ -42,13 +42,13 @@ public class Queen extends Pieces{
 			}
 			
 			//Ensure no array index out of bounds for moving DOWN
-			if( (this.x - i >= 0)  && !downBlock) { 
+			if( (this.getX() - i >= 0)  && !downBlock) { 
 				
 				//Create move - may or may not add
-				int[] move = {this.x - i, this.y};
+				Point move = new Point(this.getX() - i, this.getY());
 				
 				//Check if the square is empty
-				if(b.isEmptySquare(this.x - i, this.y)){
+				if(b.isEmptySquare(this.getX() - i, this.getY())){
 					moves.add(move);
 				}else{
 					downBlock = true;
@@ -58,13 +58,13 @@ public class Queen extends Pieces{
 			
 			
 			//Ensure no array index out of bounds for moving RIGHT
-			if( (this.y + i < 8)  && !rightBlock) { 
+			if( (this.getY() + i < 8)  && !rightBlock) { 
 				
 				//Create move - may or may not add
-				int[] move = {this.x, this.y + i};
+				Point move = new Point(this.getX(), this.getY() + i);
 				
 				//Check if the square is empty
-				if(b.isEmptySquare(this.x, this.y + i)){
+				if(b.isEmptySquare(this.getX(), this.getY() + i)){
 					moves.add(move);
 				}else{
 					rightBlock = true;
@@ -73,13 +73,13 @@ public class Queen extends Pieces{
 			}
 			
 			//Ensure no array index out of bounds for moving LEFT
-			if( (this.y - i >= 0)  && !leftBlock) { 
+			if( (this.getY() - i >= 0)  && !leftBlock) { 
 				
 				//Create move - may or may not add
-				int[] move = {this.x, this.y - i};
+				Point move = new Point(this.getX(), this.getY() - i);
 				
 				//Check if the square is empty
-				if(b.isEmptySquare(this.x, this.y - i)){
+				if(b.isEmptySquare(this.getX(), this.getY() - i)){
 					moves.add(move);
 				}else{
 					leftBlock = true;
@@ -88,13 +88,13 @@ public class Queen extends Pieces{
 			}
 			
 			//Ensure no array index out of bounds for UP-RIGHT
-			if( (this.y + i < 8)  && (this.x + i < 8) && !upRightBlock) { 
+			if( (this.getY() + i < 8)  && (this.getX() + i < 8) && !upRightBlock) { 
 				
 				//Create move - may or may not add
-				int[] move = {this.x + i, this.y + i};
+				Point move = new Point(this.getX() + i, this.getY() + i);
 				
 				//Check if the square  is empty
-				if(b.isEmptySquare(this.x + i, this.y + i)){
+				if(b.isEmptySquare(this.getX() + i, this.getY() + i)){
 					moves.add(move);
 				}else{
 					upRightBlock = true;
@@ -103,13 +103,13 @@ public class Queen extends Pieces{
 			}
 			
 			//Ensure no array index out of bounds for UP-LEFT
-			if( (this.y - i >= 0)  && (this.x + i < 8) && !upLeftBlock) { 
+			if( (this.getY() - i >= 0)  && (this.getX() + i < 8) && !upLeftBlock) { 
 				
 				//Create move - may or may not add
-				int[] move = {this.x + i, this.y - i};
+				Point move = new Point(this.getX() + i, this.getY() - i);
 				
 				//Check if the square  is empty
-				if(b.isEmptySquare(this.x + i, this.y - i)){
+				if(b.isEmptySquare(this.getX() + i, this.getY() - i)){
 					moves.add(move);
 				}else{
 					upLeftBlock = true;
@@ -118,13 +118,13 @@ public class Queen extends Pieces{
 			}
 			
 			//Ensure no array index out of bounds for DOWN-RIGHT
-			if( (this.y + i < 8)  && (this.x - i >= 0) && !downRightBlock) { 
+			if( (this.getY() + i < 8)  && (this.getX() - i >= 0) && !downRightBlock) { 
 				
 				//Create move - may or may not add
-				int[] move = {this.x - i, this.y + i};
+				Point move = new Point(this.getX() - i, this.getY() + i);
 				
 				//Check if the square  is empty
-				if(b.isEmptySquare(this.x - i, this.y + i)){
+				if(b.isEmptySquare(this.getX() - i, this.getY() + i)){
 					moves.add(move);
 				}else{
 					downRightBlock = true;
@@ -133,13 +133,13 @@ public class Queen extends Pieces{
 			}
 			
 			//Ensure no array index out of bounds for DOWN-LEFT
-			if( (this.y - i >= 0)  && (this.x - i >= 0) && !downLeftBlock) { 
+			if( (this.getY() - i >= 0)  && (this.getX() - i >= 0) && !downLeftBlock) { 
 				
 				//Create move - may or may not add
-				int[] move = {this.x - i, this.y - i};
+				Point move = new Point(this.getX() - i, this.getY() - i);
 				
 				//Check if the square  is empty
-				if(b.isEmptySquare(this.x - i, this.y - i)){
+				if(b.isEmptySquare(this.getX() - i, this.getY() - i)){
 					moves.add(move);
 				}else{
 					downLeftBlock = true;
@@ -157,27 +157,15 @@ public class Queen extends Pieces{
 		return worth;
 	}
 	
-	@Override
-	//getSymbol() method which returns the symbol for the piece
-	public String getSymbol(){
-		return symbol;
-	}
-	
 	//Constructor
 	public Queen(int x, int y, Boolean player){
 		
 		//Setting base values for the Queen piece
 		worth = 9;
 		isPlayer = player;
-		
-		//Draw distinctions between players
-		if(player){
-			symbol = "Q";
-		}else{
-			symbol = "q";
-		}
+		symbol = "q";
 		
 		//Using accessory method for clarity; not strictly necessary
-		setPosition(x, y);
+		position.setXY(x, y);
 	}
 }

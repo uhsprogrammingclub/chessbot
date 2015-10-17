@@ -20,7 +20,7 @@ public class Board {
 			//Nested loops getting values
 			for(int row = 0; row < locations.length; row++) {
 				for(int col = 0; col < locations[row].length; col++) {
-					aString += " " + locations[row][col].getSymbol();
+					aString += " " + locations[row][col].toString();
 				}
 				
 				//Create a new line
@@ -77,7 +77,7 @@ public class Board {
 		
 		//Place the pieces passed in the list
 		for(Pieces piece: list){
-			locations[piece.x][piece.y] = piece;
+			locations[piece.getX()][piece.getY()] = piece;
 		}
 		
 	}

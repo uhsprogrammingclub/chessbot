@@ -8,9 +8,9 @@ public class Pawn extends Pieces {
 	// Looks directly in front, diagonally left, and diagonally right. Needs to
 	// include En Passant still.
 	
-	public ArrayList<int[]> findMoves(Board b) {
+	public ArrayList<Point> findMoves(Board b) {
 		
-		ArrayList<int[]> moves = new ArrayList<int[]>();
+		ArrayList<Point> moves = new ArrayList<Point>();
 		
 		//Create variable that is -1 if it is the player's piece, and 1 if it is the computer's piece
 		int val = 1;
@@ -20,20 +20,20 @@ public class Pawn extends Pieces {
 		
 		
 		// Checks the square directly in front of it
-		if( b.squareExists(this.x + val, this.y) && b.isEmptySquare(this.x + val, this.y)){
-			int[] move = {this.x + val, this.y};
+		if( b.squareExists(this.getX() + val, this.getY()) && b.isEmptySquare(this.getX() + val, this.getY())){
+			Point move = new Point(this.getX() + val, this.getY());
 			moves.add(move);
 		}
 
 		// Check one diagonal
-		if( b.squareExists(this.x + val, this.y + val)  && !b.isEmptySquare(this.x + val, this.y + val) && !b.getTeam(this.x + val, this.y + val)){
-			int[] move = {this.x + val, this.y + val};
+		if( b.squareExists(this.getX() + val, this.getY() + val)  && !b.isEmptySquare(this.getX() + val, this.getY() + val) && !b.getTeam(this.getX() + val, this.getY() + val)){
+			Point move = new Point(this.getX() + val, this.getY() + val);
 			moves.add(move);
 		}
 		
 		// Check the other diagonal
-		if( b.squareExists(this.x + val, this.y - val)  && !b.isEmptySquare(this.x + val, this.y - val) && !b.getTeam(this.x + val, this.y - val)){
-			int[] move = {this.x + val, this.y - val};
+		if( b.squareExists(this.getX() + val, this.getY() - val)  && !b.isEmptySquare(this.getX() + val, this.getY() - val) && !b.getTeam(this.getX() + val, this.getY() - val)){
+			Point move = new Point(this.getX() + val, this.getY() - val);
 			moves.add(move);
 		}
 		
@@ -47,11 +47,6 @@ public class Pawn extends Pieces {
 		return worth;
 	}
 
-	@Override
-	// getSymbol() method which returns the symbol for the piece
-	public String getSymbol() {
-		return symbol;
-	}
 
 	// Constructor
 	public Pawn(int x, int y, Boolean player) {
@@ -59,13 +54,7 @@ public class Pawn extends Pieces {
 		// Setting base values for the Pawn piece
 		worth = 1;
 		isPlayer = player;
-		
-		//Draw distinctions between players
-				if(player){
-					symbol = "P";
-				}else{
-					symbol = "p";
-				}
+		symbol = "p";
 
 		// Using accessory method for clarity; not strictly necessary
 		setPosition(x, y);
