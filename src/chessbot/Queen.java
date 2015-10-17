@@ -3,7 +3,7 @@ package chessbot;
 import java.util.ArrayList;
 
 //Methods for the Queen Piece
-public class Queen extends Pieces{
+public class Queen extends Piece{
 	
 	@Override
 	//findMoves() method which identifies possible moves
@@ -13,14 +13,14 @@ public class Queen extends Pieces{
 		ArrayList<Point> moves = new ArrayList<Point>();
 		
 		//Variables to keep track of pieces blocking
-		Boolean upBlock = false;
-		Boolean downBlock = false;
-		Boolean leftBlock = false;
-		Boolean rightBlock = false;
-		Boolean upRightBlock = false;
-		Boolean upLeftBlock = false;
-		Boolean downRightBlock = false;
-		Boolean downLeftBlock = false;
+		boolean upBlock = false;
+		boolean downBlock = false;
+		boolean leftBlock = false;
+		boolean rightBlock = false;
+		boolean upRightBlock = false;
+		boolean upLeftBlock = false;
+		boolean downRightBlock = false;
+		boolean downLeftBlock = false;
 		
 		//Find moves using for-loop 
 		for(int i = 1; i < 8; i++){
@@ -158,7 +158,7 @@ public class Queen extends Pieces{
 	}
 	
 	//Constructor
-	public Queen(int x, int y, Boolean player){
+	public Queen(int x, int y, boolean player){
 		
 		//Setting base values for the Queen piece
 		worth = 9;

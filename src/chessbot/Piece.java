@@ -3,7 +3,7 @@ package chessbot;
 import java.util.ArrayList;
 
 //General
-public abstract class Pieces {
+public abstract class Piece {
 	
 	//Variables to determine position on the board
 	Point position = new Point(0,0);
@@ -36,4 +36,5 @@ public abstract class Pieces {
 	public String toString() {
 		return isPlayer? symbol.toUpperCase() : symbol; 
 	}
+	
 }

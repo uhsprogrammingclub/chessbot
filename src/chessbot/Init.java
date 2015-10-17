@@ -10,11 +10,11 @@ public class Init {
 
 	public static void main(String[] args) {
 		
-		ArrayList<Pieces> list = new ArrayList<Pieces>();
-		Pieces q = new Queen(7, 3, true);
-		Pieces w = new Queen(0, 3, false);
-		Pieces p = new Pawn(6, 3, true);
-		Pieces l = new Pawn(5, 4, false);
+		ArrayList<Piece> list = new ArrayList<Piece>();
+		Piece q = new Queen(7, 3, true);
+		Piece w = new Queen(0, 3, false);
+		Piece p = new Pawn(6, 3, true);
+		Piece l = new Pawn(5, 4, false);
 		list.add(q);
 		list.add(w);
 		list.add(p);
@@ -26,6 +26,11 @@ public class Init {
 		for (Point n : p.findMoves(test)){
 			System.out.println(n);
 		}
+		
+		
+		//Fundamental ideas - getting list of all possible moves for the computer
+		
+		
 	}
 
 }

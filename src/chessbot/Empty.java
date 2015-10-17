@@ -2,7 +2,7 @@ package chessbot;
 
 import java.util.ArrayList;
 
-public class Empty extends Pieces{
+public class Empty extends Piece{
 	
 	//Empty squares have no worth
 	int worth;
