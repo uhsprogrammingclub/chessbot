@@ -9,4 +9,10 @@ public class Move {
 		point = pt;
 		piece = pc;
 	}
+
+	@Override
+	public String toString() {
+		return "Move piece=" + piece + " to point=" + point;
+	}
+
 }

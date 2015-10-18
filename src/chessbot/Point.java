@@ -19,7 +19,7 @@ public class Point {
 	//Function that determines whether a square exists
 	boolean squareExists(){
 		
-		if( x >= 0 && x < 8 && y >= 0 && y <= 8){
+		if( x >= 0 && x < 8 && y >= 0 && y < 8){
 			return true;
 		}else{
 			return false;

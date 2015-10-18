@@ -1,48 +1,26 @@
 package chessbot;
 
-import java.util.ArrayList;
+import java.util.*;
 
 public class Pawn extends Piece {
 
 	// Finds all moves for the Pawn piece
 	// Looks directly in front, diagonally left, and diagonally right. Needs to include En Passant still.
 	
-	public ArrayList<Move> findMoves(Board b) {
+	public List<Move> findMoves(Board b) {
 		
-		ArrayList<Move> moves = new ArrayList<Move>();
-		
-		//Create variable that is -1 if it is the player's piece, and 1 if it is the computer's piece
-		int val = 1;
-		if(isPlayer){
-			val = -1;
-		}
-		
+		List<Move> moves = new ArrayList<Move>();
+
 		
 		// Checks the square directly in front of it
 		moves.addAll(Utils.getVerticalMoves(b, this));
+		
+		//Check diagonal
+		moves.addAll(Utils.getDiagonalMoves(b, this));
 
-		// Check one diagonal
-		/*if( b.squareExists(this.getX() + val, this.getY() + val)  && !b.isEmptySquare(this.getX() + val, this.getY() + val) && !b.getTeam(this.getX() + val, this.getY() + val)){
-			Point move = new Point(this.getX() + val, this.getY() + val);
-			moves.add(move);
-		}
-		
-		// Check the other diagonal
-		if( b.squareExists(this.getX() + val, this.getY() - val)  && !b.isEmptySquare(this.getX() + val, this.getY() - val) && !b.getTeam(this.getX() + val, this.getY() - val)){
-			Point move = new Point(this.getX() + val, this.getY() - val);
-			moves.add(move);
-		}*/
-		
 		//Return moves
 		return moves;
 	}
-
-	@Override
-	// getWorth() method which returns the worth of the piece
-	public int getWorth() {
-		return worth;
-	}
-
 
 	// Constructor
 	public Pawn(int x, int y, boolean player) {

@@ -17,7 +17,10 @@ public abstract class Piece {
 	
 	//Abstract methods
 	public abstract List<Move> findMoves(Board b);
-	public abstract int getWorth();
+	
+	public int getWorth(){
+		return worth;
+	}
 	
 	//Common methods
 	public void setPosition(int x, int y){
