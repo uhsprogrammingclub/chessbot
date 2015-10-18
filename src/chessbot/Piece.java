@@ -1,6 +1,6 @@
 package chessbot;
 
-import java.util.ArrayList;
+import java.util.*;
 
 //General
 public abstract class Piece {
@@ -16,8 +16,11 @@ public abstract class Piece {
 	Boolean isPlayer = false;
 	
 	//Abstract methods
-	public abstract ArrayList<Point> findMoves(Board b);
-	public abstract int getWorth();
+	public abstract List<Point> findMoves(Board b);
+	
+	public int getWorth(){
+		return worth;
+	}
 	
 	//Common methods
 	public void setPosition(int x, int y){

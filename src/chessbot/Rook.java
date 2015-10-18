@@ -1,13 +1,13 @@
 package chessbot;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-//Methods for the Queen Piece
-public class Queen extends Piece{
-	
+public class Rook extends Piece{
+
 	@Override
 	//findMoves() method which identifies possible moves
-	//The Queen Piece can move vertically, horizontally, or diagonally as far as it can
+	//The Rook Piece can move vertically, or horizontally as far as it can
 	public List<Point> findMoves(Board b){
 		
 		List<Point> moves = new ArrayList<Point>();
@@ -16,19 +16,17 @@ public class Queen extends Piece{
 		moves.addAll(Utils.getVerticalMoves(b, this));
 		//Get Horizontal moves
 		moves.addAll(Utils.getHorizontalMoves(b, this));
-		//Get Diagonal moves
-		moves.addAll(Utils.getDiagonalMoves(b, this));
 		
 		return moves;
 	}
 	
 	//Constructor
-	public Queen(int x, int y, boolean player){
+	public Rook(int x, int y, boolean player){
 		
 		//Setting base values for the Queen piece
-		worth = 9;
+		worth = 5;
 		isPlayer = player;
-		symbol = "q";
+		symbol = "r";
 		
 		//Using accessory method for clarity; not strictly necessary
 		position.setXY(x, y);

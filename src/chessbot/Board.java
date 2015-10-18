@@ -1,6 +1,6 @@
 package chessbot;
 
-import java.util.ArrayList;
+import java.util.*;
 
 //Class to hold board variables and methods
 public class Board {
@@ -55,7 +55,7 @@ public class Board {
 	}
 		
 	//Constructor for the Board class
-	public Board(ArrayList<Piece> list){
+	public Board(List<Piece> list){
 		
 		//Fill the locations array with empty squares
 		for(int i = 0; i < locations.length; i++){

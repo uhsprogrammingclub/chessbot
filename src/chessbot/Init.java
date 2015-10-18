@@ -3,28 +3,29 @@
 
 package chessbot;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 public class Init {
 
 	public static void main(String[] args) {
 		
-		ArrayList<Piece> list = new ArrayList<Piece>();
+		List<Piece> list = new ArrayList<Piece>();
 		Piece q = new Queen(3, 0, true);
 		Piece w = new Queen(3, 7, false);
 		Piece p = new Pawn(3, 1, true);
 		Piece l = new Pawn(4, 2, false);
+		Piece k = new King(4, 0, false);
 		list.add(q);
 		list.add(w);
 		list.add(p);
 		list.add(l);
+		list.add(k);
 		
 		Board test = new Board(list);
 		System.out.println(test);
 		
 		
-		for (Point n : p.findMoves(test)){
+		for (Point n : k.findMoves(test)){
 			System.out.println(n);
 		}
 		
