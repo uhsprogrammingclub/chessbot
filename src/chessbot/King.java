@@ -23,11 +23,11 @@ public class King extends Piece{
 	}
 	
 	//Constructor
-	public King(int x, int y, boolean player){
+	public King(int x, int y, boolean p){
 		
 		//Setting base values for the Queen piece
 		worth = 10000;
-		isPlayer = player;
+		player = p;
 		symbol = "k";
 		
 		//Using accessory method for clarity; not strictly necessary

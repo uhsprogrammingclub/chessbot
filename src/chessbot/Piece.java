@@ -13,7 +13,7 @@ public abstract class Piece {
 	String symbol;
 	
 	//Variable indicates whether or not the piece belongs to the player
-	Boolean isPlayer = false;
+	Boolean player = false;
 	
 	//Abstract methods
 	public abstract List<Move> findMoves(Board b);
@@ -37,7 +37,7 @@ public abstract class Piece {
 	
 	@Override
 	public String toString() {
-		return isPlayer? symbol.toUpperCase() : symbol; 
+		return player ? symbol.toUpperCase() : symbol; 
 	}
 	
 }

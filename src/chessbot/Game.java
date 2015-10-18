@@ -5,7 +5,7 @@ package chessbot;
 
 import java.util.*;
 
-public class Init {
+public class Game {
 
 	public static void main(String[] args) {
 		
@@ -94,8 +94,6 @@ public class Init {
 			System.out.println(n);
 		}
 		
-		
-		//Fundamental ideas - getting list of all possible moves for the computer
 		
 		
 	}

@@ -54,7 +54,7 @@ public class Board {
 	/** Function does not validate square, so it MUST EXIST OR WILL THROW ARRAY INDEX OUT OF BOUNDS **/
 	public boolean getTeam(Point pos){
 		Piece p = locations[pos.x][pos.y];
-		return p.isPlayer;
+		return p.player;
 	}
 		
 	//Constructor for the Board class - when given a list of pieces
@@ -78,25 +78,13 @@ public class Board {
 	}
 	
 	//Find all possible moves
-	public List<Move> allMoves(){
-
-		//Array list of raw moves - may include illegal ones
-		List<Move> rawMoves = new ArrayList<Move>();
-		
-		//Loop through all pieces on the board
-		for(Piece[] l: locations) {
-		    for (Piece p: l) {
-		    	//Add all possibilities of each piece's move to the raw list
-		    	List<Move> moves = p.findMoves(this);
-		    	rawMoves.addAll(moves);
-		    }
-		}
-		
+	public List<Move> allMoves(boolean player){
+		List<Move> rawMoves = rawMoves(player);
 		//Remove moves that are illegal because of rules regarding check
 		for(Move m : rawMoves){
 			Board b = new Board(pieceList);
 			b.makeMove(m);
-			if(b.isCheck()){
+			if(b.isCheck(player)){
 				rawMoves.remove(m);
 			}	
 		}
@@ -105,9 +93,55 @@ public class Board {
 		
 	}
 	
+	public List<Move> rawMoves(boolean player){
+		//Array list of raw moves - may include illegal ones
+		List<Move> rawMoves = new ArrayList<Move>();
+		
+		//Loop through all pieces on the board
+		for(Piece[] l: locations) {
+		    for (Piece p: l) {
+		    	//Add all possibilities of each piece's move to the raw list
+		    	if(p.player == player){
+		    		List<Move> moves = p.findMoves(this);
+			    	rawMoves.addAll(moves);
+		    	}
+		    }
+		}
+		return rawMoves;
+	}
+	
 	//Function that identifies whether the king is directly threatened
-	public boolean isCheck(){
-		return false;
+	public boolean isCheck(boolean player){
+		
+		//Load the King's position
+		Point kingPosition = getKingPosition(player);
+		
+		//Load all possible moves in this (hypothetical) board
+		List<Move> rawMoves = rawMoves(player);
+		
+		for(Move m : rawMoves){
+			//If a check exists...
+			if(m.point == kingPosition && m.piece.worth != 10000){
+				return true;
+			}
+		}
+		
+		//Base case: there is no check
+		return false;	
+	}
+	
+	//Function that finds the King's position on the board
+	public Point getKingPosition(boolean player){
+		for(Piece[] l: locations){
+			for(Piece p : l){
+				if(p.player == player && p.worth == 10000){
+					//Return the King's position
+					return p.position;
+				}
+			}
+		}
+		//Default return
+		return null;
 	}
 	
 	//Function that completes the given move
@@ -123,7 +157,7 @@ public class Board {
 	}
 	
 	//Analyze the board, and assign a numeric value to it for the position based on how favorable it is for the designated player.
-	public int scoreBoard(boolean isPlayer){
+	public int scoreBoard(boolean player){
 		
 		//Default the score to zero
 		int score = 0;

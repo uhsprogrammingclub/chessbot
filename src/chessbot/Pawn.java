@@ -23,11 +23,11 @@ public class Pawn extends Piece {
 	}
 
 	// Constructor
-	public Pawn(int x, int y, boolean player) {
+	public Pawn(int x, int y, boolean p) {
 
 		// Setting base values for the Pawn piece
 		worth = 1;
-		isPlayer = player;
+		player = p;
 		symbol = "p";
 
 		// Using accessory method for clarity; not strictly necessary

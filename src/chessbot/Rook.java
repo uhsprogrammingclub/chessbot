@@ -21,11 +21,11 @@ public class Rook extends Piece{
 	}
 	
 	//Constructor
-	public Rook(int x, int y, boolean player){
+	public Rook(int x, int y, boolean p){
 		
 		//Setting base values for the Queen piece
 		worth = 5;
-		isPlayer = player;
+		player = p;
 		symbol = "r";
 		
 		//Using accessory method for clarity; not strictly necessary
