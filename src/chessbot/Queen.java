@@ -11,7 +11,7 @@ public class Queen extends Piece{
 	public ArrayList<Point> findMoves(Board b){
 		
 		ArrayList<Point> moves = new ArrayList<Point>();
-		
+		/*
 		//Variables to keep track of pieces blocking
 		boolean upBlock = false;
 		boolean downBlock = false;
@@ -147,7 +147,7 @@ public class Queen extends Piece{
 				}
 			}
 		}
-		
+		*/
 		return moves;
 	}
 	

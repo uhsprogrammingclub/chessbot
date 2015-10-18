@@ -18,9 +18,9 @@ public class Board {
 			String aString = "Board: \n";
 			
 			//Nested loops getting values
-			for(int row = 0; row < locations.length; row++) {
-				for(int col = 0; col < locations[row].length; col++) {
-					aString += " " + locations[row][col].toString();
+			for(int y = 7; y >= 0; y--) {
+				for(int x = 0; x < 8; x++) {
+					aString += " " + locations[x][y].toString();
 				}
 				
 				//Create a new line
@@ -32,10 +32,10 @@ public class Board {
 	}
 	
 	//Function that returns true if a certain square is empty
-	public boolean isEmptySquare(int x, int y){
+	public boolean isEmptySquare(Point p){
 		
 		//Load the piece into variable spot
-		Piece spot = locations[x][y];
+		Piece spot = locations[p.x][p.y];
 		
 		//If the piece has a value of 0, it has to be empty
 		if(spot.getWorth() == 0){
@@ -45,22 +45,12 @@ public class Board {
 		}
 	}
 	
-	//Function that determines whether a square exists
-	public boolean squareExists(int x, int y){
-		
-		if( x >= 0 && x < 8 && y >= 0 && y <= 8){
-			return true;
-		}else{
-			return false;
-		}
-		
-	}
 	
 	//Function that returns the team of the piece at the specified locations. 
 	//True = player; False = computer
 	/** Function does not validate square, so it MUST EXIST OR WILL THROW ARRAY INDEX OUT OF BOUNDS **/
-	public boolean getTeam(int x, int y){
-		Piece p = locations[x][y];
+	public boolean getTeam(Point pos){
+		Piece p = locations[pos.x][pos.y];
 		return p.isPlayer;
 	}
 		
