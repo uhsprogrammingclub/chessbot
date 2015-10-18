@@ -94,8 +94,8 @@ public class Game {
 			System.out.println(n);
 		}
 		
-		
-		
+		for (Move n : N1.findMoves(test)){
+			System.out.println(n);
+		}
 	}
-
 }

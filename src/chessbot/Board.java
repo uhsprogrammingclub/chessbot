@@ -144,6 +144,11 @@ public class Board {
 		return null;
 	}
 	
+	//Function that identifies whether the game is over
+	public boolean isGameOver(){
+		return false;
+	}
+	
 	//Function that completes the given move
 	public void makeMove(Move m){
 		locations[m.piece.position.x][m.piece.position.y] = new Empty();
