@@ -108,7 +108,7 @@ public class Utils {
 			
 			//check if spot diagonally to the left
 			Point move2 = new Point(pos.x -1, pos.y + dir);
-			if( move2.squareExists() && !b.isEmptySquare(move2) && b.getTeam(move) != p.isPlayer){
+			if( move2.squareExists() && !b.isEmptySquare(move2) && b.getTeam(move2) != p.isPlayer){
 				moves.add(new Move(move, p));
 			}
 		}else{

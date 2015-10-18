@@ -5,7 +5,7 @@ package chessbot;
 
 import java.util.*;
 
-public class Init {
+public class Game {
 
 	public static void main(String[] args) {
 		
@@ -90,7 +90,7 @@ public class Init {
 		System.out.println(test);
 		
 		
-		for (Move n : p5.findMoves(test)){
+		for (Move n : N1.findMoves(test)){
 			System.out.println(n);
 		}
 		
