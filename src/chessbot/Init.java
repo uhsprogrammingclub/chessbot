@@ -3,14 +3,13 @@
 
 package chessbot;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 public class Init {
 
 	public static void main(String[] args) {
 		
-		ArrayList<Piece> list = new ArrayList<Piece>();
+		List<Piece> list = new ArrayList<Piece>();
 		Piece q = new Queen(3, 0, true);
 		Piece w = new Queen(3, 7, false);
 		Piece p = new Pawn(3, 1, true);
@@ -24,7 +23,7 @@ public class Init {
 		System.out.println(test);
 		
 		
-		for (Point n : p.findMoves(test)){
+		for (Move n : p.findMoves(test)){
 			System.out.println(n);
 		}
 		

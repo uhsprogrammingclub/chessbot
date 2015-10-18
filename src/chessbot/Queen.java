@@ -1,6 +1,6 @@
 package chessbot;
 
-import java.util.ArrayList;
+import java.util.*;
 
 //Methods for the Queen Piece
 public class Queen extends Piece{
@@ -8,9 +8,9 @@ public class Queen extends Piece{
 	@Override
 	//findMoves() method which identifies possible moves
 	//The Queen Piece can move vertically, horizontally, or diagonally as far as it can
-	public ArrayList<Point> findMoves(Board b){
+	public List<Move> findMoves(Board b){
 		
-		ArrayList<Point> moves = new ArrayList<Point>();
+		List<Move> moves = new ArrayList<Move>();
 		/*
 		//Variables to keep track of pieces blocking
 		boolean upBlock = false;

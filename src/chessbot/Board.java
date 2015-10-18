@@ -1,6 +1,6 @@
 package chessbot;
 
-import java.util.ArrayList;
+import java.util.*;
 
 //Class to hold board variables and methods
 public class Board {
@@ -55,7 +55,7 @@ public class Board {
 	}
 		
 	//Constructor for the Board class
-	public Board(ArrayList<Piece> list){
+	public Board(List<Piece> list){
 		
 		//Fill the locations array with empty squares
 		for(int i = 0; i < locations.length; i++){
@@ -69,6 +69,26 @@ public class Board {
 		for(Piece piece: list){
 			locations[piece.getX()][piece.getY()] = piece;
 		}		
+	}
+	
+	//Find all possible moves
+	public List<Move> allPossible(){
+
+		//Array list of raw moves - may include illegal ones
+		List<Move> rawMoves = new ArrayList<Move>();
+		
+		//Loop through all pieces on the board
+		for (Piece[] l: locations) {
+		    for (Piece p: l) {
+		    	List<Move> moves = p.findMoves(this);
+		    	rawMoves.addAll(moves);
+		        // Your individual element
+		    }
+		}
+		
+		
+		return rawMoves;
+		
 	}
 	
 	//Function that retrieves numeric value assigned to position. High values are good for the player, low values good for the computer

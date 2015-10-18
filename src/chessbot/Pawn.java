@@ -7,9 +7,9 @@ public class Pawn extends Piece {
 	// Finds all moves for the Pawn piece
 	// Looks directly in front, diagonally left, and diagonally right. Needs to include En Passant still.
 	
-	public ArrayList<Point> findMoves(Board b) {
+	public ArrayList<Move> findMoves(Board b) {
 		
-		ArrayList<Point> moves = new ArrayList<Point>();
+		ArrayList<Move> moves = new ArrayList<Move>();
 		
 		//Create variable that is -1 if it is the player's piece, and 1 if it is the computer's piece
 		int val = 1;
