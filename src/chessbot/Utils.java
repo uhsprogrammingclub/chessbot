@@ -18,7 +18,7 @@ public class Utils {
 				if (b.isEmptySquare(move)){
 					moves.add(new Move(move, p));
 					//check if pawn can move 2 squares.
-					if ((p.player && pos.y == 6) || (p.player && pos.y == 1)){
+					if ((p.player && pos.y == 6) || (!p.player && pos.y == 1)){
 						Point move2 = new Point(pos.x, pos.y + dir*2);
 						if( move2.squareExists() && b.isEmptySquare(move2)){
 							moves.add(new Move(move2, p));

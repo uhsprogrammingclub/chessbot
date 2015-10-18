@@ -34,4 +34,20 @@ public class Point {
 		return letters[x] + "" + (y+1);
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+	    if (obj == null) {
+	        return false;
+	    }
+	    if (getClass() != obj.getClass()) {
+	        return false;
+	    }
+	    final Point other = (Point) obj;
+	    if (this.x == other.x && this.y == other.y){
+	    	return true;
+	    }else{
+	    	return false;
+	    }
+	}
+	
 }

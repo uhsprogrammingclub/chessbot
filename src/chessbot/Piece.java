@@ -40,4 +40,20 @@ public abstract class Piece {
 		return player ? symbol.toUpperCase() : symbol; 
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+	    if (obj == null) {
+	        return false;
+	    }
+	    if (getClass() != obj.getClass()) {
+	        return false;
+	    }
+	    final Piece other = (Piece) obj;
+	    if (this.position.equals(other.position) && this.symbol.equals(other.symbol) && this.player == other.player){
+	    	return true;
+	    }else{
+	    	return false;
+	    }
+	}
+	
 }
