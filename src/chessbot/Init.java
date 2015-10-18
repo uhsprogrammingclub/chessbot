@@ -11,10 +11,10 @@ public class Init {
 	public static void main(String[] args) {
 		
 		ArrayList<Piece> list = new ArrayList<Piece>();
-		Piece q = new Queen(7, 3, true);
-		Piece w = new Queen(0, 3, false);
-		Piece p = new Pawn(6, 3, true);
-		Piece l = new Pawn(5, 4, false);
+		Piece q = new Queen(3, 0, true);
+		Piece w = new Queen(3, 7, false);
+		Piece p = new Pawn(3, 1, true);
+		Piece l = new Pawn(4, 2, false);
 		list.add(q);
 		list.add(w);
 		list.add(p);
@@ -22,6 +22,7 @@ public class Init {
 		
 		Board test = new Board(list);
 		System.out.println(test);
+		
 		
 		for (Point n : p.findMoves(test)){
 			System.out.println(n);

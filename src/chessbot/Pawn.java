@@ -19,13 +19,10 @@ public class Pawn extends Piece {
 		
 		
 		// Checks the square directly in front of it
-		if( b.squareExists(this.getX() + val, this.getY()) && b.isEmptySquare(this.getX() + val, this.getY())){
-			Point move = new Point(this.getX() + val, this.getY());
-			moves.add(move);
-		}
+		moves.addAll(Utils.getVerticalMoves(b, this));
 
 		// Check one diagonal
-		if( b.squareExists(this.getX() + val, this.getY() + val)  && !b.isEmptySquare(this.getX() + val, this.getY() + val) && !b.getTeam(this.getX() + val, this.getY() + val)){
+		/*if( b.squareExists(this.getX() + val, this.getY() + val)  && !b.isEmptySquare(this.getX() + val, this.getY() + val) && !b.getTeam(this.getX() + val, this.getY() + val)){
 			Point move = new Point(this.getX() + val, this.getY() + val);
 			moves.add(move);
 		}
@@ -34,7 +31,7 @@ public class Pawn extends Piece {
 		if( b.squareExists(this.getX() + val, this.getY() - val)  && !b.isEmptySquare(this.getX() + val, this.getY() - val) && !b.getTeam(this.getX() + val, this.getY() - val)){
 			Point move = new Point(this.getX() + val, this.getY() - val);
 			moves.add(move);
-		}
+		}*/
 		
 		//Return moves
 		return moves;
