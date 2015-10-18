@@ -9,7 +9,6 @@ public class Init {
 
 	public static void main(String[] args) {
 		
-		
 		Piece r1 = new Rook(0, 0, false);
 		Piece n1 = new Knight(1, 0, false);
 		Piece b1 = new Bishop(2, 0, false);
@@ -91,7 +90,7 @@ public class Init {
 		System.out.println(test);
 		
 		
-		for (Point n : p5.findMoves(test)){
+		for (Move n : p5.findMoves(test)){
 			System.out.println(n);
 		}
 		

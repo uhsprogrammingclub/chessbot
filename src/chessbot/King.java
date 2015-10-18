@@ -8,9 +8,9 @@ public class King extends Piece{
 	@Override
 	//findMoves() method which identifies possible moves
 	//The King Piece can move vertically, horizontally, or diagonally 1 square
-	public List<Point> findMoves(Board b){
+	public List<Move> findMoves(Board b){
 		
-		List<Point> moves = new ArrayList<Point>();
+		List<Move> moves = new ArrayList<Move>();
 		
 		// Gets vertical moves
 		moves.addAll(Utils.getVerticalMoves(b, this));

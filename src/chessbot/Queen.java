@@ -8,9 +8,10 @@ public class Queen extends Piece{
 	@Override
 	//findMoves() method which identifies possible moves
 	//The Queen Piece can move vertically, horizontally, or diagonally as far as it can
-	public List<Point> findMoves(Board b){
+
+	public List<Move> findMoves(Board b){
 		
-		List<Point> moves = new ArrayList<Point>();
+		List<Move> moves = new ArrayList<Move>();
 		
 		// Gets vertical moves
 		moves.addAll(Utils.getVerticalMoves(b, this));

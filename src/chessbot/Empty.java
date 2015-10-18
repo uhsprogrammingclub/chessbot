@@ -10,7 +10,7 @@ public class Empty extends Piece{
 
 	@Override
 	//Empty squares have no possible moves; therefore, return null.
-	public List<Point> findMoves(Board b) {
+	public List<Move> findMoves(Board b) {
 		return null;
 	}
 

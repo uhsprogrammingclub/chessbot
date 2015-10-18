@@ -7,9 +7,9 @@ public class Knight extends Piece {
 	@Override
 	//findMoves() method which identifies possible moves
 	//The Knight Piece can move ...
-	public List<Point> findMoves(Board b){
+	public List<Move> findMoves(Board b){
 		
-		List<Point> moves = new ArrayList<Point>();
+		List<Move> moves = new ArrayList<Move>();
 		
 		return moves;
 	}

@@ -16,7 +16,7 @@ public abstract class Piece {
 	Boolean isPlayer = false;
 	
 	//Abstract methods
-	public abstract List<Point> findMoves(Board b);
+	public abstract List<Move> findMoves(Board b);
 	
 	public int getWorth(){
 		return worth;

@@ -8,9 +8,9 @@ public class Bishop extends Piece {
 	@Override
 	//findMoves() method which identifies possible moves
 	//The Bishop Piece can move diagonally as far as it can
-	public List<Point> findMoves(Board b){
+	public List<Move> findMoves(Board b){
 		
-		List<Point> moves = new ArrayList<Point>();
+		List<Move> moves = new ArrayList<Move>();
 		
 		//Get Diagonal moves
 		moves.addAll(Utils.getDiagonalMoves(b, this));

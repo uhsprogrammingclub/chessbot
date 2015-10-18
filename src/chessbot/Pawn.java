@@ -7,9 +7,10 @@ public class Pawn extends Piece {
 	// Finds all moves for the Pawn piece
 	// Looks directly in front, diagonally left, and diagonally right. Needs to include En Passant still.
 	
-	public List<Point> findMoves(Board b) {
+	public List<Move> findMoves(Board b) {
 		
-		List<Point> moves = new ArrayList<Point>();
+		List<Move> moves = new ArrayList<Move>();
+
 		
 		// Checks the square directly in front of it
 		moves.addAll(Utils.getVerticalMoves(b, this));
@@ -28,7 +29,6 @@ public class Pawn extends Piece {
 		worth = 1;
 		isPlayer = player;
 		symbol = "p";
-
 
 		// Using accessory method for clarity; not strictly necessary
 		setPosition(x, y);
