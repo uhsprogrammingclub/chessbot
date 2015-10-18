@@ -2,12 +2,22 @@ package chessbot;
 
 public class Point {
 	
-	int x;
-	int y;
+	int x = 8; // out of bounds
+	int y = 8; // out of bounds
 	
 	public Point(int x, int y){
 		this.x = x;
 		this.y = y;
+	}
+	
+	public Point(String loc){
+		if (loc.length() != 2) return;
+		
+		char letter = loc.toUpperCase().charAt(0);
+		char number = loc.charAt(1);
+		
+		x = (int)letter-65;
+		y = Character.getNumericValue(number)-1;
 	}
 	
 	void setXY(int x, int y){

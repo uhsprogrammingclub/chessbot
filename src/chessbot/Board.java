@@ -146,6 +146,13 @@ public class Board {
 	
 	//Function that identifies whether the game is over
 	public boolean isGameOver(){
+		boolean[] players = {true, false};
+		for(boolean p : players){
+			if(allMoves(p).size() == 0){
+				return true;
+			}
+		}
+		//Base case
 		return false;
 	}
 	
@@ -153,6 +160,7 @@ public class Board {
 	public void makeMove(Move m){
 		locations[m.piece.position.x][m.piece.position.y] = new Empty();
 		locations[m.point.x][m.point.y] = m.piece;
+		m.piece.position = m.point;
 	}
 	
 	//Function that retrieves numeric value assigned to position. High values are good for the player, low values good for the computer
