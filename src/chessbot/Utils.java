@@ -10,7 +10,7 @@ public class Utils {
 		//evaluate moves if it's a pawn
 		if (p.symbol.equals("p")){
 			//get direction of the pawn
-			int dir = p.isPlayer? 1: -1;
+			int dir = p.isPlayer ? -1: 1;
 			Point move = new Point(pos.x, pos.y + dir);
 			if( move.squareExists()){
 				if (b.isEmptySquare(move)){
@@ -96,17 +96,17 @@ public class Utils {
 		//evaluate moves if it's a pawn
 		if (p.symbol.equals("p")){
 			//get direction of the pawn
-			int dir = p.isPlayer? 1: -1;
+			int dir = p.isPlayer ? -1: 1;
 			
 			//check if spot diagonally to the right
 			Point move = new Point(pos.x + 1, pos.y + dir);
-			if( move.squareExists() && !b.isEmptySquare(move)){
+			if( move.squareExists() && !b.isEmptySquare(move) && b.getTeam(move) != p.isPlayer){
 					moves.add(move);
 			}
 			
 			//check if spot diagonally to the left
 			Point move2 = new Point(pos.x -1, pos.y + dir);
-			if( move2.squareExists() && !b.isEmptySquare(move2)){
+			if( move2.squareExists() && !b.isEmptySquare(move2) && b.getTeam(move) != p.isPlayer){
 					moves.add(move2);
 			}
 		}else{
