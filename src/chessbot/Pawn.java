@@ -55,7 +55,6 @@ public class Pawn extends Piece {
 		isPlayer = player;
 		symbol = "p";
 
-
 		// Using accessory method for clarity; not strictly necessary
 		setPosition(x, y);
 	}

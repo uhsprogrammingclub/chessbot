@@ -80,14 +80,22 @@ public class Board {
 			locations[piece.getX()][piece.getY()] = piece;
 		}		
 	}
-		
+	
+	//Function that retrieves numeric value assigned to position. High values are good for the player, low values good for the computer
 	public int evaluateBoard(){
 		int score = scoreBoard(true) - scoreBoard(false);
 		return score;
 	}
 	
+	//Analyze the board, and assign a numeric value to it for the position based on how favorable it is for the designated player.
 	public int scoreBoard(boolean isPlayer){
-		return 5;
+		
+		//Default the score to zero
+		int score = 0;
+		
+		//Sum the worth of all of the pieces to get a base score
+		
+		return score;
 	}
 	
 }
