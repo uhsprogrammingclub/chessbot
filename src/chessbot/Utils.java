@@ -10,7 +10,7 @@ public class Utils {
 		//evaluate moves if it's a pawn
 		if (p.symbol.equals("p")){
 			//get direction of the pawn
-			int dir = p.isPlayer? 1: -1;
+			int dir = p.isPlayer ? 1: -1;
 			Point move = new Point(pos.x, pos.y + dir);	
 			if( move.squareExists()){
 				if (b.isEmptySquare(move)){

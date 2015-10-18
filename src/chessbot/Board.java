@@ -10,6 +10,9 @@ public class Board {
 	//Two-dimensional array to hold the locations of all of the pieces
 	Piece[][] locations = new Piece[8][8];
 	
+	//One-dimensional array to hold simple list of pieces
+	List<Piece> pieceList = new ArrayList<Piece>();
+	
 	//Override java.lang.Object.toString method to create easier to read output in the form of a table
 	@Override
 	public String toString() {
@@ -54,8 +57,11 @@ public class Board {
 		return p.isPlayer;
 	}
 		
-	//Constructor for the Board class
+	//Constructor for the Board class - when given a list of pieces
 	public Board(List<Piece> list){
+		
+		//Assign list to pieceList variable
+		pieceList = list;
 		
 		//Fill the locations array with empty squares
 		for(int i = 0; i < locations.length; i++){
@@ -72,23 +78,42 @@ public class Board {
 	}
 	
 	//Find all possible moves
-	public List<Move> allPossible(){
+	public List<Move> allMoves(){
 
 		//Array list of raw moves - may include illegal ones
 		List<Move> rawMoves = new ArrayList<Move>();
 		
 		//Loop through all pieces on the board
-		for (Piece[] l: locations) {
+		for(Piece[] l: locations) {
 		    for (Piece p: l) {
+		    	//Add all possibilities of each piece's move to the raw list
 		    	List<Move> moves = p.findMoves(this);
 		    	rawMoves.addAll(moves);
-		        // Your individual element
 		    }
 		}
 		
+		//Remove moves that are illegal because of rules regarding check
+		for(Move m : rawMoves){
+			Board b = new Board(pieceList);
+			b.makeMove(m);
+			if(b.isCheck()){
+				rawMoves.remove(m);
+			}	
+		}
 		
 		return rawMoves;
 		
+	}
+	
+	//Function that identifies whether the king is directly threatened
+	public boolean isCheck(){
+		return false;
+	}
+	
+	//Function that completes the given move
+	public void makeMove(Move m){
+		locations[m.piece.position.x][m.piece.position.y] = new Empty();
+		locations[m.point.x][m.point.y] = m.piece;
 	}
 	
 	//Function that retrieves numeric value assigned to position. High values are good for the player, low values good for the computer
