@@ -12,7 +12,7 @@ public class Move {
 
 	@Override
 	public String toString() {
-		return "Move piece=" + piece + " to point=" + point;
+		return "Move piece " + piece + " from point " + piece.position + " to point " + point;
 	}
 
 }
