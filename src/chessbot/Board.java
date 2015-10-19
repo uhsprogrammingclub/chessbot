@@ -175,7 +175,17 @@ public class Board {
 	// Function that retrieves numeric value assigned to position. High values
 	// are good for the player, low values good for the computer
 	public int evaluateBoard() {
+		
 		int score = scoreBoard(false) - scoreBoard(true);
+		
+		if(allMoves(false).size() == 0){
+			score -= 10000;
+		}
+		
+		if(allMoves(true).size() == 0){
+			score += 10000;
+		}
+		
 		return score;
 	}
 
@@ -194,5 +204,4 @@ public class Board {
 
 		return score;
 	}
-
 }
