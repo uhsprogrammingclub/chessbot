@@ -100,17 +100,17 @@ public class Game {
 			Point from = new Point(piecePos);
 			*/
 			
-			System.out.println("[A-H][1-8], [A-H][1-8]: ");
-			String[] sp = s.nextLine().split(",");
+			System.out.print("[A-H][1-8], [A-H][1-8]: ");
+			String[] sp = s.nextLine().split(" ");
 			
 			Point from = new Point("I5");
 			Point to = new Point("I5");
 			
-			if(sp.length > 1){
+			if(sp.length != 1){
 				 from = new Point(sp[0].replaceAll("\\s+",""));
 				 to = new Point(sp[1].replaceAll("\\s+",""));
 			}else{
-				System.out.println("You need to seperate your moves with a comma.");
+				System.out.println("You need to seperate your moves with a single space.");
 			}
 			
 
@@ -142,12 +142,12 @@ public class Game {
 	static void computerMakeMove(Board b) {
 		System.out.println("Processing move...");
 		AlphaBetaMinimax ai = new AlphaBetaMinimax(b);
-		System.out.println(ai.bestMove);
+		System.out.println(ai.bestMove());
 		
-		for(MovesAndScores m : ai.rootsChildrenScore){
+		for(MoveAndScore m : ai.rootsChildrenScore){
 			System.out.println(m);
 		}
-		ai.bestMove.execute();
+		ai.bestMove().execute();
 		if (!b.isGameOver()) {
 			takePlayerMove(b);
 		} else {

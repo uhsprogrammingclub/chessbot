@@ -1,13 +1,31 @@
 package chessbot;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class AlphaBetaMinimax {
 
 	Board board;
 	int maxDepth = 5;
-	Move bestMove;
-	List<MovesAndScores> rootsChildrenScore = new ArrayList<>();
+	List<MoveAndScore> rootsChildrenScore = new ArrayList<>();
+	
+	public Move bestMove(){
+		
+		List<Move>primeMoves = new ArrayList<>();
+		
+		Collections.sort(rootsChildrenScore);
+		
+		for(MoveAndScore ms : rootsChildrenScore){
+			if(ms.score == rootsChildrenScore.get(0).score){
+				primeMoves.add(ms.move);
+			}else{
+				break;
+			}
+		}
+		
+		int rand = ThreadLocalRandom.current().nextInt(0, primeMoves.size());
+		return primeMoves.get(rand);
+	}
 
 	public AlphaBetaMinimax(Board board) {
 		this.board = board;
@@ -44,10 +62,7 @@ public class AlphaBetaMinimax {
 				currentScore = miniMaxAlgorithm(alpha, beta, depth + 1, true);
 				
 				if (depth == 0) {
-					rootsChildrenScore.add(new MovesAndScores(move, currentScore));
-					if(currentScore > maxValue){
-						bestMove = move;
-					}	
+					rootsChildrenScore.add(new MoveAndScore(move, currentScore));
 				}
 
 				maxValue = Math.max(currentScore, maxValue);
