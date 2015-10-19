@@ -11,6 +11,7 @@ public abstract class Piece {
 	//Value of the piece; can potentially change depending on context
 	int worth;
 	String symbol;
+	boolean alive = true;
 	
 	//Variable indicates whether or not the piece belongs to the player
 	Boolean player = false;

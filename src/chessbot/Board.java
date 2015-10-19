@@ -161,7 +161,7 @@ public class Board {
 	
 	//Function that retrieves numeric value assigned to position. High values are good for the player, low values good for the computer
 	public int evaluateBoard(){
-		int score = scoreBoard(true) - scoreBoard(false);
+		int score = scoreBoard(false) - scoreBoard(true);
 		return score;
 	}
 	
@@ -173,7 +173,7 @@ public class Board {
 		
 		//Sum the worth of all of the pieces to get a base score
 		for(Piece p : pieceList){
-			if(p.player == player) score += p.getWorth();
+			if(p.player == player && p.alive) score += p.getWorth();
 		}
 		
 		return score;

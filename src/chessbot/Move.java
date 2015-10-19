@@ -44,6 +44,7 @@ public class Move {
 			board.locations[piece.position.x][piece.position.y] = new Empty();
 			destinationPc.position = piece.position; // reverse positions
 			piece.position = point;
+			destinationPc.alive = false;
 			executed = true;
 		}
 	}
@@ -54,6 +55,7 @@ public class Move {
 			board.locations[destinationPc.position.x][destinationPc.position.y] = piece;
 			piece.position = destinationPc.position;
 			destinationPc.position = point;
+			destinationPc.alive = true;
 			executed = false;
 		}
 	}
