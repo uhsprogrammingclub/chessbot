@@ -84,21 +84,8 @@ public class Game {
 		list.add(P7);
 		list.add(P8);
 
-		Board test = new Board(list);
-		System.out.println(test);
-
-		System.out.println(test.rawMoves(true));
-		System.out.println(test.rawMoves(false));
-
-		for (Move n : p5.findMoves(test)) {
-			System.out.println(n);
-		}
-
-		for (Move n : N1.findMoves(test)) {
-			System.out.println(n);
-		}
-
-		takePlayerMove(test);
+		Board b = new Board(list);
+		takePlayerMove(b);
 	}
 
 	static void takePlayerMove(Board b) {
@@ -106,13 +93,26 @@ public class Game {
 		List<Move> validMoves = b.allMoves(true);
 		while (true) {
 			System.out.println(b);
+			
+			/*
 			System.out.print("Move piece [A-H][1-8]: ");
 			String piecePos = s.nextLine();
 			Point from = new Point(piecePos);
-
-			System.out.print("To [A-H][1-8]: ");
-			String pieceDest = s.nextLine();
-			Point to = new Point(pieceDest);
+			*/
+			
+			System.out.println("[A-H][1-8], [A-H][1-8]: ");
+			String[] sp = s.nextLine().split(",");
+			
+			Point from = new Point("I5");
+			Point to = new Point("I5");
+			
+			if(sp.length > 1){
+				 from = new Point(sp[0].replaceAll("\\s+",""));
+				 to = new Point(sp[1].replaceAll("\\s+",""));
+			}else{
+				System.out.println("You need to seperate your moves with a comma.");
+			}
+			
 
 			move = new Move(b, from, to);
 			boolean validMove = false;
@@ -144,6 +144,10 @@ public class Game {
 		System.out.println("Processing move...");
 		AlphaBetaMinimax ai = new AlphaBetaMinimax(b);
 		System.out.println(ai.bestMove);
+		
+		for(MovesAndScores m : ai.rootsChildrenScore){
+			System.out.println(m);
+		}
 		ai.bestMove.execute();
 		if (!b.isGameOver()) {
 			takePlayerMove(b);

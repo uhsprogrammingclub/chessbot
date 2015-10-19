@@ -20,7 +20,7 @@ public class Empty extends Piece {
 	}
 
 	public Empty() {
-		symbol = "░";
+		symbol = "-";
 		worth = 0;
 	}
 

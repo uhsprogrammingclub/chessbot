@@ -7,6 +7,7 @@ public class AlphaBetaMinimax {
 	Board board;
 	int maxDepth = 4;
 	Move bestMove;
+	List<MovesAndScores> rootsChildrenScore = new ArrayList<>();
 
 	public AlphaBetaMinimax(Board board) {
 		this.board = board;
@@ -14,6 +15,7 @@ public class AlphaBetaMinimax {
 	}
 
 	int miniMaxAlgorithm(int alpha, int beta, int depth, boolean player) {
+		
 		if (beta <= alpha) {
 			if (!player) {
 				return Integer.MAX_VALUE;
@@ -27,6 +29,10 @@ public class AlphaBetaMinimax {
 		}
 
 		List<Move> movesAvailible = board.allMoves(player);
+		
+		if(depth == 0){
+            rootsChildrenScore.clear();
+        }
 
 		int maxValue = Integer.MIN_VALUE, minValue = Integer.MAX_VALUE;
 
@@ -36,8 +42,12 @@ public class AlphaBetaMinimax {
 			move.execute();
 			if (!player) {
 				currentScore = miniMaxAlgorithm(alpha, beta, depth + 1, true);
-				if (depth == 0 && currentScore > maxValue) {
-					bestMove = move;
+				
+				if (depth == 0) {
+					rootsChildrenScore.add(new MovesAndScores(move, currentScore));
+					if(currentScore > maxValue){
+						bestMove = move;
+					}	
 				}
 
 				maxValue = Math.max(currentScore, maxValue);
