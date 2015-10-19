@@ -87,7 +87,7 @@ public class AlphaBetaMinimax {
 			// If a pruning has been done, don't evaluate the rest of the
 			// sibling states
 			if (currentScore == Integer.MAX_VALUE || currentScore == Integer.MIN_VALUE){
-				System.out.println("Pruning at depth "+depth+": " + move);
+				//System.out.println("Pruning at depth "+depth+": " + move);
 				break;
 			}
 				
