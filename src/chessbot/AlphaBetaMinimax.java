@@ -5,7 +5,7 @@ import java.util.*;
 public class AlphaBetaMinimax {
 	
 	Board board;
-	int maxDepth = 5;
+	int maxDepth = 6;
 	Move bestMove;
 	
 	
@@ -16,7 +16,7 @@ public class AlphaBetaMinimax {
 	
 	int miniMaxAlgorithm(int alpha, int beta, int depth, boolean player){
 		if(beta<=alpha){
-			if(player == true){
+			if(!player){
 				return Integer.MAX_VALUE;
 			}else{
 				return Integer.MIN_VALUE; 
@@ -35,16 +35,18 @@ public class AlphaBetaMinimax {
 			Move move = movesAvailible.get(i);			
 			int currentScore = 0;
 			move.execute();
-			if (player == false){
+			if (!player){
 				currentScore = miniMaxAlgorithm(alpha, beta, depth + 1, true);
-				if(depth == 0 && currentScore > maxValue)
-					bestMove = move;
+				if(depth == 0 && currentScore > maxValue){
+					bestMove = move;		            
+				}
+					
 					
 				maxValue = Math.max(currentScore, maxValue);
 				
 				alpha = Math.max(maxValue, alpha);
 				
-			}else if (player == true){
+			}else if (player){
 				
 				currentScore = miniMaxAlgorithm(alpha, beta, depth + 1, false);
 				minValue = Math.min(currentScore, minValue);
@@ -53,10 +55,7 @@ public class AlphaBetaMinimax {
 			}
 			
 			//reset board
-			System.out.println(board.evaluateBoard());
 			move.reverse();
-			System.out.println(move);
-			System.out.println("currentScore: " + currentScore + ", maxValue: " + maxValue + ", minValue: " + minValue);
             //If a pruning has been done, don't evaluate the rest of the sibling states
             if(currentScore == Integer.MAX_VALUE || currentScore == Integer.MIN_VALUE) break;
 		}

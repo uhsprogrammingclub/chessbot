@@ -140,6 +140,7 @@ public class Game {
 	}
 	
 	static void computerMakeMove(Board b){
+		System.out.println("Processing move...");
 		AlphaBetaMinimax ai = new AlphaBetaMinimax(b);
 		System.out.println(ai.bestMove);
 		ai.bestMove.execute();
