@@ -5,7 +5,7 @@ import java.util.*;
 public class AlphaBetaMinimax {
 
 	Board board;
-	int maxDepth = 4;
+	int maxDepth = 5;
 	Move bestMove;
 	List<MovesAndScores> rootsChildrenScore = new ArrayList<>();
 
