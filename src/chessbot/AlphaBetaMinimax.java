@@ -5,7 +5,7 @@ import java.util.*;
 public class AlphaBetaMinimax {
 
 	Board board;
-	int maxDepth = 5;
+	int maxDepth = 4;
 	Move bestMove;
 
 	public AlphaBetaMinimax(Board board) {
