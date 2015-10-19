@@ -20,11 +20,9 @@ We will be using a fundemental alpha-beta minimax algorithm, with some twists an
 ## Task List
 List of tasks that need to be completed. Please add to the list if you come across one that needs to be done. *Keep the tasks small.* Small tasks are much more likely to be completed. If you decide to work on a task, cut it off the list, and paste it into the "In Progress Task List," and *write your name next to the task* so we can contact you if we have any questions. Multiple people can work on the same task.
 
-  * Create basic outline and essential variables (for now) of Position class. Includes the board (probably multi-dimensional) array
-  * Create print current board function. Override the `toString()` function for the Position class, and have it print a representation of the board complete with proper indexing, like [this](http://www.chessstrategiesblog.com/wp-content/uploads/algebraic_notation.gif).
-  * Create classes for each individual piece. We will need a knight class, pawn class, etc. Each class should have its position (x and y, corresponding to the multidimensional array). 
-  * Create or find a graphic for each piece, and a graphic for the chess board. This is our opportunity to be unique; for instance, we can make UHS chess or other twists, with teachers as the chess pieces. 
-
+  * Create a functioning GUI to accompany the board. Would be a gigantic improvement
+  * Algorithm optimizations (See optimizations)
+ 
 ## In Progresss Task List
 List of in-progress tasks. Please write your name next to the task.
   * I hope to see many tasks here, soon!
@@ -32,5 +30,9 @@ List of in-progress tasks. Please write your name next to the task.
 ## Completed Task List
 Place tasks here once you complete them. Sign them off with your name 
   * I hope to see many tasks here, soon!
+
+## Algorithm Optimizations
+  * Deriving function for gradual increase in search depth. Will likely be some form of rational function. 
+  * Branching! Branching! Branching!
 
 >UHS Software Development Club Presidents
