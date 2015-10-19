@@ -85,7 +85,7 @@ public class Game {
 		list.add(P8);
 
 		Board b = new Board(list);
-		takePlayerMove(b);
+		computerMakeMove(b);
 	}
 
 	static void takePlayerMove(Board b) {
@@ -135,6 +135,7 @@ public class Game {
 		if (!b.isGameOver()) {
 			computerMakeMove(b);
 		} else {
+			System.out.println(b);
 			System.out.println("Game Over!");
 		}
 	}
@@ -142,7 +143,27 @@ public class Game {
 	static void computerMakeMove(Board b) {
 		System.out.println(b);
 		System.out.println("Processing move...");
-		AlphaBetaMinimax ai = new AlphaBetaMinimax(b);
+		AlphaBetaMinimax ai = new AlphaBetaMinimax(b, 1);
+		Move move = ai.bestMove();
+		System.out.println("Static computations: " + ai.staticComputations);
+		System.out.println(move);
+		
+		for(MoveAndScore m : ai.rootsChildrenScore){
+			System.out.println(m);
+		}
+		move.execute();
+		if (!b.isGameOver()) {
+			playerBotMakeMove(b);
+		} else {
+			System.out.println(b);
+			System.out.println("Game Over!");
+		}
+	}
+	
+	static void playerBotMakeMove(Board b) {
+		System.out.println(b);
+		System.out.println("Processing move...");
+		AlphaBetaMinimax ai = new AlphaBetaMinimax(b, -1);
 		Move move = ai.bestMove();
 		System.out.println("Static computations: " + ai.staticComputations);
 		System.out.println(move);
@@ -154,6 +175,7 @@ public class Game {
 		if (!b.isGameOver()) {
 			computerMakeMove(b);
 		} else {
+			System.out.println(b);
 			System.out.println("Game Over!");
 		}
 	}

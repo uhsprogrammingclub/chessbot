@@ -6,9 +6,10 @@ import java.util.concurrent.ThreadLocalRandom;
 public class AlphaBetaMinimax {
 
 	Board board;
-	int maxDepth = 5;
+	int maxDepth = 3;
 	List<MoveAndScore> rootsChildrenScore = new ArrayList<>();
 	int staticComputations = 0;
+	int playerBot = 1;
 	
 	public Move bestMove(){
 		
@@ -28,8 +29,10 @@ public class AlphaBetaMinimax {
 		return primeMoves.get(rand);
 	}
 
-	public AlphaBetaMinimax(Board board) {
+	public AlphaBetaMinimax(Board board, int playerBot) {
 		this.board = board;
+		this.playerBot = playerBot;
+		maxDepth = maxDepth;
 		miniMaxAlgorithm(Integer.MIN_VALUE, Integer.MAX_VALUE, 0, false);
 	}
 
@@ -45,10 +48,10 @@ public class AlphaBetaMinimax {
 
 		if (depth == maxDepth || board.isGameOver() == true) {
 			staticComputations++;
-			return board.evaluateBoard();	
+			return board.evaluateBoard()*playerBot;	
 		}
 
-		List<Move> movesAvailible = board.allMoves(player);
+		List<Move> movesAvailible = board.allMoves(playerBot == 1 ? player : !player);
 		
 		if(depth == 0){
             rootsChildrenScore.clear();

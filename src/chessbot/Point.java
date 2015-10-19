@@ -43,6 +43,7 @@ public class Point {
 		// Convert to readable position
 		String[] letters = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R",
 				"S", "T", "U", "V", "W", "X", "Y", "Z" };
+		if (x < 0 || x > 25) x = 25;
 		return letters[x] + "" + (y + 1);
 	}
 
