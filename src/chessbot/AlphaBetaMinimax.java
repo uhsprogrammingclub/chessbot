@@ -32,7 +32,7 @@ public class AlphaBetaMinimax {
 	public AlphaBetaMinimax(Board board, int playerBot) {
 		this.board = board;
 		this.playerBot = playerBot;
-		maxDepth = maxDepth;
+		maxDepth = maxDepth + playerBot;
 		miniMaxAlgorithm(Integer.MIN_VALUE, Integer.MAX_VALUE, 0, false);
 	}
 
