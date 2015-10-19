@@ -8,9 +8,9 @@ import java.util.*;
 public class Game {
 
 	static Scanner s = new Scanner(System.in);
-	
+
 	public static void main(String[] args) {
-		
+
 		Piece r1 = new Rook(0, 0, false);
 		Piece n1 = new Knight(1, 0, false);
 		Piece b1 = new Bishop(2, 0, false);
@@ -19,7 +19,7 @@ public class Game {
 		Piece b2 = new Bishop(5, 0, false);
 		Piece n2 = new Knight(6, 0, false);
 		Piece r2 = new Rook(7, 0, false);
-		
+
 		Piece p1 = new Pawn(0, 1, false);
 		Piece p2 = new Pawn(1, 1, false);
 		Piece p3 = new Pawn(2, 1, false);
@@ -28,9 +28,7 @@ public class Game {
 		Piece p6 = new Pawn(5, 1, false);
 		Piece p7 = new Pawn(6, 1, false);
 		Piece p8 = new Pawn(7, 1, false);
-		
-		
-		
+
 		List<Piece> list = new ArrayList<Piece>();
 		Piece R1 = new Rook(0, 7, true);
 		Piece N1 = new Knight(1, 7, true);
@@ -40,7 +38,7 @@ public class Game {
 		Piece B2 = new Bishop(5, 7, true);
 		Piece N2 = new Knight(6, 7, true);
 		Piece R2 = new Rook(7, 7, true);
-		
+
 		Piece P1 = new Pawn(0, 6, true);
 		Piece P2 = new Pawn(1, 6, true);
 		Piece P3 = new Pawn(2, 6, true);
@@ -49,8 +47,7 @@ public class Game {
 		Piece P6 = new Pawn(5, 6, true);
 		Piece P7 = new Pawn(6, 6, true);
 		Piece P8 = new Pawn(7, 6, true);
-		
-		
+
 		list.add(r1);
 		list.add(n1);
 		list.add(b1);
@@ -59,7 +56,7 @@ public class Game {
 		list.add(b2);
 		list.add(n2);
 		list.add(r2);
-		
+
 		list.add(p1);
 		list.add(p2);
 		list.add(p3);
@@ -68,7 +65,7 @@ public class Game {
 		list.add(p6);
 		list.add(p7);
 		list.add(p8);
-		
+
 		list.add(R1);
 		list.add(N1);
 		list.add(B1);
@@ -77,7 +74,7 @@ public class Game {
 		list.add(B2);
 		list.add(N2);
 		list.add(R2);
-		
+
 		list.add(P1);
 		list.add(P2);
 		list.add(P3);
@@ -86,72 +83,70 @@ public class Game {
 		list.add(P6);
 		list.add(P7);
 		list.add(P8);
-		
-		
-		
+
 		Board test = new Board(list);
 		System.out.println(test);
-		
+
 		System.out.println(test.rawMoves(true));
 		System.out.println(test.rawMoves(false));
-		
-		for (Move n : p5.findMoves(test)){
+
+		for (Move n : p5.findMoves(test)) {
 			System.out.println(n);
 		}
-		
-		for (Move n : N1.findMoves(test)){
+
+		for (Move n : N1.findMoves(test)) {
 			System.out.println(n);
 		}
-		
+
 		takePlayerMove(test);
 	}
-	
-	static void takePlayerMove(Board b){
+
+	static void takePlayerMove(Board b) {
 		Move move;
 		List<Move> validMoves = b.allMoves(true);
-		while(true){
+		while (true) {
 			System.out.println(b);
 			System.out.print("Move piece [A-H][1-8]: ");
 			String piecePos = s.nextLine();
 			Point from = new Point(piecePos);
-			
+
 			System.out.print("To [A-H][1-8]: ");
 			String pieceDest = s.nextLine();
 			Point to = new Point(pieceDest);
-						
+
 			move = new Move(b, from, to);
 			boolean validMove = false;
-			for(Move m : validMoves){
-				
-				if (move.equals(m)){
+			for (Move m : validMoves) {
+
+				if (move.equals(m)) {
 					validMove = true;
 					break;
 				}
 			}
-			if (validMove){
+			if (validMove) {
 				break;
-			}else{
+			} else {
 				System.out.println(move + " is an invalid move!");
 			}
-			
+
 		}
 		System.out.println(move);
 		move.execute();
-		if (!b.isGameOver()){
+		if (!b.isGameOver()) {
 			computerMakeMove(b);
-		}else{
+		} else {
 			System.out.println("Game Over!");
 		}
 	}
-	
-	static void computerMakeMove(Board b){
+
+	static void computerMakeMove(Board b) {
 		System.out.println("Processing move...");
 		AlphaBetaMinimax ai = new AlphaBetaMinimax(b);
 		System.out.println(ai.bestMove);
 		ai.bestMove.execute();
-		if (!b.isGameOver()){
+		if (!b.isGameOver()) {
 			takePlayerMove(b);
-		}else{
+		} else {
 			System.out.println("Game Over!");
 		}
 	}

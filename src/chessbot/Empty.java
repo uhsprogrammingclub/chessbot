@@ -2,14 +2,14 @@ package chessbot;
 
 import java.util.*;
 
-public class Empty extends Piece{
-	
-	//Empty squares have no worth
+public class Empty extends Piece {
+
+	// Empty squares have no worth
 	int worth;
-	//String symbol;
+	// String symbol;
 
 	@Override
-	//Empty squares have no possible moves; therefore, return null.
+	// Empty squares have no possible moves; therefore, return null.
 	public List<Move> findMoves(Board b) {
 		return new ArrayList<Move>(); // empty list
 	}
@@ -18,9 +18,9 @@ public class Empty extends Piece{
 	public int getWorth() {
 		return worth;
 	}
-	
-	public Empty(){
-		symbol = "-";
+
+	public Empty() {
+		symbol = "░";
 		worth = 0;
 	}
 
