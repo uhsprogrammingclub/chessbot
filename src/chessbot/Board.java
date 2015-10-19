@@ -94,12 +94,12 @@ public class Board {
 	public List<Move> allMoves(boolean player) {
 		List<Move> rawMoves = rawMoves(player);
 		// Remove moves that are illegal because of rules regarding check
-		for (Move m : rawMoves) {
-			Board b = new Board(pieceList);
+		for (Iterator<Move> iterator = rawMoves.iterator(); iterator.hasNext();) {
+			Move m = iterator.next();
 			m.execute();
-			if (b.isCheck(player)) {
+			if (this.isCheck(player)) {
 				m.reverse();
-				rawMoves.remove(m);
+				iterator.remove();
 			} else {
 				m.reverse();
 			}
@@ -130,14 +130,14 @@ public class Board {
 	public boolean isCheck(boolean player) {
 
 		// Load the King's position
-		Point kingPosition = getKingPosition(player);
+		Piece king = getKing(player);
 
 		// Load all possible moves in this (hypothetical) board
-		List<Move> rawMoves = rawMoves(player);
+		List<Move> rawMoves = rawMoves(!player);
 
 		for (Move m : rawMoves) {
 			// If a check exists...
-			if (m.point == kingPosition && m.piece.worth != 10000) {
+			if (m.destinationPc.equals(king)) {
 				return true;
 			}
 		}
@@ -147,12 +147,12 @@ public class Board {
 	}
 
 	// Function that finds the King's position on the board
-	public Point getKingPosition(boolean player) {
+	public Piece getKing(boolean player) {
 		for (Piece[] l : locations) {
 			for (Piece p : l) {
-				if (p.player == player && p.worth == 10000) {
+				if (p.player == player && p.symbol.equals("k")) {
 					// Return the King's position
-					return p.position;
+					return p;
 				}
 			}
 		}

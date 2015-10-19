@@ -8,6 +8,7 @@ public class AlphaBetaMinimax {
 	Board board;
 	int maxDepth = 5;
 	List<MoveAndScore> rootsChildrenScore = new ArrayList<>();
+	int staticComputations = 0;
 	
 	public Move bestMove(){
 		
@@ -43,7 +44,8 @@ public class AlphaBetaMinimax {
 		}
 
 		if (depth == maxDepth || board.isGameOver() == true) {
-			return board.evaluateBoard();
+			staticComputations++;
+			return board.evaluateBoard();	
 		}
 
 		List<Move> movesAvailible = board.allMoves(player);

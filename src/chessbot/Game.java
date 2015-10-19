@@ -143,14 +143,16 @@ public class Game {
 		System.out.println(b);
 		System.out.println("Processing move...");
 		AlphaBetaMinimax ai = new AlphaBetaMinimax(b);
-		System.out.println(ai.bestMove());
+		Move move = ai.bestMove();
+		System.out.println("Static computations: " + ai.staticComputations);
+		System.out.println(move);
 		
 		for(MoveAndScore m : ai.rootsChildrenScore){
 			System.out.println(m);
 		}
-		ai.bestMove().execute();
+		move.execute();
 		if (!b.isGameOver()) {
-			takePlayerMove(b);
+			computerMakeMove(b);
 		} else {
 			System.out.println("Game Over!");
 		}
