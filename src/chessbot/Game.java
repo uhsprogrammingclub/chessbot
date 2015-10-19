@@ -136,7 +136,7 @@ public class Game {
 		}
 		System.out.println(move);
 		move.execute();
-		takePlayerMove(b);
+		computerMakeMove(b);
 	}
 	
 	static void computerMakeMove(Board b){

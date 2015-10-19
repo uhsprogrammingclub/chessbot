@@ -60,7 +60,7 @@ public class Move {
 
 	@Override
 	public String toString() {
-		return "Move piece " + piece + " from point " + piece.position + " to point " + point + "which is a" + destinationPc;
+		return "Move piece " + piece + " from point " + piece.position + " to point " + point + ", which is a " + destinationPc;
 	}
 	
 	@Override
