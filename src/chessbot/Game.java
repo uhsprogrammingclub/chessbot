@@ -7,6 +7,8 @@ import java.util.*;
 
 public class Game {
 
+	static Scanner s = new Scanner(System.in);
+	
 	public static void main(String[] args) {
 		
 		Piece r1 = new Rook(0, 0, false);
@@ -89,6 +91,8 @@ public class Game {
 		Board test = new Board(list);
 		System.out.println(test);
 		
+		System.out.println(test.rawMoves(true));
+		System.out.println(test.rawMoves(false));
 		
 		for (Move n : p5.findMoves(test)){
 			System.out.println(n);
@@ -97,5 +101,48 @@ public class Game {
 		for (Move n : N1.findMoves(test)){
 			System.out.println(n);
 		}
+		
+		takePlayerMove(test);
+	}
+	
+	static void takePlayerMove(Board b){
+		Move move;
+		List<Move> validMoves = b.allMoves(true);
+		while(true){
+			System.out.println(b);
+			System.out.print("Move piece [A-H][1-8]: ");
+			String piecePos = s.nextLine();
+			Point from = new Point(piecePos);
+			
+			System.out.print("To [A-H][1-8]: ");
+			String pieceDest = s.nextLine();
+			Point to = new Point(pieceDest);
+						
+			move = new Move(b, from, to);
+			boolean validMove = false;
+			for(Move m : validMoves){
+				
+				if (move.equals(m)){
+					validMove = true;
+					break;
+				}
+			}
+			if (validMove){
+				break;
+			}else{
+				System.out.println(move + " is an invalid move!");
+			}
+			
+		}
+		System.out.println(move);
+		move.execute();
+		computerMakeMove(b);
+	}
+	
+	static void computerMakeMove(Board b){
+		AlphaBetaMinimax ai = new AlphaBetaMinimax(b);
+		System.out.println(ai.bestMove);
+		ai.bestMove.execute();
+		takePlayerMove(b);
 	}
 }

@@ -15,11 +15,11 @@ public class Knight extends Piece {
 			for (int j = -2; j<=2; j= j+4){ 
 				Point move = new Point(this.position.x+i, this.position.y+j);
 				if( move.squareExists() && b.getTeam(move) != this.player){
-					moves.add(new Move(move, this));
+					moves.add(new Move(b, move, this));
 				}
 				Point move2 = new Point(this.position.x+j, this.position.y+i);
 				if( move2.squareExists() && b.getTeam(move2) != this.player){
-					moves.add(new Move(move2, this));
+					moves.add(new Move(b, move2, this));
 				}
 			}
 		}

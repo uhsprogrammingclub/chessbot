@@ -83,10 +83,13 @@ public class Board {
 		//Remove moves that are illegal because of rules regarding check
 		for(Move m : rawMoves){
 			Board b = new Board(pieceList);
-			b.makeMove(m);
+			m.execute();
 			if(b.isCheck(player)){
+				m.reverse();
 				rawMoves.remove(m);
-			}	
+			}else{
+				m.reverse();
+			}
 		}
 		
 		return rawMoves;
@@ -146,13 +149,14 @@ public class Board {
 	
 	//Function that identifies whether the game is over
 	public boolean isGameOver(){
+		boolean[] players = {true, false};
+		for(boolean p : players){
+			if(allMoves(p).size() == 0){
+				return true;
+			}
+		}
+		//Base case
 		return false;
-	}
-	
-	//Function that completes the given move
-	public void makeMove(Move m){
-		locations[m.piece.position.x][m.piece.position.y] = new Empty();
-		locations[m.point.x][m.point.y] = m.piece;
 	}
 	
 	//Function that retrieves numeric value assigned to position. High values are good for the player, low values good for the computer
