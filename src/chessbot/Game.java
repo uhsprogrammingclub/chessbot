@@ -135,14 +135,14 @@ public class Game {
 			
 		}
 		System.out.println(move);
-		b.makeMove(move);
+		move.execute();
 		takePlayerMove(b);
 	}
 	
 	static void computerMakeMove(Board b){
 		AlphaBetaMinimax ai = new AlphaBetaMinimax(b);
 		System.out.println(ai.bestMove);
-		b.makeMove(ai.bestMove);
+		ai.bestMove.execute();
 		takePlayerMove(b);
 	}
 }

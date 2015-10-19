@@ -83,10 +83,13 @@ public class Board {
 		//Remove moves that are illegal because of rules regarding check
 		for(Move m : rawMoves){
 			Board b = new Board(pieceList);
-			b.makeMove(m);
+			m.execute();
 			if(b.isCheck(player)){
+				m.reverse();
 				rawMoves.remove(m);
-			}	
+			}else{
+				m.reverse();
+			}
 		}
 		
 		return rawMoves;
@@ -154,13 +157,6 @@ public class Board {
 		}
 		//Base case
 		return false;
-	}
-	
-	//Function that completes the given move
-	public void makeMove(Move m){
-		locations[m.piece.position.x][m.piece.position.y] = new Empty();
-		locations[m.point.x][m.point.y] = m.piece;
-		m.piece.position = m.point;
 	}
 	
 	//Function that retrieves numeric value assigned to position. High values are good for the player, low values good for the computer

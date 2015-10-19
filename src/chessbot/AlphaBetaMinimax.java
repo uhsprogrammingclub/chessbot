@@ -32,12 +32,9 @@ public class AlphaBetaMinimax {
 		int maxValue = Integer.MIN_VALUE, minValue = Integer.MAX_VALUE;
 		
 		for (int i = 0; i<movesAvailible.size(); i++){
-			Move move = movesAvailible.get(i);
-			Point originalPt = new Point(move.piece.getX(), move.piece.getY());
-			
-			System.out.println("ORIGNAL MOVE " + move);
+			Move move = movesAvailible.get(i);			
 			int currentScore = 0;
-			board.makeMove(move);
+			move.execute();
 			
 			if (player == false){
 				currentScore = miniMaxAlgorithm(alpha, beta, depth + 1, true);
@@ -57,9 +54,7 @@ public class AlphaBetaMinimax {
 			}
 			
 			//reset board
-			Move reverseMove = new Move(originalPt, move.piece);
-			System.out.println("REVERSE MOVE" + reverseMove);
-			board.makeMove(reverseMove);
+			move.reverse();
             
             //If a pruning has been done, don't evaluate the rest of the sibling states
             if(currentScore == Integer.MAX_VALUE || currentScore == Integer.MIN_VALUE) break;

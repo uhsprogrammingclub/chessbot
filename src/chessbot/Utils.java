@@ -16,12 +16,12 @@ public class Utils {
 
 			if( move.squareExists()){
 				if (b.isEmptySquare(move)){
-					moves.add(new Move(move, p));
+					moves.add(new Move(b, move, p));
 					//check if pawn can move 2 squares.
 					if ((p.player && pos.y == 6) || (!p.player && pos.y == 1)){
 						Point move2 = new Point(pos.x, pos.y + dir*2);
 						if( move2.squareExists() && b.isEmptySquare(move2)){
-							moves.add(new Move(move2, p));
+							moves.add(new Move(b, move2, p));
 						}
 					}
 				}
@@ -31,10 +31,10 @@ public class Utils {
 			for (int y = pos.y+1; y < 8; y++){
 				Point move = new Point( pos.x, y);
 				if (b.isEmptySquare(move)){
-					moves.add(new Move(move, p));
+					moves.add(new Move(b, move, p));
 				}else{
 					if (b.getTeam(move) != p.player){
-						moves.add(new Move(move, p));
+						moves.add(new Move(b, move, p));
 					}
 					break;
 				}
@@ -44,10 +44,10 @@ public class Utils {
 			for (int y = pos.y-1; y >= 0; y--){
 				Point move = new Point( pos.x, y);
 				if (b.isEmptySquare(move)){
-					moves.add(new Move(move, p));
+					moves.add(new Move(b, move, p));
 				}else{
 					if (b.getTeam(move) != p.player){
-						moves.add(new Move(move, p));
+						moves.add(new Move(b, move, p));
 					}
 					break;
 				}
@@ -66,10 +66,10 @@ public class Utils {
 		for (int x = pos.x+1; x < 8; x++){
 			Point move = new Point( x, pos.y);
 			if (b.isEmptySquare(move)){
-				moves.add(new Move(move, p));
+				moves.add(new Move(b, move, p));
 			}else{
 				if (b.getTeam(move) != p.player){
-					moves.add(new Move(move, p));
+					moves.add(new Move(b, move, p));
 				}
 				break;
 			}
@@ -79,10 +79,10 @@ public class Utils {
 		for (int x = pos.x-1; x >= 0; x--){
 			Point move = new Point( x, pos.y);
 			if (b.isEmptySquare(move)){
-				moves.add(new Move(move, p));
+				moves.add(new Move(b, move, p));
 			}else{
 				if (b.getTeam(move) != p.player){
-					moves.add(new Move(move, p));
+					moves.add(new Move(b, move, p));
 				}
 				break;
 			}
@@ -103,7 +103,7 @@ public class Utils {
 			//check if spot diagonally to the right
 			Point move = new Point(pos.x + 1, pos.y + dir);
 			if( move.squareExists() && !b.isEmptySquare(move) && b.getTeam(move) != p.player){
-				moves.add(new Move(move, p));
+				moves.add(new Move(b, move, p));
 			}
 			
 			//check if spot diagonally to the left
@@ -111,7 +111,7 @@ public class Utils {
 
 			
 			if( move2.squareExists() && !b.isEmptySquare(move2) && b.getTeam(move2) != p.player){
-				moves.add(new Move(move2, p));
+				moves.add(new Move(b, move2, p));
 			}
 		}else{
 			//diagonal moves right forward
@@ -120,10 +120,10 @@ public class Utils {
 				if (!move.squareExists()) break;
 				
 				if (b.isEmptySquare(move)){
-					moves.add(new Move(move, p));
+					moves.add(new Move(b, move, p));
 				}else{
 					if (b.getTeam(move) != p.player){
-						moves.add(new Move(move, p));
+						moves.add(new Move(b, move, p));
 					}
 					break;
 				}
@@ -136,10 +136,10 @@ public class Utils {
 				if (!move.squareExists()) break;
 				
 				if (b.isEmptySquare(move)){
-					moves.add(new Move(move, p));
+					moves.add(new Move(b, move, p));
 				}else{
 					if (b.getTeam(move) != p.player){
-						moves.add(new Move(move, p));
+						moves.add(new Move(b, move, p));
 					}
 					break;
 				}
@@ -151,10 +151,10 @@ public class Utils {
 				if (!move.squareExists()) break;
 				
 				if (b.isEmptySquare(move)){
-					moves.add(new Move(move, p));
+					moves.add(new Move(b, move, p));
 				}else{
 					if (b.getTeam(move) != p.player){
-						moves.add(new Move(move, p));
+						moves.add(new Move(b, move, p));
 					}
 					break;
 				}
@@ -166,10 +166,10 @@ public class Utils {
 				if (!move.squareExists()) break;
 				
 				if (b.isEmptySquare(move)){
-					moves.add(new Move(move, p));
+					moves.add(new Move(b, move, p));
 				}else{
 					if (b.getTeam(move) != p.player){
-						moves.add(new Move(move, p));
+						moves.add(new Move(b, move, p));
 					}
 					break;
 				}
