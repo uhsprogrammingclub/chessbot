@@ -165,8 +165,13 @@ public class Board {
 		boolean[] players = { true, false };
 		for (boolean p : players) {
 			if (allMoves(p).size() == 0) {
+				System.out.println("Raw Moves: " + rawMoves(p));
+				System.out.println("Valid Moves: " + allMoves(p));
 				return true;
 			}
+		}
+		if( scoreBoard(true) == 10000 && scoreBoard(false) == 10000){
+			return true;
 		}
 		// Base case
 		return false;
@@ -179,11 +184,15 @@ public class Board {
 		int score = scoreBoard(false) - scoreBoard(true);
 		
 		if(allMoves(false).size() == 0){
-			score -= 10000;
+			if (isCheck(false)){
+				score -= 10000;
+			}
 		}
 		
 		if(allMoves(true).size() == 0){
-			score += 10000;
+			if (isCheck(true)){
+				score += 10000;
+			}
 		}
 		
 		return score;

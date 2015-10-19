@@ -6,7 +6,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class AlphaBetaMinimax {
 
 	Board board;
-	int maxDepth = 3;
+	int maxDepth = 2;
 	List<MoveAndScore> rootsChildrenScore = new ArrayList<>();
 	int staticComputations = 0;
 	int playerBot = 1;
@@ -86,8 +86,11 @@ public class AlphaBetaMinimax {
 			move.reverse();
 			// If a pruning has been done, don't evaluate the rest of the
 			// sibling states
-			if (currentScore == Integer.MAX_VALUE || currentScore == Integer.MIN_VALUE)
+			if (currentScore == Integer.MAX_VALUE || currentScore == Integer.MIN_VALUE){
+				System.out.println("Pruning at depth "+depth+": " + move);
 				break;
+			}
+				
 		}
 		return player == false ? maxValue : minValue;
 	}
