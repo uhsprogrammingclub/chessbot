@@ -168,6 +168,9 @@ public class Board {
 		int score = 0;
 		
 		//Sum the worth of all of the pieces to get a base score
+		for(Piece p : pieceList){
+			score += p.getWorth();
+		}
 		
 		return score;
 	}
