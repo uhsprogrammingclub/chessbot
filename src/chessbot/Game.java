@@ -50,6 +50,7 @@ public class Game {
 		Piece P7 = new Pawn(6, 6, true);
 		Piece P8 = new Pawn(7, 6, true);
 		
+		
 		list.add(r1);
 		list.add(n1);
 		list.add(b1);
@@ -136,7 +137,11 @@ public class Game {
 		}
 		System.out.println(move);
 		move.execute();
-		computerMakeMove(b);
+		if (!b.isGameOver()){
+			computerMakeMove(b);
+		}else{
+			System.out.println("Game Over!");
+		}
 	}
 	
 	static void computerMakeMove(Board b){
@@ -144,6 +149,10 @@ public class Game {
 		AlphaBetaMinimax ai = new AlphaBetaMinimax(b);
 		System.out.println(ai.bestMove);
 		ai.bestMove.execute();
-		takePlayerMove(b);
+		if (!b.isGameOver()){
+			takePlayerMove(b);
+		}else{
+			System.out.println("Game Over!");
+		}
 	}
 }

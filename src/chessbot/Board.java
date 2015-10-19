@@ -21,9 +21,15 @@ public class Board {
 			String aString = "Board: \n";
 			
 			//Nested loops getting values
-			for(int y = 7; y >= 0; y--) {
-				for(int x = 0; x < 8; x++) {
-					aString += " " + locations[x][y].toString();
+			for(int y = 7; y >= -1; y--) {
+				if (y != -1){
+					aString += (y+1) + "|";
+					for(int x = 0; x < 8; x++) {
+						aString += " " + locations[x][y].toString();
+					}
+				}else{
+					aString += "   ---------------\n";
+					aString += "   A B C D E F G H";
 				}
 				
 				//Create a new line
