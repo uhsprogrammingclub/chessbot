@@ -22,7 +22,7 @@ public class Board {
 	public String toString() {
 
 		// String variable to eventually return		
-		String aString = "Board: " + Zobrist.getZobristHash(this) + "\n";
+		String aString = "Board Zobrist Hash: " + Zobrist.getZobristHash(this) + "\n";
 		
 		aString += " |-----------------|\n";
 		// Nested loops getting values
