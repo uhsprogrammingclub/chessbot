@@ -3,8 +3,8 @@ package chessbot;
 public class Move {
 
 	Point point;
-	Piece piece = new Empty();
-	Piece destinationPc = new Empty();
+	Piece piece = null;
+	Piece destinationPc = null;
 	boolean executed = false;
 	Board board;
 
@@ -16,6 +16,7 @@ public class Move {
 			destinationPc = b.locations[pt.x][pt.y];
 
 		} else {
+			destinationPc = new Empty();
 			destinationPc.setPosition(pt.x, pt.y);// for toString() reasons
 		}
 	}
@@ -27,6 +28,7 @@ public class Move {
 			piece = b.locations[from.x][from.y];
 
 		} else {
+			piece = new Empty();
 			piece.setPosition(from.x, from.y);// for toString() reasons
 		}
 
@@ -34,14 +36,19 @@ public class Move {
 			destinationPc = b.locations[to.x][to.y];
 
 		} else {
+			destinationPc = new Empty();
 			destinationPc.setPosition(to.x, to.y);// for toString() reasons
 		}
 	}
 
 	void execute() {
 		if (!executed) {
+			if (board.isEmptySquare(destinationPc.position)){
+				board.locations[piece.position.x][piece.position.y] = destinationPc;
+			}else{
+				board.locations[piece.position.x][piece.position.y] = new Empty();
+			}
 			board.locations[point.x][point.y] = piece;
-			board.locations[piece.position.x][piece.position.y] = new Empty();
 			destinationPc.position = piece.position; // reverse positions
 			piece.position = point;
 			destinationPc.alive = false;
