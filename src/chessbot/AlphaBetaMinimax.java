@@ -6,7 +6,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class AlphaBetaMinimax {
 
 	Board board;
-	int maxComputations = 20000;
+	int maxComputations = 2000;
 	List<MoveAndScore> rootsChildrenScore = new ArrayList<>();
 	List<MoveAndScore> currentRootsChildrenScore = new ArrayList<>();
 	int staticComputations = 0;
