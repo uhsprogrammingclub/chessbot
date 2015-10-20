@@ -12,14 +12,14 @@ public class Utils {
 		if (p.symbol.equals("p")) {
 			// get direction of the pawn
 
-			int dir = p.player ? -1 : 1;
+			int dir = p.player ? 1 : -1;
 			Point move = new Point(pos.x, pos.y + dir);
 
 			if (move.squareExists()) {
 				if (b.isEmptySquare(move)) {
 					moves.add(new Move(b, move, p));
 					// check if pawn can move 2 squares.
-					if ((p.player && pos.y == 6) || (!p.player && pos.y == 1)) {
+					if ((p.player && pos.y == 1) || (!p.player && pos.y == 6)) {
 						Point move2 = new Point(pos.x, pos.y + dir * 2);
 						if (move2.squareExists() && b.isEmptySquare(move2)) {
 							moves.add(new Move(b, move2, p));
@@ -102,7 +102,7 @@ public class Utils {
 		// evaluate moves if it's a pawn
 		if (p.symbol.equals("p")) {
 			// get direction of the pawn
-			int dir = p.player ? -1 : 1;
+			int dir = p.player ? 1 : -1;
 
 			// check if spot diagonally to the right
 			Point move = new Point(pos.x + 1, pos.y + dir);
