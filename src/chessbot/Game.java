@@ -8,7 +8,7 @@ import java.util.*;
 public class Game {
 
 	static Scanner s = new Scanner(System.in);
-	static boolean botVBot = true;
+	static boolean botVBot = false;
 
 	public static void main(String[] args) {
 
@@ -94,16 +94,17 @@ public class Game {
 	}
 
 	static void takePlayerMove(Board b) {
+		
+		// Get all values
+	    /*for (Enumeration e = TranspositionTable.trans.keys(); e.hasMoreElements();)
+	    {
+		System.out.println (TranspositionTable.trans.get(e.nextElement()));
+	    }*/
+		
 		Move move;
 		List<Move> validMoves = b.allMoves(true);
 		while (true) {
 			System.out.println(b);
-			
-			/*
-			System.out.print("Move piece [A-H][1-8]: ");
-			String piecePos = s.nextLine();
-			Point from = new Point(piecePos);
-			*/
 			
 			System.out.print("[A-H][1-8], [A-H][1-8]: ");
 			String[] sp = s.nextLine().split(" ");

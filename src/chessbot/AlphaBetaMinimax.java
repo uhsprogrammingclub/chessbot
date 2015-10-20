@@ -62,6 +62,10 @@ public class AlphaBetaMinimax {
 
 			maxValue = Math.max(currentScore, maxValue);
 			alpha = Math.max(maxValue, alpha);
+			
+			//Push entry to the TranspositionTable
+			HashEntry entry = new HashEntry(Zobrist.getZobristHash(board), maxDepth - depth, currentScore, move);
+			TranspositionTable.addEntry(entry);
 
 			// reset board
 			move.reverse();
