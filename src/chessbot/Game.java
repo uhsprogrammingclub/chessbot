@@ -137,7 +137,7 @@ public class Game {
 		}
 		System.out.println(move);
 		move.execute();
-		if (!b.isGameOver()) {
+		if (!b.isGameOver(false)) {
 			botMakeMove(b, false);
 		} else {
 			System.out.println(b);
@@ -148,16 +148,17 @@ public class Game {
 	static void botMakeMove(Board b, boolean player) {
 		System.out.println(b);
 		System.out.println("Processing move...");
-		AlphaBetaMinimax ai = new AlphaBetaMinimax(b, player ? -1 : 1);
+		AlphaBetaMinimax ai = new AlphaBetaMinimax(b, player);
 		Move move = ai.bestMove();
-		System.out.println("Static computations: " + ai.staticComputations);
-		System.out.println(move);
 		
 		for(MoveAndScore m : ai.rootsChildrenScore){
 			System.out.println(m);
 		}
+		System.out.println("Static computations: " + ai.staticComputations);
+		System.out.println(move);
+		
 		move.execute();
-		if (!b.isGameOver()) {
+		if (!b.isGameOver(!player)) {
 			if (botVBot){
 				botMakeMove(b, !player);
 			}else{

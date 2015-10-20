@@ -162,12 +162,10 @@ public class Board {
 	}
 
 	// Function that identifies whether the game is over
-	public boolean isGameOver() {
+	public boolean isGameOver( boolean playerTurn ) {
 		boolean[] players = { true, false };
 		for (boolean p : players) {
-			if (allMoves(p).size() == 0) {
-				System.out.println("Raw Moves: " + rawMoves(p));
-				System.out.println("Valid Moves: " + allMoves(p));
+			if (allMoves(p).size() == 0 && (isCheck(p) || playerTurn == p)) {
 				return true;
 			}
 		}
@@ -184,16 +182,12 @@ public class Board {
 		
 		int score = scoreBoard(false) - scoreBoard(true);
 		
-		if(allMoves(false).size() == 0){
-			if (isCheck(false)){
-				score -= 10000;
-			}
+		if(allMoves(false).size() == 0 && isCheck(false)){
+			score -= 10000;
 		}
 		
-		if(allMoves(true).size() == 0){
-			if (isCheck(true)){
-				score += 10000;
-			}
+		if(allMoves(true).size() == 0 && isCheck(true)){
+			score += 10000;
 		}
 		
 		return score;
