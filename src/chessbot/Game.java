@@ -156,6 +156,7 @@ public class Game {
 			System.out.println(m);
 		}
 		System.out.println("Static computations: " + ai.staticComputations);
+		System.out.println("Max Depth: " + ai.finalDepth);
 		System.out.println(move);
 		
 		move.execute();
