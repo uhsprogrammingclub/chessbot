@@ -2,9 +2,9 @@ package chessbot;
 
 public class MoveAndScore implements Comparable<MoveAndScore>{
 	Move move;
-	int score;
+	double score;
 	
-	public MoveAndScore(Move m, int s){
+	public MoveAndScore(Move m, double s){
 		move = m;
 		score = s;
 	}

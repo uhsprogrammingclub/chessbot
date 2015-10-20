@@ -4,10 +4,10 @@ public class HashEntry {
 	
 	public long zobrist;
 	public int depthLeft;
-	public int eval;
+	public double eval;
 	public Move move;
 	
-	public HashEntry(long zobrist, int depthLeft, int eval, Move move){
+	public HashEntry(long zobrist, int depthLeft, double eval, Move move){
 		this.zobrist = zobrist;
 		this.depthLeft = depthLeft;
 		this.eval = eval;
