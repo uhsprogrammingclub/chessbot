@@ -21,8 +21,9 @@ public class Board {
 	@Override
 	public String toString() {
 
-		// String variable to eventually return
-		String aString = "Board: \n";
+		// String variable to eventually return		
+		String aString = "Board: " + Zobrist.getZobristHash(this) + "\n";
+		
 		aString += " |-----------------|\n";
 		// Nested loops getting values
 		for (int y = 7; y >= -1; y--) {

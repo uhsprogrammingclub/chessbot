@@ -87,7 +87,10 @@ public class Game {
 
 		Board b = new Board(list);
 		
-		botMakeMove(b, false);
+		Zobrist.zobristFillArray();
+		
+		//botMakeMove(b, false);
+		takePlayerMove(b);
 	}
 
 	static void takePlayerMove(Board b) {
