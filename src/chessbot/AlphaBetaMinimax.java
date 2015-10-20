@@ -45,7 +45,7 @@ public class AlphaBetaMinimax {
 	int progressiveDeepening(boolean player){
 		int depth;
 		for (depth = 1; depth < 25; depth++){
-			int result = negaMax(MIN, MAX, 0, player, depth);
+			double result = negaMax(MIN, MAX, 0, player, depth);
 			if (result != 404 ){
 				staticComputations = currentStaticComputations;
 				rootsChildrenScore.clear();
@@ -58,7 +58,7 @@ public class AlphaBetaMinimax {
 	}
 	
 	
-	int negaMax(int alpha, int beta, int depth, boolean player, int maxDepth){
+	double negaMax(double alpha, double beta, int depth, boolean player, int maxDepth){
 		if (alpha > beta) {
 			return MAX;
 		}
@@ -75,10 +75,10 @@ public class AlphaBetaMinimax {
 			currentStaticComputations = 0;
 			currentRootsChildrenScore.clear();
 		}
-		int maxValue = MIN;
+		double maxValue = MIN;
 		for (Move move: movesAvailible) {
 			move.execute();
-			int currentScore = -negaMax( -beta, -alpha, depth + 1, !player, maxDepth);
+			double currentScore = -negaMax( -beta, -alpha, depth + 1, !player, maxDepth);
 			if (currentScore == -404){
 				move.reverse();
 				return 404;
