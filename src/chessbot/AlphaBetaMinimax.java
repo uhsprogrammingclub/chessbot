@@ -6,7 +6,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class AlphaBetaMinimax {
 
 	Board board;
-	int maxComputations = 2000;
+	int maxComputations = 3000;
 	List<MoveAndScore> rootsChildrenScore = new ArrayList<>();
 	List<MoveAndScore> currentRootsChildrenScore = new ArrayList<>();
 	int staticComputations = 0;
@@ -50,6 +50,7 @@ public class AlphaBetaMinimax {
 				staticComputations = currentStaticComputations;
 				rootsChildrenScore.clear();
 				rootsChildrenScore.addAll(currentRootsChildrenScore);
+				Collections.sort(rootsChildrenScore);
 			}else{
 				return depth - 1;
 			}
@@ -59,7 +60,7 @@ public class AlphaBetaMinimax {
 	
 	
 	double negaMax(double alpha, double beta, int depth, boolean player, int maxDepth){
-		if (alpha > beta) {
+		if (alpha >= beta) {
 			return MAX;
 		}
 		
@@ -69,12 +70,26 @@ public class AlphaBetaMinimax {
 			return board.evaluateBoard() * ( player ? -1 : 1 );	
 		}
 		
-		List<Move> movesAvailible = board.allMoves(player);
+		List<Move> movesAvailible;
 		
 		if(depth == 0){
 			currentStaticComputations = 0;
 			currentRootsChildrenScore.clear();
+			movesAvailible = new ArrayList<Move>();
+			Collections.sort(rootsChildrenScore);
+			for (MoveAndScore ms: rootsChildrenScore){
+				movesAvailible.add(ms.move);
+			}
+			List<Move> allAvailible = board.allMoves(player);
+			for (Move m: allAvailible){
+				if (!movesAvailible.contains(m)){
+					movesAvailible.add(m);
+				}
+			}
+		}else{
+			movesAvailible = board.allMoves(player);
 		}
+		
 		double maxValue = MIN;
 		for (Move move: movesAvailible) {
 			move.execute();
@@ -84,7 +99,7 @@ public class AlphaBetaMinimax {
 				return 404;
 			}
 			
-			if (depth == 0) {
+			if (depth == 0 && currentScore > maxValue) {
 				currentRootsChildrenScore.add(new MoveAndScore(move, currentScore));
 			}
 

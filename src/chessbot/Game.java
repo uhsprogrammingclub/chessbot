@@ -90,8 +90,8 @@ public class Game {
 		
 		Zobrist.zobristFillArray();
 		
-		//botMakeMove(b, true);
-		takePlayerMove(b);
+		botMakeMove(b, false);
+		//takePlayerMove(b);
 	}
 
 	static void takePlayerMove(Board b) {
@@ -107,7 +107,7 @@ public class Game {
 		while (true) {
 			System.out.println(b);
 			
-			System.out.print("[A-H][1-8], [A-H][1-8]: ");
+			System.out.print("[A-H][1-8] [A-H][1-8]: ");
 			String[] sp = s.nextLine().split(" ");
 			
 			Point from = new Point("I5");

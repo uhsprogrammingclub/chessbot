@@ -207,9 +207,10 @@ public class Board {
 		}
 		
 		//Sum all of the moves 
-		double totalMoves = allMoves(player).size();
+		List<Move> moves = allMoves(player);
+		double totalMoves = moves.size();
 		score += totalMoves/300;
-
+	
 		return score;
 	}
 }
