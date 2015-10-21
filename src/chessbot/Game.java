@@ -90,8 +90,8 @@ public class Game {
 		
 		Zobrist.zobristFillArray();
 		
-		botMakeMove(b, false);
-		//takePlayerMove(b);
+		//botMakeMove(b, false);
+		takePlayerMove(b);
 	}
 
 	static void takePlayerMove(Board b) {

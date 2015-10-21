@@ -31,7 +31,7 @@ public class PV {
 	public String toString() {
 		String s = "";
 		for (HashEntry h: hashList){
-			s += h.move.piece + " " + h.move.from + " -> " + (h.move.destinationPc.toString().equals("-") ? "" : h.move.destinationPc + " ") + h.move.to + ";";
+			s += h.move.piece + " " + h.move.from + " -> " + (h.move.destinationPc.toString().equals("-") ? "" : h.move.destinationPc + " ") + h.move.to + " ;";
 		}
 		return s;
 	}
