@@ -6,7 +6,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class AlphaBetaMinimax {
 
 	Board board;
-	int maxComputations = 5000;
+	int maxComputations = 10000;
 	List<MoveAndScore> rootsChildrenScore = new ArrayList<>();
 	List<MoveAndScore> currentRootsChildrenScore = new ArrayList<>();
 	int staticComputations = 0;
@@ -37,8 +37,6 @@ public class AlphaBetaMinimax {
 
 	public AlphaBetaMinimax(Board board, boolean player) {
 		this.board = board;
-		//maxDepth = maxDepth +  ( player ? -1 : 1); //so depths are different
-		//negaMax(Integer.MIN_VALUE, Integer.MAX_VALUE, 0, player);
 		finalDepth = progressiveDeepening(player);
 	}
 	
@@ -55,7 +53,7 @@ public class AlphaBetaMinimax {
 				return depth - 1;
 			}
 		}
-		return depth;
+		return depth-1;
 	}
 	
 	
@@ -70,52 +68,59 @@ public class AlphaBetaMinimax {
 			return board.evaluateBoard() * ( player ? -1 : 1 );	
 		}
 		
-		List<Move> movesAvailible;
-		
 		//Get hash of current board
 		long zHash = Zobrist.getZobristHash(board);
 		int index = (int)(zHash % TranspositionTable.hashSize);
 		//find entry with same index
 		HashEntry oldEntry = TranspositionTable.trans.get(index);
 		
+		List<Move> movesAvailible = new ArrayList<Move>();
+		
 		if(oldEntry != null //if there is an old entry
 				&& oldEntry.zobrist == zHash //and the boards are the same
-				&& oldEntry.depthLeft >= (maxDepth - depth) //the the depth of the entry is not less than what we have to go through
 				&& oldEntry.player == player){ //and it's the same player's move
-			if (depth != 0){
-				return oldEntry.eval; //passes up the precomputed evaluation
-			}else{
-				currentRootsChildrenScore.add(new MoveAndScore(oldEntry.move, oldEntry.eval)); //puts the precomputed move into root moves array
-				return 0;
+			if (oldEntry.depthLeft >= (maxDepth - depth)){ //the the depth of the entry is not less than what we have to go through
+				if (depth != 0){
+					return oldEntry.eval; //passes up the pre-computed evaluation
+				}else{
+					currentRootsChildrenScore.add(new MoveAndScore(oldEntry.move, oldEntry.eval)); //puts the precomputed move into root moves array
+					return 0;
+				}
+			}else{ // if the entry we have is not accurate enough
+				movesAvailible.add(oldEntry.move); // make the move be computed first
 			}
 		}
 		
 		if(depth == 0){
 			currentStaticComputations = 0;
 			currentRootsChildrenScore.clear();
-			movesAvailible = new ArrayList<Move>();
+			//add the moves from previous depth iteration with the highest moves in the first place. 
 			Collections.sort(rootsChildrenScore);
 			for (MoveAndScore ms: rootsChildrenScore){
 				movesAvailible.add(ms.move);
 			}
-			List<Move> allAvailible = board.allMoves(player);
-			for (Move m: allAvailible){
-				if (!movesAvailible.contains(m)){
-					movesAvailible.add(m);
-				}
+		}
+		
+		List<Move> allAvailible = board.allMoves(player);
+		for (Move m: allAvailible){
+			if (!movesAvailible.contains(m)){
+				movesAvailible.add(m);
 			}
-			
-		}else{
-			movesAvailible = board.allMoves(player);
 		}
 		
 		double maxValue = MIN;
 		for (Move move: movesAvailible) {
 			
+			int desiredDepth = maxDepth;
+			
+			if (depth == maxDepth-1 //if last move to be made
+				&& move.destinationPc.worth != 0){ //and its a capture move
+				desiredDepth++;
+			}
 			move.execute();
 			
 			double currentScore;
-			currentScore = -negaMax( -beta, -alpha, depth + 1, !player, maxDepth);
+			currentScore = -negaMax( -beta, -alpha, depth + 1, !player, desiredDepth);
 			
 			if (currentScore == -404){
 				move.reverse();
