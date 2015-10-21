@@ -4,11 +4,12 @@
 package chessbot;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 public class Game {
 
 	static Scanner s = new Scanner(System.in);
-	static boolean botVBot = true;
+	static boolean botVBot = false;
 
 	public static void main(String[] args) {
 
@@ -90,17 +91,11 @@ public class Game {
 		
 		Zobrist.zobristFillArray();
 		
-		botMakeMove(b, false);
-		//takePlayerMove(b);
+		//botMakeMove(b, false);
+		takePlayerMove(b);
 	}
 
 	static void takePlayerMove(Board b) {
-		
-		// Get all values
-	    /*for (Enumeration e = TranspositionTable.trans.keys(); e.hasMoreElements();)
-	    {
-		System.out.println (TranspositionTable.trans.get(e.nextElement()));
-	    }*/
 		
 		Move move;
 		List<Move> validMoves = b.allMoves(true);
@@ -157,8 +152,13 @@ public class Game {
 			System.out.println(m);
 		}
 		System.out.println("Static computations: " + ai.staticComputations);
+		System.out.println("Transposition Table Size: " + TranspositionTable.trans.size());
 		System.out.println("Max Depth: " + ai.finalDepth);
 		System.out.println(move);
+		
+		/*for (Entry<Integer, HashEntry> entry : TranspositionTable.trans.entrySet()) {
+		    System.out.println(entry.getKey() + " " + entry.getValue());
+		}*/
 		
 		move.execute();
 		if (!b.isGameOver(!player)) {

@@ -86,14 +86,31 @@ public class AlphaBetaMinimax {
 					movesAvailible.add(m);
 				}
 			}
+			
 		}else{
 			movesAvailible = board.allMoves(player);
 		}
 		
 		double maxValue = MIN;
 		for (Move move: movesAvailible) {
+			
 			move.execute();
-			double currentScore = -negaMax( -beta, -alpha, depth + 1, !player, maxDepth);
+			
+			double currentScore;
+
+			//Checking if this position already exists in the Transposition Table
+			long zHash = Zobrist.getZobristHash(board);
+			System.out.println(zHash);
+			int index = (int)(zHash % TranspositionTable.hashSize);
+			HashEntry oldEntry = TranspositionTable.trans.get(index);
+			
+			if(oldEntry != null && oldEntry.zobrist == zHash && oldEntry.depthLeft <= (maxDepth - depth) && oldEntry.player == player){
+				System.out.println("Using Table");
+				currentScore = oldEntry.eval;
+			}else{
+				currentScore = -negaMax( -beta, -alpha, depth + 1, !player, maxDepth);
+			}
+			
 			if (currentScore == -404){
 				move.reverse();
 				return 404;
@@ -107,11 +124,14 @@ public class AlphaBetaMinimax {
 			alpha = Math.max(currentScore, alpha);
 			
 			//Push entry to the TranspositionTable
-			HashEntry entry = new HashEntry(Zobrist.getZobristHash(board), maxDepth - depth, currentScore, move);
-			TranspositionTable.addEntry(entry);
+			HashEntry newEntry = new HashEntry(zHash, maxDepth - depth, currentScore, move, player);
+			TranspositionTable.addEntry(newEntry);
 
 			// reset board
 			move.reverse();
+			
+			
+			
 			// If a pruning has been done, don't evaluate the rest of the
 			// sibling states
 			if (currentScore == MIN){

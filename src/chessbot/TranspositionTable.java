@@ -11,7 +11,9 @@ public class TranspositionTable {
 	public static void addEntry(HashEntry entry){
 		long zobrist = entry.zobrist;
 		int index = (int)(zobrist % hashSize);
-		trans.put(index, entry);
+		if(TranspositionTable.trans.get(index) == null || TranspositionTable.trans.get(index).depthLeft < entry.depthLeft){
+				trans.put(index, entry);	
+		}
 	}
 	
 }
