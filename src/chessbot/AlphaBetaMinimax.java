@@ -6,7 +6,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class AlphaBetaMinimax {
 
 	Board board;
-	int maxComputations = 3000;
+	int maxComputations = 5000;
 	List<MoveAndScore> rootsChildrenScore = new ArrayList<>();
 	List<MoveAndScore> currentRootsChildrenScore = new ArrayList<>();
 	int staticComputations = 0;
@@ -72,6 +72,24 @@ public class AlphaBetaMinimax {
 		
 		List<Move> movesAvailible;
 		
+		//Get hash of current board
+		long zHash = Zobrist.getZobristHash(board);
+		int index = (int)(zHash % TranspositionTable.hashSize);
+		//find entry with same index
+		HashEntry oldEntry = TranspositionTable.trans.get(index);
+		
+		if(oldEntry != null //if there is an old entry
+				&& oldEntry.zobrist == zHash //and the boards are the same
+				&& oldEntry.depthLeft >= (maxDepth - depth) //the the depth of the entry is not less than what we have to go through
+				&& oldEntry.player == player){ //and it's the same player's move
+			if (depth != 0){
+				return oldEntry.eval; //passes up the precomputed evaluation
+			}else{
+				currentRootsChildrenScore.add(new MoveAndScore(oldEntry.move, oldEntry.eval)); //puts the precomputed move into root moves array
+				return 0;
+			}
+		}
+		
 		if(depth == 0){
 			currentStaticComputations = 0;
 			currentRootsChildrenScore.clear();
@@ -97,19 +115,7 @@ public class AlphaBetaMinimax {
 			move.execute();
 			
 			double currentScore;
-
-			//Checking if this position already exists in the Transposition Table
-			long zHash = Zobrist.getZobristHash(board);
-			System.out.println(zHash);
-			int index = (int)(zHash % TranspositionTable.hashSize);
-			HashEntry oldEntry = TranspositionTable.trans.get(index);
-			
-			if(oldEntry != null && oldEntry.zobrist == zHash && oldEntry.depthLeft <= (maxDepth - depth) && oldEntry.player == player){
-				System.out.println("Using Table");
-				currentScore = oldEntry.eval;
-			}else{
-				currentScore = -negaMax( -beta, -alpha, depth + 1, !player, maxDepth);
-			}
+			currentScore = -negaMax( -beta, -alpha, depth + 1, !player, maxDepth);
 			
 			if (currentScore == -404){
 				move.reverse();
@@ -125,12 +131,10 @@ public class AlphaBetaMinimax {
 			
 			//Push entry to the TranspositionTable
 			HashEntry newEntry = new HashEntry(zHash, maxDepth - depth, currentScore, move, player);
-			TranspositionTable.addEntry(newEntry);
+			TranspositionTable.addEntry(newEntry); //add the move entry. only gets placed if eval is higher than previous entry
 
 			// reset board
 			move.reverse();
-			
-			
 			
 			// If a pruning has been done, don't evaluate the rest of the
 			// sibling states
