@@ -2,7 +2,8 @@ package chessbot;
 
 public class Move {
 
-	Point point;
+	Point from;
+	Point to;
 	Piece piece = null;
 	Piece destinationPc = null;
 	boolean executed = false;
@@ -10,8 +11,9 @@ public class Move {
 
 	public Move(Board b, Point pt, Piece pc) {
 		board = b;
-		point = pt;
 		piece = pc;
+		from = new Point(pc.position.x, pc.position.y);
+		to = pt;
 		if (pt.squareExists()) { // checks that doesn't look out of bounds
 			destinationPc = b.locations[pt.x][pt.y];
 
@@ -23,7 +25,8 @@ public class Move {
 
 	public Move(Board b, Point from, Point to) {
 		board = b;
-		point = to;
+		this.from = from;
+		this.to = to;
 		if (from.squareExists()) { // checks that doesn't look out of bounds
 			piece = b.locations[from.x][from.y];
 
@@ -44,13 +47,13 @@ public class Move {
 	void execute() {
 		if (!executed) {
 			if (board.isEmptySquare(destinationPc.position)){
-				board.locations[piece.position.x][piece.position.y] = destinationPc;
+				board.locations[from.x][from.y] = destinationPc;
 			}else{
-				board.locations[piece.position.x][piece.position.y] = new Empty();
+				board.locations[from.x][from.y] = new Empty();
 			}
-			board.locations[point.x][point.y] = piece;
-			destinationPc.position = piece.position; // reverse positions
-			piece.position = point;
+			board.locations[to.x][to.y] = piece;
+			destinationPc.position = from; // reverse positions
+			piece.position = to;
 			destinationPc.alive = false;
 			executed = true;
 		}
@@ -58,10 +61,10 @@ public class Move {
 
 	void reverse() {
 		if (executed) {
-			board.locations[point.x][point.y] = destinationPc;
-			board.locations[destinationPc.position.x][destinationPc.position.y] = piece;
-			piece.position = destinationPc.position;
-			destinationPc.position = point;
+			board.locations[to.x][to.y] = destinationPc;
+			board.locations[from.x][from.y] = piece;
+			piece.position = from;
+			destinationPc.position = to;
 			destinationPc.alive = true;
 			executed = false;
 		}
@@ -69,7 +72,7 @@ public class Move {
 
 	@Override
 	public String toString() {
-		return "Move piece " + piece + " from point " + piece.position + " to point " + point + ", which is a "
+		return "Move piece " + piece + " from point " + from + " to point " + to + ", which is a "
 				+ destinationPc;
 	}
 
@@ -82,10 +85,10 @@ public class Move {
 			return false;
 		}
 		final Move other = (Move) obj;
-		if (other.point == null || other.piece == null || this.point == null || this.piece == null) {
+		if (other.to == null || other.piece == null || this.to == null || this.piece == null) {
 			return false;
 		}
-		if (this.point.equals(other.point) && this.piece.equals(other.piece)) {
+		if (this.to.equals(other.to) && this.piece.equals(other.piece)) {
 			return true;
 		} else {
 			return false;

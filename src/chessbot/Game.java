@@ -160,6 +160,7 @@ public class Game {
 		}*/
 		
 		move.execute();
+		System.out.println("PV: " + new PV(b, !player));
 		if (!b.isGameOver(!player)) {
 			if (botVBot){
 				botMakeMove(b, !player);
