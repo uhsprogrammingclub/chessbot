@@ -148,9 +148,7 @@ public class GridLayoutManager extends JFrame{
 								Game.squareFrom = new Point(j,7-i);
 							
 							}else{
-								
-								System.out.println("MAKING ANEW");
-						
+								Game.squareTo = new Point(j,7-i);
 							}
 							
 							return;
