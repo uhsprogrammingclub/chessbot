@@ -45,7 +45,7 @@ public class GridLayoutManager extends JFrame{
 	private ImageIcon WKing = new ImageIcon("src/ChessPieces/WKing.png");
 
 	public GridLayoutManager(){
-		super("Stiven's amazing chess bot.. Nate barely helped");
+		super("");
 		
 		contents = getContentPane();
 		contents.setLayout(new GridLayout(8,8));
