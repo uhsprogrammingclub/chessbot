@@ -7,9 +7,19 @@ import java.util.*;
 
 public class Game {
 
+	//Scanner to take Human input
 	static Scanner s = new Scanner(System.in);
+	
+	//Boolean that determines whether the AI plays itself
 	static boolean botVBot = false;
-
+	
+	//Initialize the grid GUI layout
+	static GridLayoutManager gui = new GridLayoutManager();
+	
+	//Points to be created by the GUI
+	static volatile Point squareFrom = null;
+	static volatile Point squareTo = null;
+	
 	public static void main(String[] args) {
 
 		List<Piece> list = new ArrayList<Piece>();
@@ -89,18 +99,33 @@ public class Game {
 		Board b = new Board(list);
 		
 		Zobrist.zobristFillArray();
+
+		gui.updateBoard(b);
 		
-		botMakeMove(b, false);
-		//takePlayerMove(b);
+		
+		//botMakeMove(b, false);
+		takePlayerMove(b);
 	}
 
 	static void takePlayerMove(Board b) {
 		
+		//Clear GUI input
+		squareFrom = null;
+		squareTo = null;
+		
+		//Make the GUI board active
+		GridLayoutManager.setActive(true);
+		
 		Move move;
 		List<Move> validMoves = b.allMoves(true);
+		
 		while (true) {
-			System.out.println(b);
 			
+			Point from = Game.squareFrom;
+			Point to = Game.squareTo;
+			
+			/*
+			System.out.println(b);
 			System.out.print("[A-H][1-8] [A-H][1-8]: ");
 			String[] sp = s.nextLine().split(" ");
 			
@@ -112,36 +137,53 @@ public class Game {
 				 to = new Point(sp[1].replaceAll("\\s+",""));
 			}else{
 				System.out.println("You need to seperate your moves with a single space.");
+			}*/
+			
+			if(from != null && to != null){
+			
+				move = new Move(b, from, to);
+				boolean validMove = false;
+				
+				for (Move m : validMoves) {
+
+					if (move.equals(m)) {
+						validMove = true;
+						break;
+					}
+				}
+				
+				if (validMove) {
+					break;
+				}else{
+					System.out.println(move + " is an invalid move!");
+					
+					//Clear GUI input
+					Game.squareFrom = null;
+					Game.squareTo = null;
+				}		
 			}
 			
-
-			move = new Move(b, from, to);
-			boolean validMove = false;
-			for (Move m : validMoves) {
-
-				if (move.equals(m)) {
-					validMove = true;
-					break;
-				}
-			}
-			if (validMove) {
-				break;
-			} else {
-				System.out.println(move + " is an invalid move!");
-			}
-
-		}
+		} //End of While loop
+		
 		System.out.println(move);
 		move.execute();
+		
+		gui.updateBoard(b);
+		
 		if (!b.isGameOver(false)) {
 			botMakeMove(b, false);
 		} else {
 			System.out.println(b);
 			System.out.println("Game Over!");
 		}
+		
 	}
 
 	static void botMakeMove(Board b, boolean player) {
+		
+		//Make the GUI board inactive
+		GridLayoutManager.setActive(false);
+		
 		System.out.println(b);
 		System.out.println("Processing move...");
 		
@@ -164,8 +206,9 @@ public class Game {
 		    System.out.println(entry.getKey() + " " + entry.getValue());
 		}*/
 		System.out.println("PV: " + new PV(b, player));
-		
 		move.execute();
+		gui.updateBoard(b);
+		
 		if (!b.isGameOver(!player)) {
 			if (botVBot){
 				botMakeMove(b, !player);
