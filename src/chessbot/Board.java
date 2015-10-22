@@ -70,6 +70,14 @@ public class Board {
 		Piece p = locations[pos.x][pos.y];
 		return p.player;
 	}
+	
+	public Piece getPiece(Point pos) {
+		if (pos.squareExists()){
+			return locations[pos.x][pos.y];
+		}else{
+			return new Empty();
+		}
+	}
 
 	// Constructor for the Board class - when given a list of pieces
 	public Board(List<Piece> list) {
@@ -133,28 +141,21 @@ public class Board {
 		// Load the King's position
 		Piece king = getKing(player);
 
-		// Load all possible moves in this (hypothetical) board
-		List<Move> rawMoves = rawMoves(!player);
-
-		for (Move m : rawMoves) {
-			// If a check exists...
-			if (m.destinationPc.equals(king)) {
-				return true;
-			}
-		}
-
 		// Base case: there is no check
+		if (king != null){
+			return Utils.isChecked(this, king);
+		}else{
+			System.out.println("ERROR: King was eaten!!!");
+		}
 		return false;
 	}
 
 	// Function that finds the King's position on the board
 	public Piece getKing(boolean player) {
-		for (Piece[] l : locations) {
-			for (Piece p : l) {
-				if (p.player == player && p.symbol.equals("k")) {
-					// Return the King's position
-					return p;
-				}
+		for (Piece p : pieceList) {
+			if (p.player == player && p.symbol.equals("k") && p.alive == true) {
+				// Return the King's position
+				return p;
 			}
 		}
 		// Default return
@@ -163,11 +164,8 @@ public class Board {
 
 	// Function that identifies whether the game is over
 	public boolean isGameOver( boolean playerTurn ) {
-		boolean[] players = { true, false };
-		for (boolean p : players) {
-			if (allMoves(p).size() == 0 && (isCheck(p) || playerTurn == p)) {
-				return true;
-			}
+		if (allMoves(playerTurn).size() == 0 || isCheck(!playerTurn)) {
+			return true;
 		}
 		if( scoreBoard(true) == 10000 && scoreBoard(false) == 10000){
 			return true;

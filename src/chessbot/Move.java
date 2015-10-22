@@ -8,13 +8,27 @@ public class Move {
 	Piece destinationPc = null;
 	boolean executed = false;
 	Board board;
+	
+	public Move(Move m){
+		board = m.board;
+		piece = m.piece;
+		from = new Point(piece.position.x, piece.position.y);
+		to = m.to;
+		if (to.squareExists()) { // checks that doesn't look out of bounds
+			destinationPc = board.locations[to.x][to.y];
+
+		} else {
+			destinationPc = new Empty();
+			destinationPc.setPosition(to.x, to.y);// for toString() reasons
+		}
+	}
 
 	public Move(Board b, Point pt, Piece pc) {
 		board = b;
 		piece = pc;
 		from = new Point(pc.position.x, pc.position.y);
 		to = pt;
-		if (pt.squareExists()) { // checks that doesn't look out of bounds
+		if (to.squareExists()) { // checks that doesn't look out of bounds
 			destinationPc = b.locations[pt.x][pt.y];
 
 		} else {
@@ -56,6 +70,9 @@ public class Move {
 			piece.position = to;
 			destinationPc.alive = false;
 			executed = true;
+		}else{
+			System.out.println("ERROR: Trying to execute a move that is no longer viable.");
+			System.exit(0);
 		}
 	}
 
@@ -67,6 +84,9 @@ public class Move {
 			destinationPc.position = to;
 			destinationPc.alive = true;
 			executed = false;
+		}else{
+			System.out.println("ERROR: Trying to reverse a move that was never called.");
+			System.exit(0);
 		}
 	}
 

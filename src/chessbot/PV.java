@@ -20,6 +20,10 @@ public class PV {
 				&& oldEntry.zobrist == currentZHash //and the boards are the same
 				&& oldEntry.player == player){ //and it's the same player's move
 			hashList.add(oldEntry);
+			
+			if (oldEntry.move.executed){
+				return;
+			}
 			oldEntry.move.execute();
 			findHashEntry(b, !player);
 			oldEntry.move.reverse();
@@ -31,7 +35,7 @@ public class PV {
 	public String toString() {
 		String s = "";
 		for (HashEntry h: hashList){
-			s += h.move.piece + " " + h.move.from + " -> " + (h.move.destinationPc.toString().equals("-") ? "" : h.move.destinationPc + " ") + h.move.to + ";";
+			s += h.move.piece + " " + h.move.from + "->" + (h.move.destinationPc.toString().equals("-") ? "" : h.move.destinationPc + " ") + h.move.to + ";";
 		}
 		return s;
 	}

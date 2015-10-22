@@ -144,23 +144,28 @@ public class Game {
 	static void botMakeMove(Board b, boolean player) {
 		System.out.println(b);
 		System.out.println("Processing move...");
+		
+		long startTime = System.currentTimeMillis();
 		AlphaBetaMinimax ai = new AlphaBetaMinimax(b, player);
-		Move move = ai.bestMove();
+		long endTime = System.currentTimeMillis();
 		
 		for(MoveAndScore m : ai.rootsChildrenScore){
 			System.out.println(m);
 		}
+		System.out.println("Time expended: " + (endTime-startTime)/1000.0);
 		System.out.println("Static computations: " + ai.staticComputations);
 		System.out.println("Transposition Table Size: " + TranspositionTable.trans.size());
 		System.out.println("Max Depth: " + ai.finalDepth);
+		
+		Move move = ai.bestMove();
 		System.out.println(move);
 		
 		/*for (Entry<Integer, HashEntry> entry : TranspositionTable.trans.entrySet()) {
 		    System.out.println(entry.getKey() + " " + entry.getValue());
 		}*/
+		System.out.println("PV: " + new PV(b, player));
 		
 		move.execute();
-		System.out.println("PV: " + new PV(b, !player));
 		if (!b.isGameOver(!player)) {
 			if (botVBot){
 				botMakeMove(b, !player);

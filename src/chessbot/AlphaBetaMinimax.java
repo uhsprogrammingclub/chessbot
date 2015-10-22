@@ -6,7 +6,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class AlphaBetaMinimax {
 
 	Board board;
-	int maxComputations = 10000;
+	int maxComputations = 20000;
 	List<MoveAndScore> rootsChildrenScore = new ArrayList<>();
 	List<MoveAndScore> currentRootsChildrenScore = new ArrayList<>();
 	int staticComputations = 0;
@@ -32,7 +32,7 @@ public class AlphaBetaMinimax {
 		}
 		
 		int rand = ThreadLocalRandom.current().nextInt(0, primeMoves.size());
-		return primeMoves.get(rand);
+		return new Move(primeMoves.get(rand));
 	}
 
 	public AlphaBetaMinimax(Board board, boolean player) {
@@ -83,11 +83,11 @@ public class AlphaBetaMinimax {
 				if (depth != 0){
 					return oldEntry.eval; //passes up the pre-computed evaluation
 				}else{
-					currentRootsChildrenScore.add(new MoveAndScore(oldEntry.move, oldEntry.eval)); //puts the precomputed move into root moves array
+					currentRootsChildrenScore.add(new MoveAndScore(new Move(oldEntry.move), oldEntry.eval)); //puts the precomputed move into root moves array
 					return 0;
 				}
 			}else{ // if the entry we have is not accurate enough
-				movesAvailible.add(oldEntry.move); // make the move be computed first
+				movesAvailible.add(new Move(oldEntry.move)); // make the move be computed first
 			}
 		}
 		
@@ -97,7 +97,7 @@ public class AlphaBetaMinimax {
 			//add the moves from previous depth iteration with the highest moves in the first place. 
 			Collections.sort(rootsChildrenScore);
 			for (MoveAndScore ms: rootsChildrenScore){
-				movesAvailible.add(ms.move);
+				movesAvailible.add(new Move(ms.move));
 			}
 		}
 		
@@ -113,9 +113,9 @@ public class AlphaBetaMinimax {
 			
 			int desiredDepth = maxDepth;
 			
-			if (depth == maxDepth-1 //if last move to be made
+			if (depth >= maxDepth-2 //if last or second to last move to be made
 				&& move.destinationPc.worth != 0){ //and its a capture move
-				desiredDepth++;
+				desiredDepth+=(maxDepth-depth); //make sure there are at least 2 more moves
 			}
 			move.execute();
 			

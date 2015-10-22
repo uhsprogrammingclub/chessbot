@@ -1,7 +1,6 @@
 package chessbot;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Knight extends Piece {
 	@Override
@@ -9,20 +8,8 @@ public class Knight extends Piece {
 	// The Knight Piece can move ...
 	public List<Move> findMoves(Board b) {
 
-		List<Move> moves = new ArrayList<Move>();
+		List<Move> moves = Utils.getKnightMoves(b, this);
 
-		for (int i = -1; i <= 1; i = i + 2) {
-			for (int j = -2; j <= 2; j = j + 4) {
-				Point move = new Point(this.position.x + i, this.position.y + j);
-				if (move.squareExists() && (b.getTeam(move) != this.player || b.isEmptySquare(move))) {
-					moves.add(new Move(b, move, this));
-				}
-				Point move2 = new Point(this.position.x + j, this.position.y + i);
-				if (move2.squareExists() && (b.getTeam(move2) != this.player || b.isEmptySquare(move2))) {
-					moves.add(new Move(b, move2, this));
-				}
-			}
-		}
 		return moves;
 	}
 

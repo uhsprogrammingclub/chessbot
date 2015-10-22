@@ -189,5 +189,175 @@ public class Utils {
 		}
 		return moves;
 	}
+	
+	static List<Move> getKnightMoves(Board b, Piece p) {
+		List<Move> moves = new ArrayList<Move>();
+
+		for (int i = -1; i <= 1; i = i + 2) {
+			for (int j = -2; j <= 2; j = j + 4) {
+				Point move = new Point(p.position.x + i, p.position.y + j);
+				if (move.squareExists() && (b.getTeam(move) != p.player || b.isEmptySquare(move))) {
+					moves.add(new Move(b, move, p));
+				}
+				Point move2 = new Point(p.position.x + j, p.position.y + i);
+				if (move2.squareExists() && (b.getTeam(move2) != p.player || b.isEmptySquare(move2))) {
+					moves.add(new Move(b, move2, p));
+				}
+			}
+		}
+		return moves;
+	}
+	
+	static boolean isChecked(Board b, Piece king) {
+		Point pos = king.position;
+		boolean pl = king.player;
+		
+		//up the board
+		for (int y = pos.y + 1; y < 8; y++) { 
+			Point move = new Point(pos.x, y);
+			if (!b.isEmptySquare(move)) {
+				if (b.getTeam(move) != pl 
+						&&(b.getPiece(move).symbol == "q" 
+						|| b.getPiece(move).symbol == "r" 
+						|| (b.getPiece(move).symbol == "k" && y == pos.y + 1))){
+						return true; //if king queen or rook on opposing team.
+				}else{
+					break;
+				}
+			}
+		}
+		
+		//down the board
+		for (int y = pos.y - 1; y >= 0; y--) {
+			Point move = new Point(pos.x, y);
+			if (!b.isEmptySquare(move)) {
+				if (b.getTeam(move) != pl 
+						&&(b.getPiece(move).symbol == "q" 
+						|| b.getPiece(move).symbol == "r" 
+						|| (b.getPiece(move).symbol == "k" && y == pos.y - 1))){
+						return true; //if king queen or rook on opposing team.
+				}else{
+					break;
+				}
+			}
+		}
+		
+		// to the right
+		for (int x = pos.x + 1; x < 8; x++) {
+			Point move = new Point(x, pos.y);
+			if (!b.isEmptySquare(move)) {
+				if (b.getTeam(move) != pl 
+						&&(b.getPiece(move).symbol == "q" 
+						|| b.getPiece(move).symbol == "r" 
+						|| (b.getPiece(move).symbol == "k" && x == pos.x + 1))){
+						return true; //if king queen or rook on opposing team.
+				}else{
+					break;
+				}
+			}
+		}
+		
+		// to the left
+		for (int x = pos.x - 1; x >= 0; x--) {
+			Point move = new Point(x, pos.y);
+			if (!b.isEmptySquare(move)) {
+				if (b.getTeam(move) != pl 
+						&&(b.getPiece(move).symbol == "q" 
+						|| b.getPiece(move).symbol == "r" 
+						|| (b.getPiece(move).symbol == "k" && x == pos.x - 1))){
+						return true; //if king queen or rook on opposing team.
+				}else{
+					break;
+				}
+			}
+		}
+
+		
+		for (int i = 1; i < 8; i++) { //up the board, right
+			Point move = new Point(pos.x + i, pos.y + i);
+			if (!move.squareExists())
+				break;
+
+			if (!b.isEmptySquare(move)) {
+				if (b.getTeam(move) != pl 
+						&&(b.getPiece(move).symbol == "q" 
+						|| b.getPiece(move).symbol == "b" 
+						|| (b.getPiece(move).symbol == "k" && i == 1)
+						|| (b.getPiece(move).symbol == "p" && i == 1 && king.player))){
+						return true; //if king queen or rook on opposing team.
+				}else{
+					break;
+				}
+			}
+		}
+		
+		for (int i = 1; i < 8; i++) { //up the board, left
+			Point move = new Point(pos.x - i, pos.y + i);
+			if (!move.squareExists())
+				break;
+
+			if (!b.isEmptySquare(move)) {
+				if (b.getTeam(move) != pl 
+						&&(b.getPiece(move).symbol == "q" 
+						|| b.getPiece(move).symbol == "b" 
+						|| (b.getPiece(move).symbol == "k" && i == 1)
+						|| (b.getPiece(move).symbol == "p" && i == 1 && king.player))){
+						return true; //if king queen or rook on opposing team.
+				}else{
+					break;
+				}
+			}
+		}
+		
+		for (int i = 1; i < 8; i++) { //down the board, right
+			Point move = new Point(pos.x + i, pos.y - i);
+			if (!move.squareExists())
+				break;
+
+			if (!b.isEmptySquare(move)) {
+				if (b.getTeam(move) != pl 
+						&&(b.getPiece(move).symbol == "q" 
+						|| b.getPiece(move).symbol == "b" 
+						|| (b.getPiece(move).symbol == "k" && i == 1)
+						|| (b.getPiece(move).symbol == "p" && i == 1 && !king.player))){
+						return true; //if king queen or rook on opposing team.
+				}else{
+					break;
+				}
+			}
+		}
+		
+		for (int i = 1; i < 8; i++) { //down the board, left
+			Point move = new Point(pos.x - i, pos.y - i);
+			if (!move.squareExists())
+				break;
+
+			if (!b.isEmptySquare(move)) {
+				if (b.getTeam(move) != pl 
+						&&(b.getPiece(move).symbol == "q" 
+						|| b.getPiece(move).symbol == "b" 
+						|| (b.getPiece(move).symbol == "k" && i == 1)
+						|| (b.getPiece(move).symbol == "p" && i == 1 && !king.player))){
+						return true; //if king queen or rook on opposing team.
+				}else{
+					break;
+				}
+			}
+		}
+		
+		for (int i = -1; i <= 1; i = i + 2) {
+			for (int j = -2; j <= 2; j = j + 4) {
+				Point move = new Point(pos.x + i, pos.y + j);
+				if (move.squareExists() && !b.isEmptySquare(move) && b.getTeam(move) != king.player ) {
+					return true;
+				}
+				Point move2 = new Point(pos.x + j, pos.y + i);
+				if (move2.squareExists() && !b.isEmptySquare(move2) && b.getTeam(move2) != king.player ) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 }
