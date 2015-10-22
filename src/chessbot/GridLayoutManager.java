@@ -79,13 +79,13 @@ public class GridLayoutManager extends JFrame{
 	
 	public void updateBoard(Board b){
 		
-		for(int i = 0; i < 8; i++){
+		for(int i = 0; i <8 ; i++){
 			for(int j = 0; j < 8; j++){
 				
 				Piece p = b.locations[i][j];
 				
 				//Flip the board
-				int newJ = j;
+				int newJ = 7-j;
 				int newI = i;
 				
 				if(!p.player){
@@ -144,13 +144,13 @@ public class GridLayoutManager extends JFrame{
 						if(source == squares[i][j]){
 							
 							if(Game.squareFrom == null){
-								System.out.println("DUN BEEN MADE");
-								Game.squareFrom = new Point(j,i);
-								System.out.println(Game.squareFrom);
+								
+								Game.squareFrom = new Point(j,7-i);
+							
 							}else{
-								Game.squareTo = new Point(j,i);
+								
 								System.out.println("MAKING ANEW");
-								System.out.println(Game.squareTo);
+						
 							}
 							
 							return;
