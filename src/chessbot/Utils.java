@@ -283,7 +283,7 @@ public class Utils {
 						&&(b.getPiece(move).symbol == "q" 
 						|| b.getPiece(move).symbol == "b" 
 						|| (b.getPiece(move).symbol == "k" && i == 1)
-						|| (b.getPiece(move).symbol == "p" && i == 1 && king.player))){
+						|| (b.getPiece(move).symbol == "p" && i == 1 && pl))){
 						return true; //if king queen or rook on opposing team.
 				}else{
 					break;
@@ -301,7 +301,7 @@ public class Utils {
 						&&(b.getPiece(move).symbol == "q" 
 						|| b.getPiece(move).symbol == "b" 
 						|| (b.getPiece(move).symbol == "k" && i == 1)
-						|| (b.getPiece(move).symbol == "p" && i == 1 && king.player))){
+						|| (b.getPiece(move).symbol == "p" && i == 1 && pl))){
 						return true; //if king queen or rook on opposing team.
 				}else{
 					break;
@@ -319,7 +319,7 @@ public class Utils {
 						&&(b.getPiece(move).symbol == "q" 
 						|| b.getPiece(move).symbol == "b" 
 						|| (b.getPiece(move).symbol == "k" && i == 1)
-						|| (b.getPiece(move).symbol == "p" && i == 1 && !king.player))){
+						|| (b.getPiece(move).symbol == "p" && i == 1 && !pl))){
 						return true; //if king queen or rook on opposing team.
 				}else{
 					break;
@@ -337,7 +337,7 @@ public class Utils {
 						&&(b.getPiece(move).symbol == "q" 
 						|| b.getPiece(move).symbol == "b" 
 						|| (b.getPiece(move).symbol == "k" && i == 1)
-						|| (b.getPiece(move).symbol == "p" && i == 1 && !king.player))){
+						|| (b.getPiece(move).symbol == "p" && i == 1 && !pl))){
 						return true; //if king queen or rook on opposing team.
 				}else{
 					break;
@@ -348,11 +348,11 @@ public class Utils {
 		for (int i = -1; i <= 1; i = i + 2) {
 			for (int j = -2; j <= 2; j = j + 4) {
 				Point move = new Point(pos.x + i, pos.y + j);
-				if (move.squareExists() && !b.isEmptySquare(move) && b.getTeam(move) != king.player ) {
+				if (move.squareExists() && !b.isEmptySquare(move) && b.getTeam(move) != pl && b.getPiece(move).symbol == "n") {
 					return true;
 				}
 				Point move2 = new Point(pos.x + j, pos.y + i);
-				if (move2.squareExists() && !b.isEmptySquare(move2) && b.getTeam(move2) != king.player ) {
+				if (move2.squareExists() && !b.isEmptySquare(move2) && b.getTeam(move2) != pl && b.getPiece(move2).symbol == "n") {
 					return true;
 				}
 			}

@@ -167,9 +167,6 @@ public class Board {
 		if (allMoves(playerTurn).size() == 0 || isCheck(!playerTurn)) {
 			return true;
 		}
-		if( scoreBoard(true) == 10000 && scoreBoard(false) == 10000){
-			return true;
-		}
 		// Base case
 		return false;
 	}

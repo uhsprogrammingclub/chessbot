@@ -113,9 +113,9 @@ public class AlphaBetaMinimax {
 			
 			int desiredDepth = maxDepth;
 			
-			if (depth >= maxDepth-2 //if last or second to last move to be made
+			if (depth == maxDepth-1 //if last or second to last move to be made
 				&& move.destinationPc.worth != 0){ //and its a capture move
-				desiredDepth+=(maxDepth-depth); //make sure there are at least 2 more moves
+				desiredDepth++; //make sure there are at least 2 more moves
 			}
 			move.execute();
 			
