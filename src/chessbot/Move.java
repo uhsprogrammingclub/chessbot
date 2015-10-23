@@ -9,6 +9,7 @@ public class Move {
 	boolean executed = false;
 	Board board;
 	Piece promotionPiece = null;
+	boolean promotionMove = false;
 	
 	public Move(Move m){
 		
@@ -16,7 +17,8 @@ public class Move {
 		piece = m.piece;
 		from = new Point(piece.position.x, piece.position.y);
 		to = m.to;
-		if (m.promotionPiece != null){
+		promotionMove = m.promotionMove;
+		if (promotionMove){
 			if(m.promotionPiece.symbol.equals("q")){
 				this.promotionPiece = new Queen(m.promotionPiece.getX(), m.promotionPiece.getY(), m.promotionPiece.player);
 			}
@@ -29,6 +31,8 @@ public class Move {
 			else if(m.promotionPiece.symbol.equals("b")){
 				this.promotionPiece = new Bishop(m.promotionPiece.getX(), m.promotionPiece.getY(), m.promotionPiece.player);
 			}
+			this.promotionPiece.alive = false;
+			this.promotionPiece.id = m.promotionPiece.id;
 		}else{
 			promotionPiece = null;
 		}
@@ -45,6 +49,7 @@ public class Move {
 	public Move(Board b, Point pt, Piece pc, String promotionPiece) {
 		
 		if(promotionPiece != null && !promotionPiece.equals("")){
+			promotionMove = true;
 			if(promotionPiece.equals("q")){
 				this.promotionPiece = new Queen(pt.x, pt.y, pc.player);
 			}
@@ -58,6 +63,7 @@ public class Move {
 				this.promotionPiece = new Bishop(pt.x, pt.y, pc.player);
 			}
 			else{
+				promotionMove = false;
 				System.out.println("ERROR: invlaid promotion piece");
 			}
 			this.promotionPiece.alive = false;
@@ -79,6 +85,7 @@ public class Move {
 	public Move(Board b, Point from, Point to, String promotionPiece) {
 		
 		if(promotionPiece != null){
+			promotionMove = true;
 			if(promotionPiece.equals("q")){
 				this.promotionPiece = new Queen(to.x, to.y, b.getTeam(from));
 			}
@@ -92,9 +99,11 @@ public class Move {
 				this.promotionPiece = new Bishop(to.x, to.y, b.getTeam(from));
 			}
 			else{
+				promotionMove = false;
 				System.out.println("ERROR: invlaid promotion piece");
 			}
 			this.promotionPiece.alive = false;
+			
 		}
 		
 		board = b;
@@ -126,7 +135,7 @@ public class Move {
 				board.locations[from.x][from.y] = new Empty();
 			}
 			
-			if(promotionPiece != null){
+			if(promotionMove){
 				board.locations[to.x][to.y] = promotionPiece;
 				board.pieceList.add(promotionPiece);
 				
@@ -150,7 +159,7 @@ public class Move {
 
 	void reverse() {
 		if (executed) {
-			if(promotionPiece != null){
+			if(promotionMove){
 				board.pieceList.remove(promotionPiece);
 				
 				promotionPiece.alive = false;

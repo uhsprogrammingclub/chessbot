@@ -12,6 +12,8 @@ public abstract class Piece {
 	int worth;
 	String symbol;
 	boolean alive = true;
+	
+	int id = ((int)Zobrist.random64())/10000000;
 
 	// Variable indicates whether or not the piece belongs to the player
 	Boolean player = false;
@@ -38,7 +40,7 @@ public abstract class Piece {
 
 	@Override
 	public String toString() {
-		return player ? symbol.toUpperCase() : symbol;
+		return player ? symbol.toUpperCase() + id : symbol + id;
 	}
 
 	@Override
