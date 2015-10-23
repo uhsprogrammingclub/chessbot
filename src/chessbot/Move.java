@@ -8,12 +8,35 @@ public class Move {
 	Piece destinationPc = null;
 	boolean executed = false;
 	Board board;
+	Piece promotionPiece = null;
+	boolean promotionMove = false;
 	
 	public Move(Move m){
+		
 		board = m.board;
 		piece = m.piece;
 		from = new Point(piece.position.x, piece.position.y);
 		to = m.to;
+		promotionMove = m.promotionMove;
+		if (promotionMove){
+			if(m.promotionPiece.symbol.equals("q")){
+				this.promotionPiece = new Queen(m.promotionPiece.getX(), m.promotionPiece.getY(), m.promotionPiece.player);
+			}
+			else if(m.promotionPiece.symbol.equals("n")){
+				this.promotionPiece = new Knight(m.promotionPiece.getX(), m.promotionPiece.getY(), m.promotionPiece.player);
+			}
+			else if(m.promotionPiece.symbol.equals("r")){
+				this.promotionPiece = new Rook(m.promotionPiece.getX(), m.promotionPiece.getY(), m.promotionPiece.player);
+			}
+			else if(m.promotionPiece.symbol.equals("b")){
+				this.promotionPiece = new Bishop(m.promotionPiece.getX(), m.promotionPiece.getY(), m.promotionPiece.player);
+			}
+			this.promotionPiece.alive = false;
+			this.promotionPiece.id = m.promotionPiece.id;
+		}else{
+			promotionPiece = null;
+		}
+		
 		if (to.squareExists()) { // checks that doesn't look out of bounds
 			destinationPc = board.locations[to.x][to.y];
 
@@ -23,7 +46,29 @@ public class Move {
 		}
 	}
 
-	public Move(Board b, Point pt, Piece pc) {
+	public Move(Board b, Point pt, Piece pc, String promotionPiece) {
+		
+		if(promotionPiece != null && !promotionPiece.equals("")){
+			promotionMove = true;
+			if(promotionPiece.equals("q")){
+				this.promotionPiece = new Queen(pt.x, pt.y, pc.player);
+			}
+			else if(promotionPiece.equals("n")){
+				this.promotionPiece = new Knight(pt.x, pt.y, pc.player);
+			}
+			else if(promotionPiece.equals("r")){
+				this.promotionPiece = new Rook(pt.x, pt.y, pc.player);
+			}
+			else if(promotionPiece.equals("b")){
+				this.promotionPiece = new Bishop(pt.x, pt.y, pc.player);
+			}
+			else{
+				promotionMove = false;
+				System.out.println("ERROR: invlaid promotion piece");
+			}
+			this.promotionPiece.alive = false;
+		}
+		
 		board = b;
 		piece = pc;
 		from = new Point(pc.position.x, pc.position.y);
@@ -37,12 +82,35 @@ public class Move {
 		}
 	}
 
-	public Move(Board b, Point from, Point to) {
+	public Move(Board b, Point from, Point to, String promotionPiece) {
+		
+		if(promotionPiece != null){
+			promotionMove = true;
+			if(promotionPiece.equals("q")){
+				this.promotionPiece = new Queen(to.x, to.y, b.getTeam(from));
+			}
+			else if(promotionPiece.equals("n")){
+				this.promotionPiece = new Knight(to.x, to.y, b.getTeam(from));
+			}
+			else if(promotionPiece.equals("r")){
+				this.promotionPiece = new Rook(to.x, to.y, b.getTeam(from));
+			}
+			else if(promotionPiece.equals("b")){
+				this.promotionPiece = new Bishop(to.x, to.y, b.getTeam(from));
+			}
+			else{
+				promotionMove = false;
+				System.out.println("ERROR: invlaid promotion piece");
+			}
+			this.promotionPiece.alive = false;
+			
+		}
+		
 		board = b;
 		this.from = from;
 		this.to = to;
 		if (from.squareExists()) { // checks that doesn't look out of bounds
-			piece = b.locations[from.x][from.y];
+			piece = b.getPiece(from);
 
 		} else {
 			piece = new Empty();
@@ -50,24 +118,36 @@ public class Move {
 		}
 
 		if (to.squareExists()) { // checks that doesn't look out of bounds
-			destinationPc = b.locations[to.x][to.y];
+			destinationPc = b.getPiece(to);
 
 		} else {
 			destinationPc = new Empty();
-			destinationPc.setPosition(to.x, to.y);// for toString() reasons
+			destinationPc.setPosition(to.x, to.y); // for toString() reasons
 		}
 	}
 
 	void execute() {
 		if (!executed) {
+			
 			if (board.isEmptySquare(destinationPc.position)){
 				board.locations[from.x][from.y] = destinationPc;
 			}else{
 				board.locations[from.x][from.y] = new Empty();
 			}
-			board.locations[to.x][to.y] = piece;
+			
+			if(promotionMove){
+				board.locations[to.x][to.y] = promotionPiece;
+				board.pieceList.add(promotionPiece);
+				
+				promotionPiece.alive = true;
+				piece.alive = false;
+			}else{
+		
+				board.locations[to.x][to.y] = piece;
+				piece.position = to;
+			}
+			
 			destinationPc.position = from; // reverse positions
-			piece.position = to;
 			destinationPc.alive = false;
 			executed = true;
 			board.playerMove = !board.playerMove;
@@ -79,6 +159,13 @@ public class Move {
 
 	void reverse() {
 		if (executed) {
+			if(promotionMove){
+				board.pieceList.remove(promotionPiece);
+				
+				promotionPiece.alive = false;
+				piece.alive = true;
+				
+			}
 			board.locations[to.x][to.y] = destinationPc;
 			board.locations[from.x][from.y] = piece;
 			piece.position = from;
@@ -110,11 +197,10 @@ public class Move {
 		if (other.to == null || other.piece == null || this.to == null || this.piece == null) {
 			return false;
 		}
-		if (this.to.equals(other.to) && this.piece.equals(other.piece)) {
+		if (this.to.equals(other.to) && this.piece.equals(other.piece)){
 			return true;
 		} else {
 			return false;
 		}
 	}
-
 }

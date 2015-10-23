@@ -5,7 +5,7 @@ import java.util.*;
 public class AlphaBetaMinimax {
 
 	Board board;
-	int maxComputations = 20000;
+	int maxComputations = 1000;
 	List<MoveAndScore> rootsChildrenScore = new ArrayList<>();
 	List<MoveAndScore> currentRootsChildrenScore = new ArrayList<>();
 	int staticComputations = 0;
@@ -74,7 +74,7 @@ public class AlphaBetaMinimax {
 		List<Move> movesAvailible = new ArrayList<Move>();
 		
 		if(oldEntry != null //if there is an old entry
-				&& oldEntry.zobrist == zHash){  //and the boards are the same
+			&& oldEntry.zobrist == zHash){  //and the boards are the same
 			if (oldEntry.depthLeft >= (maxDepth - depth) && oldEntry.alpha <= alpha && oldEntry.beta >= beta){ //the the depth of the entry is not less than what we have to go through
 				return oldEntry.eval; //passes up the pre-computed evaluation
 			}else{ // if the entry we have is not accurate enough
