@@ -32,7 +32,6 @@ public class Move {
 				this.promotionPiece = new Bishop(m.promotionPiece.getX(), m.promotionPiece.getY(), m.promotionPiece.player);
 			}
 			this.promotionPiece.alive = false;
-			this.promotionPiece.id = m.promotionPiece.id;
 		}else{
 			promotionPiece = null;
 		}
@@ -66,6 +65,8 @@ public class Move {
 				promotionMove = false;
 				System.out.println("ERROR: invlaid promotion piece");
 			}
+		}
+		if (promotionMove){
 			this.promotionPiece.alive = false;
 		}
 		
@@ -84,7 +85,7 @@ public class Move {
 
 	public Move(Board b, Point from, Point to, String promotionPiece) {
 		
-		if(promotionPiece != null){
+		if(promotionPiece != null && !promotionPiece.equals("")){
 			promotionMove = true;
 			if(promotionPiece.equals("q")){
 				this.promotionPiece = new Queen(to.x, to.y, b.getTeam(from));
@@ -101,9 +102,11 @@ public class Move {
 			else{
 				promotionMove = false;
 				System.out.println("ERROR: invlaid promotion piece");
-			}
+			}			
+		}
+		
+		if (promotionMove){
 			this.promotionPiece.alive = false;
-			
 		}
 		
 		board = b;
@@ -181,8 +184,17 @@ public class Move {
 
 	@Override
 	public String toString() {
-		return "Move piece " + piece + " from point " + from + " to point " + to + ", which is a "
-				+ destinationPc;
+		String s = "";
+		s += piece + "";
+		s += from + "->";
+		if (!destinationPc.toString().equals("-")){
+			s += "x" + destinationPc;
+		}
+		s += this.to;
+		if (promotionMove){
+			s += "=" + promotionPiece;
+		}
+		return s;
 	}
 
 	@Override
@@ -195,6 +207,9 @@ public class Move {
 		}
 		final Move other = (Move) obj;
 		if (other.to == null || other.piece == null || this.to == null || this.piece == null) {
+			return false;
+		}
+		if (this.promotionMove != other.promotionMove) {
 			return false;
 		}
 		if (this.to.equals(other.to) && this.piece.equals(other.piece)){

@@ -5,7 +5,7 @@ import java.util.*;
 public class AlphaBetaMinimax {
 
 	Board board;
-	int maxComputations = 1000;
+	int maxComputations = 20000;
 	List<MoveAndScore> rootsChildrenScore = new ArrayList<>();
 	List<MoveAndScore> currentRootsChildrenScore = new ArrayList<>();
 	int staticComputations = 0;
@@ -108,7 +108,7 @@ public class AlphaBetaMinimax {
 			int desiredDepth = maxDepth;
 			
 			if (depth == maxDepth-1 //if last move to be made
-				&& move.destinationPc.worth != 0 && (desiredDepth - 2 < evaluateToDepth )){ //and its a capture move
+				&& move.destinationPc.worth != 0 && (desiredDepth < evaluateToDepth + 3 )){ //and its a capture move
 				desiredDepth++; //make sure there is another move
 			}
 			move.execute();

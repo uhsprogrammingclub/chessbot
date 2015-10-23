@@ -35,10 +35,7 @@ public class PV {
 	public String toString() {
 		String s = "";
 		for (HashEntry h: hashList){
-			s += h.move.piece + " ";
-			s += h.move.from + "->";
-			s += (h.move.destinationPc.toString().equals("-") ? "" : h.move.destinationPc + " ");
-			s += h.move.to;
+			s += h.move;
 			s += " ("+Math.round(h.eval*100)/100.0+")";
 			s += "; ";
 		}
