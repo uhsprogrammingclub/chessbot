@@ -19,7 +19,7 @@ public class Utils {
 				if (b.isEmptySquare(move)) {
 					if(move.y == 0 || move.y == 7){
 						moves.add(new Move(b, move, p, "q"));
-						moves.add(new Move(b, move, p, "k"));
+						moves.add(new Move(b, move, p, "n"));
 						moves.add(new Move(b, move, p, "r"));
 						moves.add(new Move(b, move, p, "b"));
 					}else{
@@ -120,7 +120,7 @@ public class Utils {
 					moves.add(new Move(b, move, p, "q"));
 					moves.add(new Move(b, move, p, "b"));
 					moves.add(new Move(b, move, p, "r"));
-					moves.add(new Move(b, move, p, "k"));
+					moves.add(new Move(b, move, p, "n"));
 				}else{
 					moves.add(new Move(b, move, p, null));
 				}	
@@ -130,7 +130,7 @@ public class Utils {
 			Point move2 = new Point(pos.x - 1, pos.y + dir);
 
 			if (move2.squareExists() && !b.isEmptySquare(move2) && b.getTeam(move2) != p.player) {
-				if(move.y == 0 || move.y == 7){
+				if(move2.y == 0 || move2.y == 7){
 					moves.add(new Move(b, move2, p, "q"));
 					moves.add(new Move(b, move2, p, "n"));
 					moves.add(new Move(b, move2, p, "r"));

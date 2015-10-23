@@ -224,14 +224,14 @@ public class Game {
 		System.out.println("Transposition Table Size: " + TranspositionTable.trans.size());
 		System.out.println("Max Depth: " + ai.finalDepth);
 		
+		System.out.println("BEFORE BEST MOVE\n"+b);
 		Move move = ai.bestMove();
+		System.out.println("AFTER BEST MOVE\n"+b);
 		System.out.println(move);
 		
-		/*for (Entry<Integer, HashEntry> entry : TranspositionTable.trans.entrySet()) {
-		    System.out.println(entry.getKey() + " " + entry.getValue());
-		}*/
 		System.out.println("PV: " + new PV(b, player));
 		move.execute();
+		System.out.println("AFTER EXECUTE\n"+b);
 		gui.updateBoard(b);
 		
 		if (!b.isGameOver(!player)) {

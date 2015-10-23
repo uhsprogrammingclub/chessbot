@@ -16,7 +16,22 @@ public class Move {
 		piece = m.piece;
 		from = new Point(piece.position.x, piece.position.y);
 		to = m.to;
-		promotionPiece = m.promotionPiece;
+		if (m.promotionPiece != null){
+			if(m.promotionPiece.symbol.equals("q")){
+				this.promotionPiece = new Queen(m.promotionPiece.getX(), m.promotionPiece.getY(), m.promotionPiece.player);
+			}
+			else if(m.promotionPiece.symbol.equals("n")){
+				this.promotionPiece = new Knight(m.promotionPiece.getX(), m.promotionPiece.getY(), m.promotionPiece.player);
+			}
+			else if(m.promotionPiece.symbol.equals("r")){
+				this.promotionPiece = new Rook(m.promotionPiece.getX(), m.promotionPiece.getY(), m.promotionPiece.player);
+			}
+			else if(m.promotionPiece.symbol.equals("b")){
+				this.promotionPiece = new Bishop(m.promotionPiece.getX(), m.promotionPiece.getY(), m.promotionPiece.player);
+			}
+		}else{
+			promotionPiece = null;
+		}
 		
 		if (to.squareExists()) { // checks that doesn't look out of bounds
 			destinationPc = board.locations[to.x][to.y];
@@ -29,19 +44,23 @@ public class Move {
 
 	public Move(Board b, Point pt, Piece pc, String promotionPiece) {
 		
-		if(promotionPiece != null){
+		if(promotionPiece != null && !promotionPiece.equals("")){
 			if(promotionPiece.equals("q")){
-				this.promotionPiece = new Queen(pc.getX(), pc.getY(), pc.player);
+				this.promotionPiece = new Queen(pt.x, pt.y, pc.player);
 			}
 			else if(promotionPiece.equals("n")){
-				this.promotionPiece = new Knight(pc.getX(), pc.getY(), pc.player);
+				this.promotionPiece = new Knight(pt.x, pt.y, pc.player);
 			}
 			else if(promotionPiece.equals("r")){
-				this.promotionPiece = new Rook(pc.getX(), pc.getY(), pc.player);
+				this.promotionPiece = new Rook(pt.x, pt.y, pc.player);
 			}
 			else if(promotionPiece.equals("b")){
-				this.promotionPiece = new Bishop(pc.getX(), pc.getY(), pc.player);
+				this.promotionPiece = new Bishop(pt.x, pt.y, pc.player);
 			}
+			else{
+				System.out.println("ERROR: invlaid promotion piece");
+			}
+			this.promotionPiece.alive = false;
 		}
 		
 		board = b;
@@ -61,25 +80,28 @@ public class Move {
 		
 		if(promotionPiece != null){
 			if(promotionPiece.equals("q")){
-				this.promotionPiece = new Queen(from.x, from.y, b.locations[from.x][from.y].player);
+				this.promotionPiece = new Queen(to.x, to.y, b.getTeam(from));
 			}
 			else if(promotionPiece.equals("n")){
-				this.promotionPiece = new Knight(from.x, from.y, b.locations[from.x][from.y].player);
+				this.promotionPiece = new Knight(to.x, to.y, b.getTeam(from));
 			}
 			else if(promotionPiece.equals("r")){
-				this.promotionPiece = new Rook(from.x, from.y, b.locations[from.x][from.y].player);
+				this.promotionPiece = new Rook(to.x, to.y, b.getTeam(from));
 			}
 			else if(promotionPiece.equals("b")){
-				this.promotionPiece = new Bishop(from.x, from.y, b.locations[from.x][from.y].player);
+				this.promotionPiece = new Bishop(to.x, to.y, b.getTeam(from));
 			}
-			
+			else{
+				System.out.println("ERROR: invlaid promotion piece");
+			}
+			this.promotionPiece.alive = false;
 		}
 		
 		board = b;
 		this.from = from;
 		this.to = to;
 		if (from.squareExists()) { // checks that doesn't look out of bounds
-			piece = b.locations[from.x][from.y];
+			piece = b.getPiece(from);
 
 		} else {
 			piece = new Empty();
@@ -87,7 +109,7 @@ public class Move {
 		}
 
 		if (to.squareExists()) { // checks that doesn't look out of bounds
-			destinationPc = b.locations[to.x][to.y];
+			destinationPc = b.getPiece(to);
 
 		} else {
 			destinationPc = new Empty();
@@ -106,9 +128,9 @@ public class Move {
 			
 			if(promotionPiece != null){
 				board.locations[to.x][to.y] = promotionPiece;
-				promotionPiece.position = to;
 				board.pieceList.add(promotionPiece);
-				board.pieceList.remove(piece);
+				
+				promotionPiece.alive = true;
 				piece.alive = false;
 			}else{
 		
@@ -129,7 +151,11 @@ public class Move {
 	void reverse() {
 		if (executed) {
 			if(promotionPiece != null){
-				piece = new Pawn(from.x, from.y, piece.player);
+				board.pieceList.remove(promotionPiece);
+				
+				promotionPiece.alive = false;
+				piece.alive = true;
+				
 			}
 			board.locations[to.x][to.y] = destinationPc;
 			board.locations[from.x][from.y] = piece;
