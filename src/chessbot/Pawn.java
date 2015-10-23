@@ -17,7 +17,7 @@ public class Pawn extends Piece {
 
 		// Check diagonal
 		moves.addAll(Utils.getDiagonalMoves(b, this));
-
+		
 		// Return moves
 		return moves;
 	}

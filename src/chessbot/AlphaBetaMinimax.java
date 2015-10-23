@@ -81,8 +81,10 @@ public class AlphaBetaMinimax {
 				&& oldEntry.player == player){ //and it's the same player's move
 			if (oldEntry.depthLeft >= (maxDepth - depth)){ //the the depth of the entry is not less than what we have to go through
 				if (depth != 0){
+					
 					return oldEntry.eval; //passes up the pre-computed evaluation
 				}else{
+					
 					currentRootsChildrenScore.add(new MoveAndScore(new Move(oldEntry.move), oldEntry.eval)); //puts the precomputed move into root moves array
 					return 0;
 				}

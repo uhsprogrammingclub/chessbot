@@ -4,6 +4,7 @@
 package chessbot;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 public class Game {
 
@@ -37,7 +38,7 @@ public class Game {
 		Piece p2 = new Pawn(1, 1, true);
 		Piece p3 = new Pawn(2, 1, true);
 		Piece p4 = new Pawn(3, 1, true);
-		Piece p5 = new Pawn(4, 1, true);
+		Piece p5 = new Pawn(4, 3, true);
 		Piece p6 = new Pawn(5, 1, true);
 		Piece p7 = new Pawn(6, 1, true);
 		Piece p8 = new Pawn(7, 1, true);
@@ -46,7 +47,7 @@ public class Game {
 		Piece N1 = new Knight(1, 7, false);
 		Piece B1 = new Bishop(2, 7, false);
 		Piece Q = new Queen(3, 7, false);
-		Piece K = new King(4, 7, false);
+		Piece K = new King(0, 7, false);
 		Piece B2 = new Bishop(5, 7, false);
 		Piece N2 = new Knight(6, 7, false);
 		Piece R2 = new Rook(7, 7, false);
@@ -55,16 +56,16 @@ public class Game {
 		Piece P2 = new Pawn(1, 6, false);
 		Piece P3 = new Pawn(2, 6, false);
 		Piece P4 = new Pawn(3, 6, false);
-		Piece P5 = new Pawn(4, 6, false);
-		Piece P6 = new Pawn(5, 6, false);
+		Piece P5 = new Pawn(4, 5, false);
+		Piece P6 = new Pawn(5, 2, false);
 		Piece P7 = new Pawn(6, 6, false);
 		Piece P8 = new Pawn(7, 6, false);
 
-		list.add(r1);
+		/*list.add(r1);
 		list.add(n1);
 		list.add(b1);
-		list.add(q);
-		list.add(k);
+		list.add(q);*/
+		list.add(k);/*
 		list.add(b2);
 		list.add(n2);
 		list.add(r2);
@@ -75,14 +76,14 @@ public class Game {
 		list.add(p4);
 		list.add(p5);
 		list.add(p6);
-		list.add(p7);
+		list.add(p7);*/
 		list.add(p8);
 
-		list.add(R1);
+		/*list.add(R1);
 		list.add(N1);
 		list.add(B1);
-		list.add(Q);
-		list.add(K);
+		list.add(Q);*/
+		list.add(K);/*
 		list.add(B2);
 		list.add(N2);
 		list.add(R2);
@@ -91,10 +92,10 @@ public class Game {
 		list.add(P2);
 		list.add(P3);
 		list.add(P4);
-		list.add(P5);
+		list.add(P5);*/
 		list.add(P6);
-		list.add(P7);
-		list.add(P8);
+		/*list.add(P7);
+		list.add(P8);*/
 
 		Board b = new Board(list);
 		
@@ -109,6 +110,10 @@ public class Game {
 
 	static void takePlayerMove(Board b) {
 		
+		/*for (Entry<Integer, HashEntry> entry : TranspositionTable.trans.entrySet() ) {
+		    System.out.println(entry.getKey() + " " + entry.getValue());
+		}*/
+		
 		//Clear GUI input
 		squareFrom = null;
 		squareTo = null;
@@ -116,7 +121,7 @@ public class Game {
 		//Make the GUI board active
 		GridLayoutManager.setActive(true);
 		
-		Move move;
+		Move move = null;
 		List<Move> validMoves = b.allMoves(true);
 		
 		while (true) {
@@ -140,8 +145,28 @@ public class Game {
 			}*/
 			
 			if(from != null && to != null){
+				
+				//If it is a promotion move
+				if(b.locations[from.x][from.y].symbol.equals("p") && (to.y == 7 || to.y == 0)){
+					System.out.println("What piece would you like to promote to? Queen = q; Knight = n, etc.");
+					String pieceStr = s.nextLine();
+					if(pieceStr.equals("q")){
+						move = new Move(b, from, to, "q");
+					}
+					else if(pieceStr.equals("n")){
+						move = new Move(b, from, to, "n");
+					}
+					else if(pieceStr.equals("r")){
+						move = new Move(b, from, to, "r");
+					}
+					else if(pieceStr.equals("b")){
+						move = new Move(b, from, to, "b");
+					}
+							
+				}else{
+					move = new Move(b, from, to, null);
+				}
 			
-				move = new Move(b, from, to);
 				boolean validMove = false;
 				
 				for (Move m : validMoves) {

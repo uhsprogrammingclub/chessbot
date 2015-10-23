@@ -8,12 +8,16 @@ public class Move {
 	Piece destinationPc = null;
 	boolean executed = false;
 	Board board;
+	Piece promotionPiece = null;
 	
 	public Move(Move m){
+		
 		board = m.board;
 		piece = m.piece;
 		from = new Point(piece.position.x, piece.position.y);
 		to = m.to;
+		promotionPiece = m.promotionPiece;
+		
 		if (to.squareExists()) { // checks that doesn't look out of bounds
 			destinationPc = board.locations[to.x][to.y];
 
@@ -23,7 +27,23 @@ public class Move {
 		}
 	}
 
-	public Move(Board b, Point pt, Piece pc) {
+	public Move(Board b, Point pt, Piece pc, String promotionPiece) {
+		
+		if(promotionPiece != null){
+			if(promotionPiece.equals("q")){
+				this.promotionPiece = new Queen(pc.getX(), pc.getY(), pc.player);
+			}
+			else if(promotionPiece.equals("n")){
+				this.promotionPiece = new Knight(pc.getX(), pc.getY(), pc.player);
+			}
+			else if(promotionPiece.equals("r")){
+				this.promotionPiece = new Rook(pc.getX(), pc.getY(), pc.player);
+			}
+			else if(promotionPiece.equals("b")){
+				this.promotionPiece = new Bishop(pc.getX(), pc.getY(), pc.player);
+			}
+		}
+		
 		board = b;
 		piece = pc;
 		from = new Point(pc.position.x, pc.position.y);
@@ -37,7 +57,24 @@ public class Move {
 		}
 	}
 
-	public Move(Board b, Point from, Point to) {
+	public Move(Board b, Point from, Point to, String promotionPiece) {
+		
+		if(promotionPiece != null){
+			if(promotionPiece.equals("q")){
+				this.promotionPiece = new Queen(from.x, from.y, b.locations[from.x][from.y].player);
+			}
+			else if(promotionPiece.equals("n")){
+				this.promotionPiece = new Knight(from.x, from.y, b.locations[from.x][from.y].player);
+			}
+			else if(promotionPiece.equals("r")){
+				this.promotionPiece = new Rook(from.x, from.y, b.locations[from.x][from.y].player);
+			}
+			else if(promotionPiece.equals("b")){
+				this.promotionPiece = new Bishop(from.x, from.y, b.locations[from.x][from.y].player);
+			}
+			
+		}
+		
 		board = b;
 		this.from = from;
 		this.to = to;
@@ -54,22 +91,35 @@ public class Move {
 
 		} else {
 			destinationPc = new Empty();
-			destinationPc.setPosition(to.x, to.y);// for toString() reasons
+			destinationPc.setPosition(to.x, to.y); // for toString() reasons
 		}
 	}
 
 	void execute() {
 		if (!executed) {
+			
 			if (board.isEmptySquare(destinationPc.position)){
 				board.locations[from.x][from.y] = destinationPc;
 			}else{
 				board.locations[from.x][from.y] = new Empty();
 			}
-			board.locations[to.x][to.y] = piece;
+			
+			if(promotionPiece != null){
+				board.locations[to.x][to.y] = promotionPiece;
+				promotionPiece.position = to;
+				board.pieceList.add(promotionPiece);
+				board.pieceList.remove(piece);
+				piece.alive = false;
+			}else{
+		
+				board.locations[to.x][to.y] = piece;
+				piece.position = to;
+			}
+			
 			destinationPc.position = from; // reverse positions
-			piece.position = to;
 			destinationPc.alive = false;
 			executed = true;
+			
 		}else{
 			System.out.println("ERROR: Trying to execute a move that is no longer viable.");
 			System.exit(0);
@@ -78,6 +128,9 @@ public class Move {
 
 	void reverse() {
 		if (executed) {
+			if(promotionPiece != null){
+				piece = new Pawn(from.x, from.y, piece.player);
+			}
 			board.locations[to.x][to.y] = destinationPc;
 			board.locations[from.x][from.y] = piece;
 			piece.position = from;
@@ -108,11 +161,10 @@ public class Move {
 		if (other.to == null || other.piece == null || this.to == null || this.piece == null) {
 			return false;
 		}
-		if (this.to.equals(other.to) && this.piece.equals(other.piece)) {
+		if (this.to.equals(other.to) && this.piece.equals(other.piece)){
 			return true;
 		} else {
 			return false;
 		}
 	}
-
 }
