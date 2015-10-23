@@ -1,7 +1,6 @@
 package chessbot;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class AlphaBetaMinimax {
 
@@ -32,18 +31,19 @@ public class AlphaBetaMinimax {
 	int progressiveDeepening(){
 		int depth;
 		for (depth = 1; depth < 25; depth++){
-			double result = negaMax(MIN, MAX, 0, depth);
-			if (result != 404 ){
+			negaMax(MIN, MAX, 0, depth);
+			if (staticComputations < maxComputations ){
 				rootsChildrenScore.clear();
 				rootsChildrenScore.addAll(currentRootsChildrenScore);
 				Collections.sort(rootsChildrenScore);
 			}else{
-				return depth - 1;
+				rootsChildrenScore.addAll(currentRootsChildrenScore);
+				return depth;
 			}
 			System.out.println("PV at depth " + depth + ": "+ new PV(board));
 		}
 		
-		return depth-1;
+		return depth;
 	}
 	
 	
@@ -59,7 +59,6 @@ public class AlphaBetaMinimax {
 			computationsAtDepth.put(depth, computationsAtDepth.get(depth) + 1);
 			
 			staticComputations++;
-			if (staticComputations > maxComputations) return 404; //arbitrary number to end the search
 			return board.evaluateBoard() * ( board.playerMove ? -1 : 1 );	
 		}
 		
@@ -100,7 +99,7 @@ public class AlphaBetaMinimax {
 		double maxValue = MIN;
 		Move bestMove = allAvailible.get(0);
 		for (Move move: movesAvailible) {
-			
+			if (depth == 0 && staticComputations > maxComputations) break; // don't evaluate the next move if the depth is 0 and you've exceeded max computations
 			int desiredDepth = maxDepth;
 			
 			if (depth == maxDepth-1 //if last move to be made
@@ -111,11 +110,6 @@ public class AlphaBetaMinimax {
 			
 			double currentScore;
 			currentScore = -negaMax( -beta, -alpha, depth + 1, desiredDepth);
-			
-			if (currentScore == -404){
-				move.reverse();
-				return 404;
-			}
 			
 			if (depth == 0 && currentScore > maxValue) {
 				currentRootsChildrenScore.add(new MoveAndScore(move, currentScore));

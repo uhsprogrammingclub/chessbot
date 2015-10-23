@@ -69,14 +69,20 @@ public class Board {
 	 * INDEX OUT OF BOUNDS
 	 **/
 	public boolean getTeam(Point pos) {
-		Piece p = locations[pos.x][pos.y];
-		return p.player;
+		if (pos.squareExists()){
+			Piece p = locations[pos.x][pos.y];
+			return p.player;
+		}else{
+			System.out.println("ERROR: getTeam(Point pos) called invalid square");
+			return false;
+		}
 	}
 	
 	public Piece getPiece(Point pos) {
 		if (pos.squareExists()){
 			return locations[pos.x][pos.y];
 		}else{
+			System.out.println("ERROR: getPiece(Point pos) called invalid square");
 			return new Empty();
 		}
 	}
