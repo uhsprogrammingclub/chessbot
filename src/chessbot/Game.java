@@ -204,14 +204,12 @@ public class Game {
 		}
 		System.out.println("Time expended: " + (endTime-startTime)/1000.0);
 		System.out.println("Max Depth: " + ai.finalDepth);
-		System.out.println("Static computations in last iteration: " + ai.staticComputations);
-		System.out.println("Static computations at depth: " + ai.computationsAtDepth);
+		System.out.println("Static computations at each depth: " + ai.computationsAtDepth);
 		System.out.println("Transposition Table Size: " + TranspositionTable.trans.size());
 		
 		Move move = ai.bestMove();
 		System.out.println("\nBot: " +move);
 		
-		System.out.println("Latest PV: " + new PV(b));
 		move.execute();
 		gui.updateBoard(b);
 		
