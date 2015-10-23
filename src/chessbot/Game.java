@@ -199,7 +199,7 @@ public class Game {
 			
 		} //End of While loop
 		
-		System.out.println(move);
+		System.out.println("Move: " + move);
 		move.execute();
 		
 		gui.updateBoard(b);
@@ -226,7 +226,7 @@ public class Game {
 		long endTime = System.currentTimeMillis();
 		
 		for(MoveAndScore m : ai.rootsChildrenScore){
-			System.out.println(m);
+			System.out.println("Root Move: " + m);
 		}
 		System.out.println("Time expended: " + (endTime-startTime)/1000.0);
 		System.out.println("Max Depth: " + ai.finalDepth);

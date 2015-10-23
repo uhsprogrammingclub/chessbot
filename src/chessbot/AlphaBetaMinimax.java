@@ -9,6 +9,7 @@ public class AlphaBetaMinimax {
 	List<MoveAndScore> rootsChildrenScore = new ArrayList<>();
 	List<MoveAndScore> currentRootsChildrenScore = new ArrayList<>();
 	int staticComputations = 0;
+	int evaluateToDepth = 0;
 	int finalDepth = 1;
 	
 	Hashtable<Integer, Integer> computationsAtDepth = new Hashtable<Integer, Integer>(100);
@@ -32,6 +33,7 @@ public class AlphaBetaMinimax {
 	int progressiveDeepening(){
 		int depth;
 		for (depth = 1; depth < 25; depth++){
+			evaluateToDepth = depth;
 			double result = negaMax(MIN, MAX, 0, depth);
 			if (result != 404 ){
 				rootsChildrenScore.clear();
@@ -106,7 +108,7 @@ public class AlphaBetaMinimax {
 			int desiredDepth = maxDepth;
 			
 			if (depth == maxDepth-1 //if last move to be made
-				&& move.destinationPc.worth != 0){ //and its a capture move
+				&& move.destinationPc.worth != 0 && (desiredDepth - 2 < evaluateToDepth )){ //and its a capture move
 				desiredDepth++; //make sure there is another move
 			}
 			move.execute();
