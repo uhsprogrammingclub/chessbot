@@ -15,6 +15,8 @@ public class Board {
 
 	// One-dimensional array to hold simple list of pieces
 	List<Piece> pieceList = new ArrayList<Piece>();
+	
+	boolean playerMove;
 
 	// Override java.lang.Object.toString method to create easier to read output
 	// in the form of a table
@@ -80,7 +82,7 @@ public class Board {
 	}
 
 	// Constructor for the Board class - when given a list of pieces
-	public Board(List<Piece> list) {
+	public Board(List<Piece> list, boolean playerGoesFirst) {
 
 		// Assign list to pieceList variable
 		pieceList = list;
@@ -97,6 +99,8 @@ public class Board {
 		for (Piece piece : list) {
 			locations[piece.getX()][piece.getY()] = piece;
 		}
+		
+		playerMove = playerGoesFirst;
 	}
 
 	// Find all possible moves
@@ -163,8 +167,8 @@ public class Board {
 	}
 
 	// Function that identifies whether the game is over
-	public boolean isGameOver( boolean playerTurn ) {
-		if (allMoves(playerTurn).size() == 0 || isCheck(!playerTurn)) {
+	public boolean isGameOver() {
+		if (allMoves(playerMove).size() == 0 || isCheck(!playerMove)) {
 			return true;
 		}
 		// Base case
@@ -202,9 +206,11 @@ public class Board {
 		}
 		
 		//Sum all of the moves 
-		List<Move> moves = allMoves(player);
-		double totalMoves = moves.size();
-		score += totalMoves/300;
+		//if (playerMove == player){
+			List<Move> moves = allMoves(player);
+			double totalMoves = moves.size();
+			score += totalMoves/300;
+		//}
 	
 		return score;
 	}

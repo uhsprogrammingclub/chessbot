@@ -6,7 +6,7 @@ public class Zobrist {
 	static long zArray[][][][] = new long [2][6][8][8];
 	static long zEnPassant[] = new long[8];
 	static long zCastle[] = new long [4];
-	static long zComputerMove;
+	static long zPlayerMove;
 	
 	public static long random64(){
 		SecureRandom random = new SecureRandom();
@@ -33,7 +33,11 @@ public class Zobrist {
 			zCastle[i] = random64();
 		}
 		
-		zComputerMove = random64();
+		zPlayerMove = random64();
+	}
+	
+	public static int getIndex(long zHash){
+		return (int)(zHash % TranspositionTable.hashSize);
 	}
 	
 	public static long getZobristHash(Board b){
@@ -91,7 +95,9 @@ public class Zobrist {
 				}
 			}
 		}
-		
+		if (b.playerMove){
+			zKey ^= zPlayerMove;
+		}
 		return zKey;
 	}
 }

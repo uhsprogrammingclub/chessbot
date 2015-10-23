@@ -6,26 +6,26 @@ public class PV {
 	
 	List<HashEntry> hashList;
 	
-	public PV(Board b, boolean player){
+	public PV(Board b){
 		hashList = new ArrayList<HashEntry>();
-		findHashEntry(b, player);
+		findHashEntry(b);
 	}
 	
-	void findHashEntry(Board b, boolean player){
+	void findHashEntry(Board b){
 		long currentZHash = Zobrist.getZobristHash(b);
-		int index = (int)(currentZHash % TranspositionTable.hashSize);
+		int index = Zobrist.getIndex(currentZHash);
 		//find entry with same index
 		HashEntry oldEntry = TranspositionTable.trans.get(index);			
 		if(oldEntry != null //if there is an old entry
-				&& oldEntry.zobrist == currentZHash //and the boards are the same
-				&& oldEntry.player == player){ //and it's the same player's move
+				&& oldEntry.zobrist == currentZHash){ //and the boards are the same
 			hashList.add(oldEntry);
 			
 			if (oldEntry.move.executed){
+				System.out.println("PV in loop");
 				return;
 			}
 			oldEntry.move.execute();
-			findHashEntry(b, !player);
+			findHashEntry(b);
 			oldEntry.move.reverse();
 		}
 		
@@ -35,7 +35,12 @@ public class PV {
 	public String toString() {
 		String s = "";
 		for (HashEntry h: hashList){
-			s += h.move.piece + " " + h.move.from + "->" + (h.move.destinationPc.toString().equals("-") ? "" : h.move.destinationPc + " ") + h.move.to + ";";
+			s += h.move.piece + " ";
+			s += h.move.from + "->";
+			s += (h.move.destinationPc.toString().equals("-") ? "" : h.move.destinationPc + " ");
+			s += h.move.to;
+			s += " ("+Math.round(h.eval*100)/100.0+")";
+			s += "; ";
 		}
 		return s;
 	}

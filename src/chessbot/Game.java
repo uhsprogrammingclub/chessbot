@@ -12,6 +12,7 @@ public class Game {
 	
 	//Boolean that determines whether the AI plays itself
 	static boolean botVBot = false;
+	static boolean playerMovesFirst = true;
 	
 	//Initialize the grid GUI layout
 	static GridLayoutManager gui = new GridLayoutManager();
@@ -96,15 +97,22 @@ public class Game {
 		list.add(P7);
 		list.add(P8);
 
-		Board b = new Board(list);
+		Board b = new Board(list, playerMovesFirst);
 		
 		Zobrist.zobristFillArray();
 
 		gui.updateBoard(b);
 		
 		
-		//botMakeMove(b, false);
-		takePlayerMove(b);
+		if (botVBot){
+			botMakeMove(b);
+		}else{
+			if (playerMovesFirst){
+				takePlayerMove(b);
+			}else{
+				botMakeMove(b);
+			}
+		}
 	}
 
 	static void takePlayerMove(Board b) {
@@ -117,7 +125,7 @@ public class Game {
 		GridLayoutManager.setActive(true);
 		
 		Move move;
-		List<Move> validMoves = b.allMoves(true);
+		List<Move> validMoves = b.allMoves(b.playerMove);
 		
 		while (true) {
 			
@@ -170,8 +178,8 @@ public class Game {
 		
 		gui.updateBoard(b);
 		
-		if (!b.isGameOver(false)) {
-			botMakeMove(b, false);
+		if (!b.isGameOver()) {
+			botMakeMove(b);
 		} else {
 			System.out.println(b);
 			System.out.println("Game Over!");
@@ -179,7 +187,7 @@ public class Game {
 		
 	}
 
-	static void botMakeMove(Board b, boolean player) {
+	static void botMakeMove(Board b) {
 		
 		//Make the GUI board inactive
 		GridLayoutManager.setActive(false);
@@ -188,30 +196,28 @@ public class Game {
 		System.out.println("Processing move...");
 		
 		long startTime = System.currentTimeMillis();
-		AlphaBetaMinimax ai = new AlphaBetaMinimax(b, player);
+		AlphaBetaMinimax ai = new AlphaBetaMinimax(b);
 		long endTime = System.currentTimeMillis();
 		
 		for(MoveAndScore m : ai.rootsChildrenScore){
 			System.out.println(m);
 		}
 		System.out.println("Time expended: " + (endTime-startTime)/1000.0);
-		System.out.println("Static computations: " + ai.staticComputations);
-		System.out.println("Transposition Table Size: " + TranspositionTable.trans.size());
 		System.out.println("Max Depth: " + ai.finalDepth);
+		System.out.println("Static computations at max depth: " + ai.computationsAtDepth.get(ai.finalDepth));
+		System.out.println("Static computations at depth: " + ai.computationsAtDepth);
+		System.out.println("Transposition Table Size: " + TranspositionTable.trans.size());
 		
 		Move move = ai.bestMove();
-		System.out.println(move);
+		System.out.println("\nBot: " +move);
 		
-		/*for (Entry<Integer, HashEntry> entry : TranspositionTable.trans.entrySet()) {
-		    System.out.println(entry.getKey() + " " + entry.getValue());
-		}*/
-		System.out.println("PV: " + new PV(b, player));
+		System.out.println("Latest PV: " + new PV(b));
 		move.execute();
 		gui.updateBoard(b);
 		
-		if (!b.isGameOver(!player)) {
+		if (!b.isGameOver()) {
 			if (botVBot){
-				botMakeMove(b, !player);
+				botMakeMove(b);
 			}else{
 				takePlayerMove(b);
 			}

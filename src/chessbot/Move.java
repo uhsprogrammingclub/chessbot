@@ -70,6 +70,7 @@ public class Move {
 			piece.position = to;
 			destinationPc.alive = false;
 			executed = true;
+			board.playerMove = !board.playerMove;
 		}else{
 			System.out.println("ERROR: Trying to execute a move that is no longer viable.");
 			System.exit(0);
@@ -84,6 +85,7 @@ public class Move {
 			destinationPc.position = to;
 			destinationPc.alive = true;
 			executed = false;
+			board.playerMove = !board.playerMove;
 		}else{
 			System.out.println("ERROR: Trying to reverse a move that was never called.");
 			System.exit(0);
