@@ -5,7 +5,7 @@ import java.util.*;
 public class AlphaBetaMinimax {
 
 	Board board;
-	int maxComputations = 20000;
+	int maxComputations = 60000;
 	List<MoveAndScore> rootsChildrenScore = new ArrayList<>();
 	List<MoveAndScore> currentRootsChildrenScore = new ArrayList<>();
 	int staticComputations = 0;

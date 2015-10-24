@@ -16,7 +16,15 @@ public class Board {
 	// One-dimensional array to hold simple list of pieces
 	List<Piece> pieceList = new ArrayList<Piece>();
 	
+	//Boolean that stores whether it is the player's move
 	boolean playerMove;
+	
+	//Variables determining whether castling is still valid
+	boolean playerKSideCastle = true;
+	boolean playerQSideCastle = true;
+	boolean botKSideCastle = true;
+	boolean botQSideCastle = true;
+	
 
 	// Override java.lang.Object.toString method to create easier to read output
 	// in the form of a table
@@ -46,6 +54,120 @@ public class Board {
 
 		return aString;
 
+	}
+	
+	public boolean canCastleKSide(Piece king){
+		
+		if(king.player){
+			
+			if(playerKSideCastle){
+				
+				//Check to make sure there is not a piece there...
+				if(king.getX() + 2 > 7 || this.locations[king.getX() + 1][king.getY()].worth != 0 || this.locations[king.getX() + 2][king.getY()].worth != 0){
+					return false;
+				}
+				
+				Move testMove = new Move(this, new Point(king.getX() +1, king.getY()), king, null);
+				testMove.execute();
+				if(isCheck(king.player)){
+					return false;
+				}
+				testMove.reverse();
+				
+				Move testMove2 = new Move(this, new Point(king.getX() +2, king.getY()), king, null);
+				testMove2.execute();
+				if(isCheck(king.player)){
+					return false;
+				}
+				testMove2.reverse();
+				return true;
+				
+			}
+			
+			
+		}else{
+			
+			if(botKSideCastle){
+				
+				//Check to make sure there is not a piece there...
+				if(king.getX() + 2 > 7 || this.locations[king.getX() + 1][king.getY()].worth != 0 || this.locations[king.getX() + 2][king.getY()].worth != 0){
+					return false;
+				}
+				Move testMove = new Move(this, new Point(king.getX() +1, king.getY()), king, null);
+				testMove.execute();
+				if(isCheck(king.player)){
+					return false;
+				}
+				testMove.reverse();
+				
+				Move testMove2 = new Move(this, new Point(king.getX() +2, king.getY()), king, null);
+				testMove2.execute();
+				if(isCheck(king.player)){
+					return false;
+				}
+				testMove2.reverse();
+				return true;
+				
+			}	
+			
+		}
+		return false;
+	}
+	
+	public boolean canCastleQSide(Piece king){
+		
+		if(king.player){
+			
+			if(playerQSideCastle){
+				
+				//Check to make sure there is not a piece there...
+				if(king.getX() - 2 < 0 ||this.locations[king.getX() - 1][king.getY()].worth != 0 || this.locations[king.getX() - 2][king.getY()].worth != 0){
+					return false;
+				}
+				
+				Move testMove = new Move(this, new Point(king.getX() - 1, king.getY()), king, null);
+				testMove.execute();
+				if(isCheck(king.player)){
+					return false;
+				}
+				testMove.reverse();
+				
+				Move testMove2 = new Move(this, new Point(king.getX() - 2, king.getY()), king, null);
+				testMove2.execute();
+				if(isCheck(king.player)){
+					return false;
+				}
+				testMove2.reverse();
+				return true;
+				
+			}
+			
+			
+		}else{
+			
+			if(botQSideCastle){
+				
+				//Check to make sure there is not a piece there...
+				if(king.getX() - 2 < 7 || this.locations[king.getX() - 1][king.getY()].worth != 0 || this.locations[king.getX() - 2][king.getY()].worth != 0){
+					return false;
+				}
+				Move testMove = new Move(this, new Point(king.getX() - 1, king.getY()), king, null);
+				testMove.execute();
+				if(isCheck(king.player)){
+					return false;
+				}
+				testMove.reverse();
+				
+				Move testMove2 = new Move(this, new Point(king.getX() - 2, king.getY()), king, null);
+				testMove2.execute();
+				if(isCheck(king.player)){
+					return false;
+				}
+				testMove2.reverse();
+				return true;
+			}	
+		}
+		return false;
 	}
 
 	// Function that returns true if a certain square is empty
