@@ -11,12 +11,25 @@ public class Move {
 	Piece promotionPiece = null;
 	boolean promotionMove = false;
 	
+	boolean playerKSideCastleO = true;
+	boolean playerQSideCastleO = true;
+	boolean botKSideCastleO = true;
+	boolean botQSideCastleO = true;
+	
+	boolean castleMove = false;
+	
 	public Move(Move m){
 		
 		board = m.board;
 		piece = m.piece;
 		from = new Point(piece.position.x, piece.position.y);
 		to = m.to;
+		
+		playerKSideCastleO = board.playerKSideCastle;
+	    playerQSideCastleO = board.playerQSideCastle;
+	    botKSideCastleO = board.botKSideCastle;
+		botQSideCastleO = board.botQSideCastle;
+		
 		promotionMove = m.promotionMove;
 		if (promotionMove){
 			if(m.promotionPiece.symbol.equals("q")){
@@ -46,6 +59,11 @@ public class Move {
 	}
 
 	public Move(Board b, Point pt, Piece pc, String promotionPiece) {
+		
+		playerKSideCastleO = b.playerKSideCastle;
+	    playerQSideCastleO = b.playerQSideCastle;
+	    botKSideCastleO = b.botKSideCastle;
+		botQSideCastleO = b.botQSideCastle;
 		
 		if(promotionPiece != null && !promotionPiece.equals("")){
 			promotionMove = true;
@@ -84,6 +102,11 @@ public class Move {
 	}
 
 	public Move(Board b, Point from, Point to, String promotionPiece) {
+		
+		playerKSideCastleO = b.playerKSideCastle;
+	    playerQSideCastleO = b.playerQSideCastle;
+	    botKSideCastleO = b.botKSideCastle;
+		botQSideCastleO = b.botQSideCastle;
 		
 		if(promotionPiece != null && !promotionPiece.equals("")){
 			promotionMove = true;
@@ -132,6 +155,22 @@ public class Move {
 	void execute() {
 		if (!executed) {
 			
+			//Check if it is a king-side castle move
+			if(piece.symbol == "k" && (to.x - from.x)  == 2){
+				castleMove = true;
+				Move m = new Move(board, new Point(5, from.y), board.locations[7][from.y], null);
+				m.execute();
+				board.playerMove = !board.playerMove;
+			}
+			
+			//Check if it is a queen-side castle move
+			if(piece.symbol == "k" && (to.x - from.x)  == -2){
+				castleMove = true;
+				Move m = new Move(board, new Point(2, from.y), board.locations[0][from.y], null);
+				m.execute();
+				board.playerMove = !board.playerMove;
+			}
+			
 			if (board.isEmptySquare(destinationPc.position)){
 				board.locations[from.x][from.y] = destinationPc;
 			}else{
@@ -150,6 +189,15 @@ public class Move {
 				piece.position = to;
 			}
 			
+			//Change the castling variables depending on the piece being moved
+			if(piece.symbol.equals("k")){
+				if(piece.player){
+					board.playerKSideCastle = board.playerQSideCastle = false;
+				}else{
+					board.botKSideCastle = board.botQSideCastle = false;
+				}
+			}
+			
 			destinationPc.position = from; // reverse positions
 			destinationPc.alive = false;
 			executed = true;
@@ -162,6 +210,25 @@ public class Move {
 
 	void reverse() {
 		if (executed) {
+			
+			//Check if it is a castling move...
+			if(castleMove){
+				//If it is a king-side castle
+				if(piece.getX() > 4){
+					castleMove = false;
+					Move m = new Move(board, new Point(7, from.y), board.locations[5][from.y], null);
+					m.execute();
+					board.playerMove = !board.playerMove;
+					
+				}else{
+					castleMove = false;
+					Move m = new Move(board, new Point(0, from.y), board.locations[2][from.y], null);
+					m.execute();
+					board.playerMove = !board.playerMove;
+					
+				}
+			}
+			
 			if(promotionMove){
 				board.pieceList.remove(promotionPiece);
 				
@@ -169,6 +236,24 @@ public class Move {
 				piece.alive = true;
 				
 			}
+			
+			board.playerKSideCastle = playerKSideCastleO;
+			board.playerQSideCastle = playerQSideCastleO;
+			board.botKSideCastle = botKSideCastleO;
+			board.botQSideCastle = botQSideCastleO;
+			
+			if(board.playerKSideCastle != playerKSideCastleO){
+				board.playerKSideCastle = playerKSideCastleO;
+			}
+			
+			if(piece.symbol.equals("k")){
+				if(piece.player){
+					board.playerKSideCastle = board.playerQSideCastle = true;
+				}else{
+					board.botKSideCastle = board.botQSideCastle = true;
+				}
+			}	
+			
 			board.locations[to.x][to.y] = destinationPc;
 			board.locations[from.x][from.y] = piece;
 			piece.position = from;

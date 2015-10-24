@@ -18,6 +18,13 @@ public class King extends Piece {
 		moves.addAll(Utils.getHorizontalMoves(b, this));
 		// Get Diagonal moves
 		moves.addAll(Utils.getDiagonalMoves(b, this));
+		// Get castling moves
+		if(b.canCastleKSide(this)){
+			moves.add(new Move(b, new Point(this.getX() + 2, this.getY()), this, null));
+		}
+		if(b.canCastleQSide(this)){
+			moves.add(new Move(b, new Point(this.getX() - 2, this.getY()), this, null));
+		}
 
 		return moves;
 	}
