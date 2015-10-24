@@ -11,12 +11,13 @@ public class Move {
 	Piece promotionPiece = null;
 	boolean promotionMove = false;
 	
-	boolean playerKSideCastleO = true;
-	boolean playerQSideCastleO = true;
-	boolean botKSideCastleO = true;
-	boolean botQSideCastleO = true;
+	boolean playerKSideCastleO = false;
+	boolean playerQSideCastleO = false;
+	boolean botKSideCastleO = false;
+	boolean botQSideCastleO = false;
 	
 	boolean castleMove = false;
+	Move castleRookMove = null;
 	
 	public Move(Move m){
 		
@@ -31,6 +32,7 @@ public class Move {
 		botQSideCastleO = board.botQSideCastle;
 		
 		promotionMove = m.promotionMove;
+		castleMove = m.castleMove;
 		if (promotionMove){
 			if(m.promotionPiece.symbol.equals("q")){
 				this.promotionPiece = new Queen(m.promotionPiece.getX(), m.promotionPiece.getY(), m.promotionPiece.player);
@@ -88,10 +90,15 @@ public class Move {
 			this.promotionPiece.alive = false;
 		}
 		
+		
 		board = b;
 		piece = pc;
 		from = new Point(pc.position.x, pc.position.y);
 		to = pt;
+		
+		if (piece.symbol == "k" && Math.abs(to.x - from.x) == 2){
+			castleMove = true;
+		}
 		if (to.squareExists()) { // checks that doesn't look out of bounds
 			destinationPc = b.locations[pt.x][pt.y];
 
@@ -135,6 +142,8 @@ public class Move {
 		board = b;
 		this.from = from;
 		this.to = to;
+		
+		
 		if (from.squareExists()) { // checks that doesn't look out of bounds
 			piece = b.getPiece(from);
 
@@ -150,24 +159,28 @@ public class Move {
 			destinationPc = new Empty();
 			destinationPc.setPosition(to.x, to.y); // for toString() reasons
 		}
+		
+		if (piece.symbol == "k" && Math.abs(to.x - from.x) == 2){
+			castleMove = true;
+		}
+		
 	}
 
 	void execute() {
 		if (!executed) {
 			
-			//Check if it is a king-side castle move
-			if(piece.symbol == "k" && (to.x - from.x)  == 2){
-				castleMove = true;
-				Move m = new Move(board, new Point(5, from.y), board.locations[7][from.y], null);
-				m.execute();
-				board.playerMove = !board.playerMove;
-			}
-			
-			//Check if it is a queen-side castle move
-			if(piece.symbol == "k" && (to.x - from.x)  == -2){
-				castleMove = true;
-				Move m = new Move(board, new Point(2, from.y), board.locations[0][from.y], null);
-				m.execute();
+			if (castleMove){
+				if (castleRookMove == null){
+					//Check if it is a king-side castle move
+					if((to.x - from.x) == 2){
+						castleRookMove = new Move(board, new Point(5, from.y), board.getPiece(new Point(7, from.y)), null);
+					}
+					//Check if it is a queen-side castle move
+					else{
+						castleRookMove = new Move(board, new Point(2, from.y), board.getPiece(new Point(0, from.y)), null);
+					}
+				}
+				castleRookMove.execute();
 				board.playerMove = !board.playerMove;
 			}
 			
@@ -198,6 +211,22 @@ public class Move {
 				}
 			}
 			
+			if(piece.symbol.equals("r")){
+				if (from.x == 0){
+					if(piece.player){
+						board.playerQSideCastle = false;
+					}else{
+						board.botQSideCastle = false;
+					}
+				}else if (from.x == 7){
+					if(piece.player){
+						board.playerKSideCastle = false;
+					}else{
+						board.botKSideCastle = false;
+					}
+				}
+			}
+			
 			destinationPc.position = from; // reverse positions
 			destinationPc.alive = false;
 			executed = true;
@@ -213,20 +242,8 @@ public class Move {
 			
 			//Check if it is a castling move...
 			if(castleMove){
-				//If it is a king-side castle
-				if(piece.getX() > 4){
-					castleMove = false;
-					Move m = new Move(board, new Point(7, from.y), board.locations[5][from.y], null);
-					m.execute();
-					board.playerMove = !board.playerMove;
-					
-				}else{
-					castleMove = false;
-					Move m = new Move(board, new Point(0, from.y), board.locations[2][from.y], null);
-					m.execute();
-					board.playerMove = !board.playerMove;
-					
-				}
+				castleRookMove.reverse();
+				board.playerMove = !board.playerMove;
 			}
 			
 			if(promotionMove){
@@ -240,19 +257,7 @@ public class Move {
 			board.playerKSideCastle = playerKSideCastleO;
 			board.playerQSideCastle = playerQSideCastleO;
 			board.botKSideCastle = botKSideCastleO;
-			board.botQSideCastle = botQSideCastleO;
-			
-			if(board.playerKSideCastle != playerKSideCastleO){
-				board.playerKSideCastle = playerKSideCastleO;
-			}
-			
-			if(piece.symbol.equals("k")){
-				if(piece.player){
-					board.playerKSideCastle = board.playerQSideCastle = true;
-				}else{
-					board.botKSideCastle = board.botQSideCastle = true;
-				}
-			}	
+			board.botQSideCastle = botQSideCastleO;	
 			
 			board.locations[to.x][to.y] = destinationPc;
 			board.locations[from.x][from.y] = piece;

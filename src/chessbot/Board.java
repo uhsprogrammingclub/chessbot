@@ -58,57 +58,29 @@ public class Board {
 	
 	public boolean canCastleKSide(Piece king){
 		
-		if(king.player){
-			
-			if(playerKSideCastle){
+		if((king.player && playerKSideCastle) || (!king.player && botKSideCastle)){
 				
-				//Check to make sure there is not a piece there...
-				if(king.getX() + 2 > 7 || this.locations[king.getX() + 1][king.getY()].worth != 0 || this.locations[king.getX() + 2][king.getY()].worth != 0){
-					return false;
-				}
-				
-				Move testMove = new Move(this, new Point(king.getX() +1, king.getY()), king, null);
-				testMove.execute();
-				if(isCheck(king.player)){
-					return false;
-				}
-				testMove.reverse();
-				
-				Move testMove2 = new Move(this, new Point(king.getX() +2, king.getY()), king, null);
-				testMove2.execute();
-				if(isCheck(king.player)){
-					return false;
-				}
-				testMove2.reverse();
-				return true;
-				
+			//Check to make sure there is not a piece there...
+			if( getPiece(new Point(king.getX() + 1, king.getY())).worth != 0 || getPiece(new Point(king.getX() + 2, king.getY())).worth != 0){
+				return false;
 			}
 			
-			
-		}else{
-			
-			if(botKSideCastle){
-				
-				//Check to make sure there is not a piece there...
-				if(king.getX() + 2 > 7 || this.locations[king.getX() + 1][king.getY()].worth != 0 || this.locations[king.getX() + 2][king.getY()].worth != 0){
-					return false;
-				}
-				Move testMove = new Move(this, new Point(king.getX() +1, king.getY()), king, null);
-				testMove.execute();
-				if(isCheck(king.player)){
-					return false;
-				}
+			Move testMove = new Move(this, new Point(king.getX() +1, king.getY()), king, null);
+			testMove.execute();
+			if(isCheck(king.player)){
 				testMove.reverse();
-				
-				Move testMove2 = new Move(this, new Point(king.getX() +2, king.getY()), king, null);
-				testMove2.execute();
-				if(isCheck(king.player)){
-					return false;
-				}
+				return false;
+			}
+			testMove.reverse();
+			
+			Move testMove2 = new Move(this, new Point(king.getX() +2, king.getY()), king, null);
+			testMove2.execute();
+			if(isCheck(king.player)){
 				testMove2.reverse();
-				return true;
-				
-			}	
+				return false;
+			}
+			testMove2.reverse();
+			return true;	
 			
 		}
 		return false;
@@ -116,56 +88,29 @@ public class Board {
 	
 	public boolean canCastleQSide(Piece king){
 		
-		if(king.player){
-			
-			if(playerQSideCastle){
+		if((king.player && playerQSideCastle) || (!king.player && botQSideCastle)){
 				
-				//Check to make sure there is not a piece there...
-				if(king.getX() - 2 < 0 ||this.locations[king.getX() - 1][king.getY()].worth != 0 || this.locations[king.getX() - 2][king.getY()].worth != 0){
-					return false;
-				}
-				
-				Move testMove = new Move(this, new Point(king.getX() - 1, king.getY()), king, null);
-				testMove.execute();
-				if(isCheck(king.player)){
-					return false;
-				}
-				testMove.reverse();
-				
-				Move testMove2 = new Move(this, new Point(king.getX() - 2, king.getY()), king, null);
-				testMove2.execute();
-				if(isCheck(king.player)){
-					return false;
-				}
-				testMove2.reverse();
-				return true;
-				
+			//Check to make sure there is not a piece there...
+			if(getPiece(new Point(king.getX() - 1, king.getY())).worth != 0 || getPiece(new Point(king.getX() - 2, king.getY())).worth != 0 || getPiece(new Point(king.getX() - 3, king.getY())).worth != 0){
+				return false;
 			}
 			
-			
-		}else{
-			
-			if(botQSideCastle){
-				
-				//Check to make sure there is not a piece there...
-				if(king.getX() - 2 < 7 || this.locations[king.getX() - 1][king.getY()].worth != 0 || this.locations[king.getX() - 2][king.getY()].worth != 0){
-					return false;
-				}
-				Move testMove = new Move(this, new Point(king.getX() - 1, king.getY()), king, null);
-				testMove.execute();
-				if(isCheck(king.player)){
-					return false;
-				}
+			Move testMove = new Move(this, new Point(king.getX() - 1, king.getY()), king, null);
+			testMove.execute();
+			if(isCheck(king.player)){
 				testMove.reverse();
-				
-				Move testMove2 = new Move(this, new Point(king.getX() - 2, king.getY()), king, null);
-				testMove2.execute();
-				if(isCheck(king.player)){
-					return false;
-				}
+				return false;
+			}
+			testMove.reverse();
+			
+			Move testMove2 = new Move(this, new Point(king.getX() - 2, king.getY()), king, null);
+			testMove2.execute();
+			if(isCheck(king.player)){
 				testMove2.reverse();
-				return true;
-			}	
+				return false;
+			}
+			testMove2.reverse();
+			return true;	
 		}
 		return false;
 	}
