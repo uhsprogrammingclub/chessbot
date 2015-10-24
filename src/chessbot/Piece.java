@@ -38,7 +38,9 @@ public abstract class Piece {
 
 	@Override
 	public String toString() {
-		return player ? symbol.toUpperCase() : symbol;
+		String s = "";
+		s += player ? symbol.toUpperCase() : symbol;
+		return s;
 	}
 
 	@Override

@@ -12,12 +12,6 @@ public class King extends Piece {
 
 		List<Move> moves = new ArrayList<Move>();
 
-		// Gets vertical moves
-		moves.addAll(Utils.getVerticalMoves(b, this));
-		// Get Horizontal moves
-		moves.addAll(Utils.getHorizontalMoves(b, this));
-		// Get Diagonal moves
-		moves.addAll(Utils.getDiagonalMoves(b, this));
 		// Get castling moves
 		if(b.canCastleKSide(this)){
 			moves.add(new Move(b, new Point(this.getX() + 2, this.getY()), this, null));
@@ -25,6 +19,13 @@ public class King extends Piece {
 		if(b.canCastleQSide(this)){
 			moves.add(new Move(b, new Point(this.getX() - 2, this.getY()), this, null));
 		}
+		// Gets vertical moves
+		moves.addAll(Utils.getVerticalMoves(b, this));
+		// Get Horizontal moves
+		moves.addAll(Utils.getHorizontalMoves(b, this));
+		// Get Diagonal moves
+		moves.addAll(Utils.getDiagonalMoves(b, this));
+		
 
 		return moves;
 	}

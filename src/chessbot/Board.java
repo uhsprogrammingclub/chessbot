@@ -61,7 +61,7 @@ public class Board {
 		if((king.player && playerKSideCastle) || (!king.player && botKSideCastle)){
 				
 			//Check to make sure there is not a piece there...
-			if( getPiece(new Point(king.getX() + 1, king.getY())).worth != 0 || getPiece(new Point(king.getX() + 2, king.getY())).worth != 0){
+			if(king.getX() != 4 || !isEmptySquare(new Point(king.getX() + 1, king.getY())) || !isEmptySquare(new Point(king.getX() + 2, king.getY()))){
 				return false;
 			}
 			
@@ -91,7 +91,7 @@ public class Board {
 		if((king.player && playerQSideCastle) || (!king.player && botQSideCastle)){
 				
 			//Check to make sure there is not a piece there...
-			if(getPiece(new Point(king.getX() - 1, king.getY())).worth != 0 || getPiece(new Point(king.getX() - 2, king.getY())).worth != 0 || getPiece(new Point(king.getX() - 3, king.getY())).worth != 0){
+			if(king.getX() != 4 || !isEmptySquare(new Point(king.getX() - 1, king.getY())) || !isEmptySquare(new Point(king.getX() - 2, king.getY())) || !isEmptySquare(new Point(king.getX() - 3, king.getY()))){
 				return false;
 			}
 			
@@ -117,14 +117,18 @@ public class Board {
 
 	// Function that returns true if a certain square is empty
 	public boolean isEmptySquare(Point p) {
-
-		// Load the piece into variable spot
-		Piece spot = locations[p.x][p.y];
-
-		// If the piece has a value of 0, it has to be empty
-		if (spot.getWorth() == 0) {
-			return true;
-		} else {
+		if (p.squareExists()){
+			// Load the piece into variable spot
+			Piece spot = locations[p.x][p.y];
+	
+			// If the piece has a value of 0, it has to be empty
+			if (spot.getWorth() == 0) {
+				return true;
+			} else {
+				return false;
+			}
+		}else{
+			System.out.println("ERROR: isEmptySquare(Point p) called invalid square");
 			return false;
 		}
 	}
@@ -150,7 +154,9 @@ public class Board {
 			return locations[pos.x][pos.y];
 		}else{
 			System.out.println("ERROR: getPiece(Point pos) called invalid square");
-			return new Empty();
+			Piece empty = new Empty();
+			empty.setPosition(pos.x, pos.y);
+			return empty;
 		}
 	}
 

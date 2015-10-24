@@ -98,6 +98,18 @@ public class Zobrist {
 		if (b.playerMove){
 			zKey ^= zPlayerMove;
 		}
+		if(b.playerKSideCastle){
+			zKey ^= zCastle[0];
+		}
+		if(b.playerQSideCastle){
+			zKey ^= zCastle[1];
+		}
+		if(b.botKSideCastle){
+			zKey ^= zCastle[2];
+		}
+		if(b.botQSideCastle){
+			zKey ^= zCastle[3];
+		}
 		return zKey;
 	}
 }

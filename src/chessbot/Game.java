@@ -96,6 +96,16 @@ public class Game {
 		list.add(P6);
 		list.add(P7);
 		list.add(P8);
+		
+		/*Piece Q = new Queen(0, 6, true);
+		Piece k = new King(2, 7, false);
+		Piece p = new Pawn(1, 1, false);
+		Piece K = new King(0, 7, true);
+
+		list.add(Q);
+		list.add(k);
+		list.add(p);
+		list.add(K);*/
 
 		Board b = new Board(list, playerMovesFirst);
 		

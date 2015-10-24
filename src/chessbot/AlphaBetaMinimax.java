@@ -56,6 +56,10 @@ public class AlphaBetaMinimax {
 			return MAX;
 		}
 		
+		if (depth == maxDepth && board.isCheck(board.playerMove) && (maxDepth < evaluateToDepth + 1 )){
+			maxDepth++; //look ahead if last move caused a check
+		}
+		
 		if (depth == maxDepth || board.isGameOver() == true) {
 			if (computationsAtDepth.get(depth) == null){
 				computationsAtDepth.put(depth, 0);
@@ -108,7 +112,7 @@ public class AlphaBetaMinimax {
 			int desiredDepth = maxDepth;
 			
 			if (depth == maxDepth-1 //if last move to be made
-				&& move.destinationPc.worth != 0 && (desiredDepth < evaluateToDepth + 3 )){ //and its a capture move
+				&& move.destinationPc.worth != 0 && (desiredDepth < evaluateToDepth + 1 )){ //and its a capture move
 				desiredDepth++; //make sure there is another move
 			}
 			move.execute();

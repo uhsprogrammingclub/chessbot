@@ -19,11 +19,12 @@ public class Move {
 	boolean castleMove = false;
 	Move castleRookMove = null;
 	
+	//boolean checkMove = false; //if the move causes a check
+	
 	public Move(Move m){
 		
 		board = m.board;
-		piece = m.piece;
-		from = new Point(piece.position.x, piece.position.y);
+		from = m.from;
 		to = m.to;
 		
 		playerKSideCastleO = board.playerKSideCastle;
@@ -35,29 +36,24 @@ public class Move {
 		castleMove = m.castleMove;
 		if (promotionMove){
 			if(m.promotionPiece.symbol.equals("q")){
-				this.promotionPiece = new Queen(m.promotionPiece.getX(), m.promotionPiece.getY(), m.promotionPiece.player);
+				this.promotionPiece = new Queen(m.to.x, m.to.y, m.promotionPiece.player);
 			}
 			else if(m.promotionPiece.symbol.equals("n")){
-				this.promotionPiece = new Knight(m.promotionPiece.getX(), m.promotionPiece.getY(), m.promotionPiece.player);
+				this.promotionPiece = new Knight(m.to.x, m.to.y, m.promotionPiece.player);
 			}
 			else if(m.promotionPiece.symbol.equals("r")){
-				this.promotionPiece = new Rook(m.promotionPiece.getX(), m.promotionPiece.getY(), m.promotionPiece.player);
+				this.promotionPiece = new Rook(m.to.x, m.to.y, m.promotionPiece.player);
 			}
 			else if(m.promotionPiece.symbol.equals("b")){
-				this.promotionPiece = new Bishop(m.promotionPiece.getX(), m.promotionPiece.getY(), m.promotionPiece.player);
+				this.promotionPiece = new Bishop(m.to.x, m.to.y, m.promotionPiece.player);
 			}
 			this.promotionPiece.alive = false;
 		}else{
 			promotionPiece = null;
 		}
 		
-		if (to.squareExists()) { // checks that doesn't look out of bounds
-			destinationPc = board.locations[to.x][to.y];
-
-		} else {
-			destinationPc = new Empty();
-			destinationPc.setPosition(to.x, to.y);// for toString() reasons
-		}
+		piece = board.getPiece(from);
+		destinationPc = board.getPiece(to);
 	}
 
 	public Move(Board b, Point pt, Piece pc, String promotionPiece) {
@@ -99,13 +95,7 @@ public class Move {
 		if (piece.symbol == "k" && Math.abs(to.x - from.x) == 2){
 			castleMove = true;
 		}
-		if (to.squareExists()) { // checks that doesn't look out of bounds
-			destinationPc = b.locations[pt.x][pt.y];
-
-		} else {
-			destinationPc = new Empty();
-			destinationPc.setPosition(pt.x, pt.y);// for toString() reasons
-		}
+		destinationPc = b.getPiece(pt);
 	}
 
 	public Move(Board b, Point from, Point to, String promotionPiece) {
@@ -144,21 +134,8 @@ public class Move {
 		this.to = to;
 		
 		
-		if (from.squareExists()) { // checks that doesn't look out of bounds
-			piece = b.getPiece(from);
-
-		} else {
-			piece = new Empty();
-			piece.setPosition(from.x, from.y);// for toString() reasons
-		}
-
-		if (to.squareExists()) { // checks that doesn't look out of bounds
-			destinationPc = b.getPiece(to);
-
-		} else {
-			destinationPc = new Empty();
-			destinationPc.setPosition(to.x, to.y); // for toString() reasons
-		}
+		piece = b.getPiece(from);
+		destinationPc = b.getPiece(to);
 		
 		if (piece.symbol == "k" && Math.abs(to.x - from.x) == 2){
 			castleMove = true;
@@ -299,7 +276,7 @@ public class Move {
 		if (other.to == null || other.piece == null || this.to == null || this.piece == null) {
 			return false;
 		}
-		if (this.promotionMove != other.promotionMove) {
+		if (this.promotionMove != other.promotionMove || this.castleMove != other.castleMove) {
 			return false;
 		}
 		if (this.to.equals(other.to) && this.piece.equals(other.piece)){
