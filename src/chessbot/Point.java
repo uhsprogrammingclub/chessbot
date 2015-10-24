@@ -37,6 +37,11 @@ public class Point {
 		}
 
 	}
+	
+	int getIndex(){
+		int i = x*8+y;
+		return i;
+	}
 
 	@Override
 	public String toString() {

@@ -165,7 +165,7 @@ public class Game {
 			if(from != null && to != null){
 				
 				//If it is a promotion move
-				if(b.locations[from.x][from.y].symbol.equals("p") && (to.y == 7 || to.y == 0)){
+				if(b.getPiece(from).symbol.equals("p") && (to.y == 7 || to.y == 0)){
 					System.out.println("What piece would you like to promote to? Queen = q; Knight = n, etc.");
 					String pieceStr = s.nextLine();
 					move = new Move(b, from, to, pieceStr);

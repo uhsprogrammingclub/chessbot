@@ -1,6 +1,4 @@
 /.DS_Store
-<<<<<<< HEAD
-=======
 /.gitignore
->>>>>>> refs/heads/PawnPromotion
+/ChessPieces/
 /chessbot/

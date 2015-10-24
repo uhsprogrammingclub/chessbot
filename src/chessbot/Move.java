@@ -162,21 +162,20 @@ public class Move {
 			}
 			
 			if (board.isEmptySquare(destinationPc.position)){
-				board.locations[from.x][from.y] = destinationPc;
+				board.setSquare(from, destinationPc);
 			}else{
-				board.locations[from.x][from.y] = new Empty();
+				board.setSquare(from, new Empty());
 			}
 			
 			if(promotionMove){
-				board.locations[to.x][to.y] = promotionPiece;
+				board.setSquare(to,  promotionPiece);
 				board.pieceList.add(promotionPiece);
 				
 				promotionPiece.alive = true;
 				piece.alive = false;
 			}else{
 		
-				board.locations[to.x][to.y] = piece;
-				piece.position = to;
+				board.setSquare(to, piece);
 			}
 			
 			//Change the castling variables depending on the piece being moved
@@ -204,7 +203,6 @@ public class Move {
 				}
 			}
 			
-			destinationPc.position = from; // reverse positions
 			destinationPc.alive = false;
 			executed = true;
 			board.playerMove = !board.playerMove;
@@ -236,10 +234,8 @@ public class Move {
 			board.botKSideCastle = botKSideCastleO;
 			board.botQSideCastle = botQSideCastleO;	
 			
-			board.locations[to.x][to.y] = destinationPc;
-			board.locations[from.x][from.y] = piece;
-			piece.position = from;
-			destinationPc.position = to;
+			board.setSquare(to,  destinationPc);
+			board.setSquare(from, piece);
 			destinationPc.alive = true;
 			executed = false;
 			board.playerMove = !board.playerMove;

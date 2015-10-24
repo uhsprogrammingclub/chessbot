@@ -11,7 +11,7 @@ public class Board {
 	 **/
 
 	// Two-dimensional array to hold the locations of all of the pieces
-	Piece[][] locations = new Piece[8][8];
+	Piece[] locations = new Piece[64];
 
 	// One-dimensional array to hold simple list of pieces
 	List<Piece> pieceList = new ArrayList<Piece>();
@@ -40,7 +40,7 @@ public class Board {
 			if (y != -1) {
 				aString += (y + 1) + "|";
 				for (int x = 0; x < 8; x++) {
-					aString += " " + locations[x][y].toString();
+					aString += " " + locations[x*8+y].toString();
 				}
 				aString += " |";
 			} else {
@@ -119,7 +119,7 @@ public class Board {
 	public boolean isEmptySquare(Point p) {
 		if (p.squareExists()){
 			// Load the piece into variable spot
-			Piece spot = locations[p.x][p.y];
+			Piece spot = getPiece(p);
 	
 			// If the piece has a value of 0, it has to be empty
 			if (spot.getWorth() == 0) {
@@ -139,9 +139,10 @@ public class Board {
 	 * Function does not validate square, so it MUST EXIST OR WILL THROW ARRAY
 	 * INDEX OUT OF BOUNDS
 	 **/
+	
 	public boolean getTeam(Point pos) {
 		if (pos.squareExists()){
-			Piece p = locations[pos.x][pos.y];
+			Piece p = getPiece(pos);
 			return p.player;
 		}else{
 			System.out.println("ERROR: getTeam(Point pos) called invalid square");
@@ -151,12 +152,22 @@ public class Board {
 	
 	public Piece getPiece(Point pos) {
 		if (pos.squareExists()){
-			return locations[pos.x][pos.y];
+			return locations[pos.getIndex()];
 		}else{
 			System.out.println("ERROR: getPiece(Point pos) called invalid square");
 			Piece empty = new Empty();
 			empty.setPosition(pos.x, pos.y);
 			return empty;
+		}
+	}
+	
+	public void setSquare(Point pos, Piece piece) {
+		if (pos.squareExists()){
+			locations[pos.getIndex()] = piece;
+			piece.position = pos;
+		}else{
+			System.out.println("ERROR: setSquare(Point pos, Piece piece) called invalid square");
+
 		}
 	}
 
@@ -168,15 +179,13 @@ public class Board {
 
 		// Fill the locations array with empty squares
 		for (int i = 0; i < locations.length; i++) {
-			for (int j = 0; j < locations.length; j++) {
-				Empty temp = new Empty();
-				locations[i][j] = temp;
-			}
+			Empty temp = new Empty();
+			locations[i] = temp;
 		}
 
 		// Place the pieces passed in the list
 		for (Piece piece : list) {
-			locations[piece.getX()][piece.getY()] = piece;
+			locations[piece.position.getIndex()] = piece;
 		}
 		
 		playerMove = playerGoesFirst;
@@ -206,13 +215,11 @@ public class Board {
 		List<Move> rawMoves = new ArrayList<Move>();
 
 		// Loop through all pieces on the board
-		for (Piece[] l : locations) {
-			for (Piece p : l) {
-				// Add all possibilities of each piece's move to the raw list
-				if (p.player == player) {
-					List<Move> moves = p.findMoves(this);
-					rawMoves.addAll(moves);
-				}
+		for (Piece p : locations) {
+			// Add all possibilities of each piece's move to the raw list
+			if (p.player == player) {
+				List<Move> moves = p.findMoves(this);
+				rawMoves.addAll(moves);
 			}
 		}
 		return rawMoves;
@@ -257,7 +264,6 @@ public class Board {
 	// Function that retrieves numeric value assigned to position. High values
 	// are good for the player, low values good for the computer
 	public double evaluateBoard() {
-		
 		double score = scoreBoard(false) - scoreBoard(true);
 		
 		if(allMoves(false).size() == 0 && isCheck(false)){
