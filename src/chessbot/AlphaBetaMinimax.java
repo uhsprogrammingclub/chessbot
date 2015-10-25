@@ -5,12 +5,13 @@ import java.util.*;
 public class AlphaBetaMinimax {
 
 	Board board;
-	int maxComputations = 100000;
+	int maxComputations = 50000;
 	List<MoveAndScore> rootsChildrenScore = new ArrayList<>();
 	List<MoveAndScore> currentRootsChildrenScore = new ArrayList<>();
 	int staticComputations = 0;
 	int evaluateToDepth = 0;
 	int finalDepth = 1;
+	int movesEvaluated = 0;
 	
 	Hashtable<Integer, Integer> computationsAtDepth = new Hashtable<Integer, Integer>(100);
 	
@@ -52,9 +53,6 @@ public class AlphaBetaMinimax {
 	
 	
 	double negaMax(double alpha, double beta, int depth, int maxDepth){
-		if (alpha >= beta) {
-			return MAX;
-		}
 		
 		if (depth == maxDepth && board.isCheck(board.playerMove) && (maxDepth < evaluateToDepth + 1 )){
 			maxDepth++; //look ahead if last move caused a check
@@ -107,6 +105,11 @@ public class AlphaBetaMinimax {
 		
 		double maxValue = MIN;
 		Move bestMove = allAvailible.get(0);
+		boolean bestAlpha = false;
+		boolean nullWindow = false;
+		if (alpha == beta-0.00001){
+			nullWindow = true;
+		}
 		for (Move move: movesAvailible) {
 			
 			int desiredDepth = maxDepth;
@@ -118,7 +121,17 @@ public class AlphaBetaMinimax {
 			move.execute();
 			
 			double currentScore;
-			currentScore = -negaMax( -beta, -alpha, depth + 1, desiredDepth);
+			if (!bestAlpha && !nullWindow){
+				currentScore = -negaMax( -beta, -alpha, depth + 1, desiredDepth);
+				movesEvaluated++;
+			}else{
+				currentScore = -negaMax( -alpha-0.00001, -alpha, depth + 1, desiredDepth); //Do a null window search
+				movesEvaluated++;
+				if (currentScore > alpha && currentScore < beta && !nullWindow){ //if move has the possibility of increasing alpha and this isn't a null window search
+					currentScore = -negaMax( -beta, -alpha, depth + 1, desiredDepth); //do a full-window search
+					movesEvaluated++;
+				}
+			}
 			
 			if (currentScore == -404){
 				move.reverse();
@@ -131,22 +144,25 @@ public class AlphaBetaMinimax {
 			}
 
 			maxValue = Math.max(currentScore, maxValue);
-			alpha = Math.max(currentScore, alpha);
+			if (alpha > currentScore) bestAlpha = true; //if alpha increased, next search should be a null window search
+			alpha = Math.max(currentScore, alpha); 
 			
 			// reset board
 			move.reverse();
 			
-			// If a pruning has been done, don't evaluate the rest of the
+			// If move is too good to be true and pruning needs to been done, don't evaluate the rest of the
 			// sibling states
-			if (currentScore == MIN){
+			if (maxValue >= beta){
 				break;
 			}
+			if (nullWindow) break; //only do first move if null window search
 			
 		}
 		//Push entry to the TranspositionTable
-		HashEntry newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, alpha, beta, bestMove);
-		TranspositionTable.addEntry(newEntry); //add the move entry. only gets placed if eval is higher than previous entry
-		
+		if (!nullWindow){ //don't add entry to hash table because eval is not accurate
+			HashEntry newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, alpha, beta, bestMove);
+			TranspositionTable.addEntry(newEntry); //add the move entry. only gets placed if eval is higher than previous entry
+		}
 		return maxValue;
 	}
 

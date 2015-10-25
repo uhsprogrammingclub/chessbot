@@ -214,14 +214,38 @@ public class Board {
 		// Array list of raw moves - may include illegal ones
 		List<Move> rawMoves = new ArrayList<Move>();
 
-		// Loop through all pieces on the board
-		for (Piece p : locations) {
+		// Loop through all pieces on the board starting from the middle
+		for (int x = 0; x < 4; x++){
+			for (int y = 0; y < 4; y++){
+				Piece p1 = getPiece(new Point(3-x, 4+y));
+				Piece p2 = getPiece(new Point(4+x, 4+y));
+				Piece p3 = getPiece(new Point(4+x, 3-y));
+				Piece p4 = getPiece(new Point(3-x, 3-y));
+				if (p1.player == player) {
+					List<Move> moves = p1.findMoves(this);
+					rawMoves.addAll(moves);
+				}
+				if (p2.player == player) {
+					List<Move> moves = p2.findMoves(this);
+					rawMoves.addAll(moves);
+				}
+				if (p3.player == player) {
+					List<Move> moves = p3.findMoves(this);
+					rawMoves.addAll(moves);
+				}
+				if (p4.player == player) {
+					List<Move> moves = p4.findMoves(this);
+					rawMoves.addAll(moves);
+				}
+			}
+		}
+		/*for (Piece p : locations) {
 			// Add all possibilities of each piece's move to the raw list
 			if (p.player == player) {
 				List<Move> moves = p.findMoves(this);
 				rawMoves.addAll(moves);
 			}
-		}
+		}*/
 		return rawMoves;
 	}
 
@@ -296,6 +320,10 @@ public class Board {
 			double totalMoves = moves.size();
 			score += totalMoves/300;
 		//}
+			
+		if(getKing(player).position.x == 6){
+			score += 5;
+		}
 	
 		return score;
 	}

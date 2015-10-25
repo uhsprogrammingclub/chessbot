@@ -228,6 +228,7 @@ public class Game {
 		}
 		System.out.println("Time expended: " + (endTime-startTime)/1000.0);
 		System.out.println("Final Depth: " + ai.finalDepth);
+		System.out.println("Moves Evaluated: " + ai.movesEvaluated);
 		System.out.println("Static computations at each depth: " + ai.computationsAtDepth);
 		System.out.println("Transposition Table Size: " + TranspositionTable.trans.size());
 		
