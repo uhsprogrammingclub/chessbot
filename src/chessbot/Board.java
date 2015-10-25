@@ -239,13 +239,6 @@ public class Board {
 				}
 			}
 		}
-		/*for (Piece p : locations) {
-			// Add all possibilities of each piece's move to the raw list
-			if (p.player == player) {
-				List<Move> moves = p.findMoves(this);
-				rawMoves.addAll(moves);
-			}
-		}*/
 		return rawMoves;
 	}
 
@@ -320,10 +313,6 @@ public class Board {
 			double totalMoves = moves.size();
 			score += totalMoves/300;
 		//}
-			
-		if(getKing(player).position.x == 6){
-			score += 5;
-		}
 	
 		return score;
 	}

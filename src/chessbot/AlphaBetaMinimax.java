@@ -13,10 +13,66 @@ public class AlphaBetaMinimax {
 	int finalDepth = 1;
 	int movesEvaluated = 0;
 	
+	List<Move> killerMoves = new ArrayList<Move>();
+	
 	Hashtable<Integer, Integer> computationsAtDepth = new Hashtable<Integer, Integer>(100);
 	
 	int MIN = Integer.MIN_VALUE+1;
 	int MAX = Integer.MAX_VALUE;
+	
+	void addKillerMove(int depth, Move move){
+		if (killerMoves.size() < (depth+1)*3){
+			for (int i = killerMoves.size(); i<(depth+1)*3; i++){
+				killerMoves.add(i, null);
+			}
+		}
+		
+		Move m1 = killerMoves.get(depth*3);
+		Move m2 = killerMoves.get(depth*3+1);
+		Move m3 = killerMoves.get(depth*3+2);
+		
+		if (move.equals(m1)){
+			return;
+		}else if (move.equals(m1)){
+			killerMoves.set(depth*3, m2);
+			killerMoves.set(depth*3+1, m1);
+			return;
+		}else if (move.equals(m1)){
+			killerMoves.set(depth*3, m3);
+			killerMoves.set(depth*3+1, m1);
+			killerMoves.set(depth*3+2, m2);
+			return;
+		}else{
+			killerMoves.set(depth*3, move);
+			killerMoves.set(depth*3+1, m1);
+			killerMoves.set(depth*3+2, m2);
+		}
+		
+	}
+	List<Move> getKillerMoves(int depth){
+		if (killerMoves.size() < (depth+1)*3){
+			for (int i = killerMoves.size(); i<(depth+1)*3; i++){
+				killerMoves.add(i, null);
+			}
+		}
+		
+		List<Move> moves = new ArrayList<Move>();
+		
+		Move m1 = killerMoves.get(depth*3);
+		Move m2 = killerMoves.get(depth*3+1);
+		Move m3 = killerMoves.get(depth*3+2);
+		
+		if (m1 != null){
+			moves.add(m1);
+		}
+		if (m2 != null){
+			moves.add(m2);
+		}
+		if (m3 != null){
+			moves.add(m3);
+		}
+		return moves;
+	}
 	
 	
 	public Move bestMove(){		
@@ -97,6 +153,13 @@ public class AlphaBetaMinimax {
 		}
 		
 		List<Move> allAvailible = board.allMoves(board.playerMove);
+		
+		for (Move m: getKillerMoves(depth)){
+			if (allAvailible.contains(m)){
+				movesAvailible.add(new Move(m));
+			}
+		}
+		
 		for (Move m: allAvailible){
 			if (!movesAvailible.contains(m)){
 				movesAvailible.add(m);
@@ -153,6 +216,7 @@ public class AlphaBetaMinimax {
 			// If move is too good to be true and pruning needs to been done, don't evaluate the rest of the
 			// sibling states
 			if (maxValue >= beta){
+				addKillerMove(depth, move);
 				break;
 			}
 			if (nullWindow) break; //only do first move if null window search
