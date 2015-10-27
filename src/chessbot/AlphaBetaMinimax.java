@@ -106,7 +106,7 @@ public class AlphaBetaMinimax {
 		}
 		
 		double maxValue = MIN;
-		Move bestMove = allAvailible.get(0);
+		Move bestMove = null;
 		for (Move move: movesAvailible) {
 			
 			int desiredDepth = maxDepth;
@@ -125,9 +125,11 @@ public class AlphaBetaMinimax {
 				return 404;
 			}
 			
-			if (depth == 0 && currentScore > maxValue) {
-				currentRootsChildrenScore.add(new MoveAndScore(move, currentScore));
+			if (currentScore > maxValue) {
 				bestMove = move;
+				if (depth == 0){
+					currentRootsChildrenScore.add(new MoveAndScore(move, currentScore));
+				}
 			}
 
 			maxValue = Math.max(currentScore, maxValue);
