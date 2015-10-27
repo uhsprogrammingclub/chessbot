@@ -167,7 +167,7 @@ public class AlphaBetaMinimax {
 		}
 		
 		double maxValue = MIN;
-		Move bestMove = allAvailible.get(0);
+		Move bestMove = null;
 		boolean bestAlpha = false;
 		boolean nullWindow = false;
 		if (alpha == beta-0.00001){
@@ -201,9 +201,11 @@ public class AlphaBetaMinimax {
 				return 404;
 			}
 			
-			if (depth == 0 && currentScore > maxValue) {
-				currentRootsChildrenScore.add(new MoveAndScore(move, currentScore));
+			if (currentScore > maxValue) {
 				bestMove = move;
+				if (depth == 0){
+					currentRootsChildrenScore.add(new MoveAndScore(move, currentScore));
+				}
 			}
 
 			maxValue = Math.max(currentScore, maxValue);
