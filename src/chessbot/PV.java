@@ -36,7 +36,7 @@ public class PV {
 		String s = "";
 		for (HashEntry h: hashList){
 			s += h.move;
-			s += " ("+Math.round(h.eval*100)/100.0+")";
+			s += " ("+Math.round(h.eval*100)/100.0+ " node:"+h.nodeType+")";
 			s += "; ";
 		}
 		return s;

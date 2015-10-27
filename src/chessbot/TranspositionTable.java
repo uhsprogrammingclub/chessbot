@@ -11,13 +11,15 @@ public class TranspositionTable {
 	public static void addEntry(HashEntry entry){
 		long zobrist = entry.zobrist;
 		int index = Zobrist.getIndex(zobrist);
-		if(TranspositionTable.trans.get(index) == null 
-				|| TranspositionTable.trans.get(index).depthLeft < entry.depthLeft
-				|| (TranspositionTable.trans.get(index).depthLeft == entry.depthLeft
-				&& TranspositionTable.trans.get(index).alpha >= entry.alpha
-				&& TranspositionTable.trans.get(index).beta <= entry.beta)
-				){
-						trans.put(index, entry);	
+		HashEntry oldEntry = TranspositionTable.trans.get(index);
+		if(oldEntry == null 
+				|| oldEntry.depthLeft < entry.depthLeft){
+			trans.put(index, entry);
+		}else if (oldEntry.depthLeft == entry.depthLeft){
+			if (oldEntry.nodeType == HashEntry.CUT_NODE && oldEntry.eval < entry.eval
+				|| oldEntry.nodeType == HashEntry.ALL_NODE && oldEntry.eval > entry.eval){
+				trans.put(index, entry);
+			}
 		}
 	}
 	

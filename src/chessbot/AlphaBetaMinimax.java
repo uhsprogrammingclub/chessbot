@@ -3,6 +3,17 @@ package chessbot;
 import java.util.*;
 
 public class AlphaBetaMinimax {
+	
+	//Speed up techniques
+	boolean PVSearch = false;
+	boolean killerHeuristic = false;
+	boolean TTMoveReordering = false;
+	boolean useTTEvals = false;
+	boolean iterativeDeepeningMoveReordering = true;
+	boolean captureExtensions = false;
+	boolean checkExtensions = false;
+	
+	
 
 	Board board;
 	int maxComputations = 50000;
@@ -110,7 +121,7 @@ public class AlphaBetaMinimax {
 	
 	double negaMax(double alpha, double beta, int depth, int maxDepth){
 		
-		if (depth == maxDepth && board.isCheck(board.playerMove) && (maxDepth < evaluateToDepth + 1 )){
+		if (checkExtensions && depth == maxDepth && board.isCheck(board.playerMove) && (maxDepth < evaluateToDepth + 1 )){
 			maxDepth++; //look ahead if last move caused a check
 		}
 		
@@ -135,11 +146,21 @@ public class AlphaBetaMinimax {
 		
 		if(oldEntry != null //if there is an old entry
 			&& oldEntry.zobrist == zHash){  //and the boards are the same
-			if (oldEntry.depthLeft >= (maxDepth - depth) && oldEntry.alpha <= alpha && oldEntry.beta >= beta){ //the the depth of the entry is not less than what we have to go through
-				return oldEntry.eval; //passes up the pre-computed evaluation
-			}else{ // if the entry we have is not accurate enough
+			
+			if (useTTEvals && oldEntry.depthLeft >= (maxDepth - depth) ){
+				if(oldEntry.nodeType == HashEntry.PV_NODE){ //the evaluated node is PV
+					return oldEntry.eval; //passes up the pre-computed evaluation
+				}else if(oldEntry.nodeType == HashEntry.CUT_NODE && oldEntry.eval > beta){ //beta cutoff
+					return oldEntry.eval;
+				}else if(oldEntry.nodeType == HashEntry.ALL_NODE && oldEntry.eval < alpha){ //beta cutoff
+					return alpha;
+				}else{
+					movesAvailible.add(new Move(oldEntry.move)); // make the move be computed first
+				}
+			}else if (TTMoveReordering){ // if the entry we have is not accurate enough
 				movesAvailible.add(new Move(oldEntry.move)); // make the move be computed first
 			}
+		
 		}
 		
 		if(depth == 0){
@@ -147,16 +168,20 @@ public class AlphaBetaMinimax {
 			currentRootsChildrenScore.clear();
 			//add the moves from previous depth iteration with the highest moves in the first place. 
 			Collections.sort(rootsChildrenScore);
-			for (MoveAndScore ms: rootsChildrenScore){
-				movesAvailible.add(new Move(ms.move));
+			if (iterativeDeepeningMoveReordering) {
+				for (MoveAndScore ms: rootsChildrenScore){
+					movesAvailible.add(new Move(ms.move));
+				}
 			}
 		}
 		
 		List<Move> allAvailible = board.allMoves(board.playerMove);
 		
-		for (Move m: getKillerMoves(depth)){
-			if (allAvailible.contains(m)){
-				movesAvailible.add(new Move(m));
+		if (killerHeuristic){
+			for (Move m: getKillerMoves(depth)){
+				if (allAvailible.contains(m)){
+					movesAvailible.add(new Move(m));
+				}
 			}
 		}
 		
@@ -168,7 +193,7 @@ public class AlphaBetaMinimax {
 		
 		double maxValue = MIN;
 		Move bestMove = null;
-		boolean bestAlpha = false;
+		boolean newAlpha = false;
 		boolean nullWindow = false;
 		if (alpha == beta-0.00001){
 			nullWindow = true;
@@ -184,7 +209,7 @@ public class AlphaBetaMinimax {
 			move.execute();
 			
 			double currentScore;
-			if (!bestAlpha && !nullWindow){
+			if (!newAlpha && !nullWindow && !PVSearch){
 				currentScore = -negaMax( -beta, -alpha, depth + 1, desiredDepth);
 				movesEvaluated++;
 			}else{
@@ -209,7 +234,7 @@ public class AlphaBetaMinimax {
 			}
 
 			maxValue = Math.max(currentScore, maxValue);
-			if (alpha > currentScore) bestAlpha = true; //if alpha increased, next search should be a null window search
+			if (alpha > currentScore) newAlpha = true; //if alpha increased, next search should be a null window search
 			alpha = Math.max(currentScore, alpha); 
 			
 			// reset board
@@ -225,8 +250,15 @@ public class AlphaBetaMinimax {
 			
 		}
 		//Push entry to the TranspositionTable
+		HashEntry newEntry;
+		if(maxValue >= beta){
+			newEntry = new HashEntry(zHash, maxDepth - depth, beta, HashEntry.CUT_NODE, bestMove);
+		}else if (!newAlpha){
+			newEntry = new HashEntry(zHash, maxDepth - depth, alpha, HashEntry.ALL_NODE, bestMove);
+		}else{
+			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.PV_NODE, bestMove);
+		}
 		if (!nullWindow){ //don't add entry to hash table because eval is not accurate
-			HashEntry newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, alpha, beta, bestMove);
 			TranspositionTable.addEntry(newEntry); //add the move entry. only gets placed if eval is higher than previous entry
 		}
 		return maxValue;

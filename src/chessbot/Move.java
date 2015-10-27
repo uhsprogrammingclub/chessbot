@@ -244,6 +244,13 @@ public class Move {
 			System.exit(0);
 		}
 	}
+	
+	boolean isCapture(){
+		if (destinationPc.worth == 0){
+			return false;
+		}
+		return true;
+	}
 
 	@Override
 	public String toString() {
