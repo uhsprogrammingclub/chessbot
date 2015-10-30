@@ -16,11 +16,27 @@ public class TranspositionTable {
 				|| oldEntry.depthLeft < entry.depthLeft){
 			trans.put(index, entry);
 		}else if (oldEntry.depthLeft == entry.depthLeft){
+			if (oldEntry.nodeType == entry.nodeType){
+				if (oldEntry.nodeType == HashEntry.CUT_NODE && oldEntry.eval < entry.eval
+					|| oldEntry.nodeType == HashEntry.ALL_NODE && oldEntry.eval > entry.eval){
+					trans.put(index, entry);
+				}
+			}else if(oldEntry.nodeType != HashEntry.PV_NODE){
+				trans.put(index, entry);
+			}
+		}else if (oldEntry.nodeType != HashEntry.PV_NODE && entry.nodeType == HashEntry.PV_NODE){
+			trans.put(index, entry);
+		}
+		/*if(oldEntry == null 
+				|| oldEntry.depthLeft < entry.depthLeft){
+			trans.put(index, entry);
+		}else if (oldEntry.depthLeft == entry.depthLeft){
 			if (oldEntry.nodeType == HashEntry.CUT_NODE && oldEntry.eval < entry.eval
 				|| oldEntry.nodeType == HashEntry.ALL_NODE && oldEntry.eval > entry.eval){
 				trans.put(index, entry);
 			}
-		}
+		}*/
+		
 	}
 	
 }

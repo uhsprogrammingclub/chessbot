@@ -155,10 +155,14 @@ public class AlphaBetaMinimax {
 				}else if(oldEntry.nodeType == HashEntry.ALL_NODE && oldEntry.eval < alpha){ //beta cutoff
 					return alpha;
 				}else{
-					movesAvailible.add(new Move(oldEntry.move)); // make the move be computed first
+					if (!movesAvailible.contains(oldEntry.move)){
+						movesAvailible.add(new Move(oldEntry.move)); // make the move be computed first
+					}
 				}
 			}else if (TTMoveReordering){ // if the entry we have is not accurate enough
-				movesAvailible.add(new Move(oldEntry.move)); // make the move be computed first
+				if (!movesAvailible.contains(oldEntry.move)){
+					movesAvailible.add(new Move(oldEntry.move)); // make the move be computed first
+				}
 			}
 		
 		}
@@ -168,9 +172,12 @@ public class AlphaBetaMinimax {
 			currentRootsChildrenScore.clear();
 			//add the moves from previous depth iteration with the highest moves in the first place. 
 			Collections.sort(rootsChildrenScore);
+
 			if (iterativeDeepeningMoveReordering) {
 				for (MoveAndScore ms: rootsChildrenScore){
-					movesAvailible.add(new Move(ms.move));
+					if (!movesAvailible.contains(ms.move)){
+						movesAvailible.add(new Move(ms.move));
+					}
 				}
 			}
 		}
