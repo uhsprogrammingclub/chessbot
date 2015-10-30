@@ -269,13 +269,13 @@ public class Move {
 			return false;
 		}
 		final Move other = (Move) obj;
-		if (other.to == null || other.piece == null || this.to == null || this.piece == null) {
+		if (other.to == null || other.from == null || this.to == null || this.from == null) {
 			return false;
 		}
 		if (this.promotionMove != other.promotionMove || this.castleMove != other.castleMove) {
 			return false;
 		}
-		if (this.to.equals(other.to) && this.piece.equals(other.piece)){
+		if (this.to.equals(other.to) && this.from.equals(other.from)){
 			return true;
 		} else {
 			return false;
