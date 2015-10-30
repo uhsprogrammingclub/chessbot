@@ -84,7 +84,9 @@ public class AlphaBetaMinimax {
 			if (oldEntry.depthLeft >= (maxDepth - depth) && oldEntry.alpha <= alpha && oldEntry.beta >= beta){ //the the depth of the entry is not less than what we have to go through
 				return oldEntry.eval; //passes up the pre-computed evaluation
 			}else{ // if the entry we have is not accurate enough
-				movesAvailible.add(new Move(oldEntry.move)); // make the move be computed first
+				if (!movesAvailible.contains(oldEntry.move)){
+					movesAvailible.add(new Move(oldEntry.move)); // make the move be computed first
+				}
 			}
 		}
 		
@@ -94,7 +96,9 @@ public class AlphaBetaMinimax {
 			//add the moves from previous depth iteration with the highest moves in the first place. 
 			Collections.sort(rootsChildrenScore);
 			for (MoveAndScore ms: rootsChildrenScore){
-				movesAvailible.add(new Move(ms.move));
+				if (!movesAvailible.contains(ms.move)){
+					movesAvailible.add(new Move(ms.move));
+				}
 			}
 		}
 		
