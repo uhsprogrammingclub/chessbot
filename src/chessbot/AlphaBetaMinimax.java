@@ -14,7 +14,7 @@ public class AlphaBetaMinimax {
 	boolean checkExtensions = false;
 
 	Board board;
-	int maxComputations = 1000;
+	int maxComputations = 10000;
 	List<MoveAndScore> rootsChildrenScore = new ArrayList<>();
 	List<MoveAndScore> currentRootsChildrenScore = new ArrayList<>();
 	List<String> depthsPV = new ArrayList<>();

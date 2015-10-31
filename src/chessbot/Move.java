@@ -148,17 +148,19 @@ public class Move {
 			
 			if (castleMove){
 				if (castleRookMove == null){
+				
 					//Check if it is a king-side castle move
 					if((to.x - from.x) == 2){
 						castleRookMove = new Move(board, new Point(5, from.y), board.getPiece(new Point(7, from.y)), null);
 					}
 					//Check if it is a queen-side castle move
 					else{
-						castleRookMove = new Move(board, new Point(2, from.y), board.getPiece(new Point(0, from.y)), null);
+						castleRookMove = new Move(board, new Point(3, from.y), board.getPiece(new Point(0, from.y)), null);
 					}
 				}
 				castleRookMove.execute();
 				board.playerMove = !board.playerMove;
+				
 			}
 			
 			if (board.isEmptySquare(destinationPc.position)){
@@ -177,7 +179,7 @@ public class Move {
 		
 				board.setSquare(to, piece);
 			}
-			
+		
 			//Change the castling variables depending on the piece being moved
 			if(piece.symbol.equals("k")){
 				if(piece.player){
@@ -188,19 +190,37 @@ public class Move {
 			}
 			
 			if(piece.symbol.equals("r")){
-				if (from.x == 0){
+				if (from.x == 7){
 					if(piece.player){
 						board.playerQSideCastle = false;
 					}else{
 						board.botQSideCastle = false;
 					}
-				}else if (from.x == 7){
+				}else if (from.x == 0){
 					if(piece.player){
 						board.playerKSideCastle = false;
 					}else{
 						board.botKSideCastle = false;
 					}
 				}
+			}
+			
+			//If a rook is being taken, alter the castling variables appropriately
+			if(destinationPc.symbol.equals("r")){
+				
+				//If it belongs to the player...
+				if(destinationPc.player){
+					
+					if(destinationPc.position.x == 0) board.playerQSideCastle = false;
+					if(destinationPc.position.x == 7) board.playerKSideCastle = false;
+					
+				}else{
+					
+					if(destinationPc.position.x == 0) board.botQSideCastle = false;
+					if(destinationPc.position.x == 7) board.botKSideCastle = false;
+					
+				}
+				
 			}
 			
 			destinationPc.alive = false;

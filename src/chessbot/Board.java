@@ -82,7 +82,9 @@ public class Board {
 				testMove2.reverse();
 				return false;
 			}
+			
 			testMove2.reverse();
+			
 			return true;	
 			
 		}
@@ -112,7 +114,9 @@ public class Board {
 				testMove2.reverse();
 				return false;
 			}
+			
 			testMove2.reverse();
+		
 			return true;	
 		}
 		return false;
@@ -256,18 +260,22 @@ public class Board {
 			return Utils.isChecked(this, king);
 		}else{
 			System.out.println("ERROR: King was eaten!!!");
+			System.out.println(this);
+			System.exit(0);
 		}
 		return false;
 	}
 
 	// Function that finds the King's position on the board
 	public Piece getKing(boolean player) {
+		
 		for (Piece p : pieceList) {
 			if (p.player == player && p.symbol.equals("k") && p.alive == true) {
 				// Return the King's position
 				return p;
 			}
 		}
+		
 		// Default return
 		return null;
 	}

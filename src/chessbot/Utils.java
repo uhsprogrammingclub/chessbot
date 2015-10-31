@@ -233,6 +233,7 @@ public class Utils {
 	}
 	
 	static boolean isChecked(Board b, Piece king) {
+		
 		Point pos = king.position;
 		boolean pl = king.player;
 		
@@ -371,6 +372,7 @@ public class Utils {
 		
 		for (int i = -1; i <= 1; i = i + 2) {
 			for (int j = -2; j <= 2; j = j + 4) {
+				
 				Point move = new Point(pos.x + i, pos.y + j);
 				if (move.squareExists() && !b.isEmptySquare(move) && b.getTeam(move) != pl && b.getPiece(move).symbol == "n") {
 					return true;
@@ -381,6 +383,7 @@ public class Utils {
 				}
 			}
 		}
+		
 		return false;
 	}
 	
