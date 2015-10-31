@@ -12,7 +12,8 @@ public class Utils {
 		if (p.symbol.equals("p")) {
 			
 			// get direction of the pawn
-			int dir = p.player ? 1 : -1;
+			int dir = p.player ? -1 : 1;
+			
 			Point move = new Point(pos.x, pos.y + dir);
 
 			if (move.squareExists()) {
@@ -27,7 +28,7 @@ public class Utils {
 					}
 					
 					// check if pawn can move 2 squares.
-					if ((p.player && pos.y == 1) || (!p.player && pos.y == 6)) {
+					if ((p.player && pos.y == 6) || (!p.player && pos.y == 1)) {
 						Point move2 = new Point(pos.x, pos.y + dir * 2);
 						if (move2.squareExists() && b.isEmptySquare(move2)) {
 							moves.add(new Move(b, move2, p, null));
@@ -110,7 +111,7 @@ public class Utils {
 		// evaluate moves if it's a pawn
 		if (p.symbol.equals("p")) {
 			// get direction of the pawn
-			int dir = p.player ? 1 : -1;
+			int dir = p.player ? -1 : 1;
 
 			// check if spot diagonally to the right
 			Point move = new Point(pos.x + 1, pos.y + dir);
@@ -381,6 +382,100 @@ public class Utils {
 			}
 		}
 		return false;
+	}
+	
+	static Board boardFromFEN(String str){
+		
+		//Array list to hold all of the pieces objects
+		List<Piece> list = new ArrayList<>();
+		
+		//Split the input string at all spaces and map that to an array
+		String[] strSplit = str.split(" ");
+		
+		for(String m : strSplit){
+			System.out.println(m);
+		}
+		
+		//Map array to correct variables
+		String piecePlacement = strSplit[0];
+		String sideToMove = strSplit[1];
+		String castlingRights = strSplit[2];
+		String enPassantTargets = strSplit[3];
+		int halfMoveClock = Integer.parseInt(strSplit[4]);
+		int fullMoveCounter = Integer.parseInt(strSplit[5]);
+		
+		//Read piece input
+		String[] piecesSplitRows = piecePlacement.split("/");
+		
+		int y = 0;
+		
+		for(String s : piecesSplitRows){
+			
+			int x = 0;
+			
+			//Map the pieces to an individual array
+			char[] piecesArray = s.toCharArray();
+			
+			for(char c : piecesArray){
+				
+				Piece p = null;
+				
+				//Check if the entry is numeric - signifies empty spaces
+				if(Character.isDigit(c)){
+					
+					x += Character.getNumericValue(c);
+					
+				}else{
+					
+					if(Character.toUpperCase(c) == 'P'){
+						p = new Pawn(x, y, Character.isUpperCase(c));
+					}
+					else if(Character.toUpperCase(c) == 'B'){
+						p = new Bishop(x, y, Character.isUpperCase(c));
+					}
+					else if(Character.toUpperCase(c) == 'N'){
+						p = new Knight(x, y, Character.isUpperCase(c));
+					}
+					else if(Character.toUpperCase(c) == 'R'){
+						p = new Rook(x, y, Character.isUpperCase(c));
+					}
+					else if(Character.toUpperCase(c) == 'Q'){
+						p = new Queen(x, y, Character.isUpperCase(c));
+					}
+					else if(Character.toUpperCase(c) == 'K'){
+						p = new King(x, y, Character.isUpperCase(c));
+					}
+					
+				}
+				
+				//Add the piece to the array, unless it is an empty space (null), increment only if it is a piece (avoid double increments)
+				if(p != null){
+					list.add(p);
+					x++;
+				}
+		
+			}
+			
+			y++;
+	
+		}
+		
+		for(Piece p : list){
+			System.out.println(p.symbol + " " + p.getX() + " " + p.getY() + " " + p.player);
+		}
+		
+		//Assign the player to move
+		Boolean playerMove = sideToMove.equals("w") ? true : false;
+		
+		//Create the board
+		Board b = new Board(list, playerMove);
+		
+		return b;
+	}
+	
+	static String boardToFEN(Board b){
+		String FEN = "";
+		return FEN;
 	}
 
 }

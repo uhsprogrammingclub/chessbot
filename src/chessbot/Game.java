@@ -6,7 +6,10 @@ package chessbot;
 import java.util.*;
 
 public class Game {
-
+	
+	//Forsyth-Edwards Notation (FEN) game setup
+	static String setup = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"; 
+	
 	//Scanner to take Human input
 	static Scanner s = new Scanner(System.in);
 	
@@ -22,6 +25,9 @@ public class Game {
 	static volatile Point squareTo = null;
 	
 	public static void main(String[] args) {
+		
+		Board b = Utils.boardFromFEN(setup);
+		//System.exit(0);
 
 		List<Piece> list = new ArrayList<Piece>();
 
@@ -107,7 +113,7 @@ public class Game {
 		list.add(p);
 		list.add(K);*/
 
-		Board b = new Board(list, playerMovesFirst);
+		//Board b = new Board(list, playerMovesFirst);
 		
 		Zobrist.zobristFillArray();
 

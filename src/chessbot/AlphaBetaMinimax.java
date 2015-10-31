@@ -9,16 +9,17 @@ public class AlphaBetaMinimax {
 	boolean killerHeuristic = false;
 	boolean TTMoveReordering = false;
 	boolean useTTEvals = false;
-	boolean iterativeDeepeningMoveReordering = true;
+	boolean iterativeDeepeningMoveReordering = false;
 	boolean captureExtensions = false;
 	boolean checkExtensions = false;
 	
 	
 
 	Board board;
-	int maxComputations = 50000;
+	int maxComputations = 1000;
 	List<MoveAndScore> rootsChildrenScore = new ArrayList<>();
 	List<MoveAndScore> currentRootsChildrenScore = new ArrayList<>();
+	List<String> depthsPV = new ArrayList<>();
 	int staticComputations = 0;
 	int evaluateToDepth = 0;
 	int finalDepth = 1;
@@ -84,7 +85,6 @@ public class AlphaBetaMinimax {
 		}
 		return moves;
 	}
-	
 	
 	public Move bestMove(){		
 		Collections.sort(rootsChildrenScore);

@@ -36,8 +36,8 @@ public class Board {
 		
 		aString += " |-----------------|\n";
 		// Nested loops getting values
-		for (int y = 7; y >= -1; y--) {
-			if (y != -1) {
+		for (int y = 0; y <= 8; y++) {
+			if (y != 8) {
 				aString += (y + 1) + "|";
 				for (int x = 0; x < 8; x++) {
 					aString += " " + locations[x*8+y].toString();
@@ -308,11 +308,9 @@ public class Board {
 		}
 		
 		//Sum all of the moves 
-		//if (playerMove == player){
-			List<Move> moves = allMoves(player);
-			double totalMoves = moves.size();
-			score += totalMoves/300;
-		//}
+		List<Move> moves = allMoves(player);
+		double totalMoves = moves.size();
+		score += totalMoves/300;
 	
 		return score;
 	}
