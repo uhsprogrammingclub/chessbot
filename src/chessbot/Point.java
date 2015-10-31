@@ -39,7 +39,7 @@ public class Point {
 	}
 	
 	int getIndex(){
-		int i = x*8+y;
+		int i = x+y*8;
 		return i;
 	}
 
@@ -67,5 +67,4 @@ public class Point {
 			return false;
 		}
 	}
-
 }

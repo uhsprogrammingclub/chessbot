@@ -392,10 +392,6 @@ public class Utils {
 		//Split the input string at all spaces and map that to an array
 		String[] strSplit = str.split(" ");
 		
-		for(String m : strSplit){
-			System.out.println(m);
-		}
-		
 		//Map array to correct variables
 		String piecePlacement = strSplit[0];
 		String sideToMove = strSplit[1];
@@ -460,21 +456,100 @@ public class Utils {
 	
 		}
 		
-		for(Piece p : list){
-			System.out.println(p.symbol + " " + p.getX() + " " + p.getY() + " " + p.player);
-		}
-		
 		//Assign the player to move
 		Boolean playerMove = sideToMove.equals("w") ? true : false;
 		
 		//Create the board
 		Board b = new Board(list, playerMove);
 		
+		//Default the castling rights to false
+		b.botKSideCastle = false;
+		b.botQSideCastle = false; 
+		b.playerKSideCastle = false;
+		b.playerQSideCastle = false;
+		
+		//Map the castling rights to an individual array
+		char[] rightsArray = castlingRights.toCharArray();
+		
+		for(char c : rightsArray){
+			if(c == 'K'){
+				b.playerKSideCastle = true;
+			}
+			else if(c == 'Q'){
+				b.playerQSideCastle = true;
+			}
+			else if(c == 'k'){
+				b.botKSideCastle = true;
+			}
+			else if(c == 'q'){
+				b.botQSideCastle = true;
+			}
+		}
+		
 		return b;
 	}
 	
 	static String boardToFEN(Board b){
+		
+		//String to ultimately return
 		String FEN = "";
+		
+		//Adding the pieces to the FEN string
+		int adjEmpty = 0;
+		int numRow = 0;
+		for(Piece p : b.locations){
+			
+			numRow++;
+			
+			//If the piece is not empty add it to the string
+			if(p.worth != 0){
+				
+				if(adjEmpty > 0){
+					FEN += Integer.toString(adjEmpty);
+				}
+				
+				FEN += p.player ? p.symbol.toUpperCase() : p.symbol;
+				
+				adjEmpty = 0;
+				
+			}else{
+				adjEmpty++;
+			}
+			
+			if(adjEmpty > 0 && numRow == 8){
+				FEN += Integer.toString(adjEmpty);
+				adjEmpty = 0;
+			}
+			
+			if(numRow == 8){
+				FEN += "/";
+				numRow = 0;
+			}
+		}
+		
+		//Chop off the last slash from the piece placement
+		FEN = FEN.substring(0, FEN.length()-1) + " ";
+		
+		//Adding side to move
+		FEN += b.playerMove ? "w" : "b";
+		FEN += " ";
+		
+		//Adding castling abilities
+		FEN += b.playerKSideCastle ? "K" : "";
+		FEN += b.playerQSideCastle ? "Q" : "";
+		FEN += b.botKSideCastle ? "k" : "";
+		FEN += b.botQSideCastle ? "q" : "";
+		FEN += " ";
+		
+		//This is where we will define what happens with En Passant when that's done
+		FEN += "- ";
+		
+		//Add the half move clock
+		FEN += Integer.toString(b.halfmoveClock) + " ";
+		
+		//Add the full move counter
+		FEN += Integer.toString(b.fullMoveCounter);
+		
 		return FEN;
 	}
 

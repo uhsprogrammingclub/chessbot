@@ -20,11 +20,14 @@ public class Board {
 	boolean playerMove;
 	
 	//Variables determining whether castling is still valid
-	boolean playerKSideCastle = true;
-	boolean playerQSideCastle = true;
-	boolean botKSideCastle = true;
-	boolean botQSideCastle = true;
+	boolean playerKSideCastle;
+	boolean playerQSideCastle;
+	boolean botKSideCastle;
+	boolean botQSideCastle;
 	
+	
+	int halfmoveClock = 0;
+	int fullMoveCounter = 0;
 
 	// Override java.lang.Object.toString method to create easier to read output
 	// in the form of a table
@@ -32,7 +35,7 @@ public class Board {
 	public String toString() {
 
 		// String variable to eventually return		
-		String aString = "Board Zobrist Hash: " + Zobrist.getZobristHash(this) + "\n";
+		String aString = "FEN: " + Utils.boardToFEN(this) + " Board Zobrist Hash: " + Zobrist.getZobristHash(this) + "\n";
 		
 		aString += " |-----------------|\n";
 		// Nested loops getting values
@@ -40,7 +43,7 @@ public class Board {
 			if (y != 8) {
 				aString += (y + 1) + "|";
 				for (int x = 0; x < 8; x++) {
-					aString += " " + locations[x*8+y].toString();
+					aString += " " + locations[x + y*8].toString();
 				}
 				aString += " |";
 			} else {

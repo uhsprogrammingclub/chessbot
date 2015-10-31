@@ -12,8 +12,6 @@ public class AlphaBetaMinimax {
 	boolean iterativeDeepeningMoveReordering = false;
 	boolean captureExtensions = false;
 	boolean checkExtensions = false;
-	
-	
 
 	Board board;
 	int maxComputations = 1000;
@@ -95,7 +93,12 @@ public class AlphaBetaMinimax {
 	public AlphaBetaMinimax(Board board) {
 		this.board = board;
 		finalDepth = progressiveDeepening();
-		System.out.println("PV at final depth " + finalDepth + ": "+ new PV(board));
+		
+		depthsPV.add("PV at final depth " + finalDepth + ": "+ new PV(board));
+		
+		for(String s : depthsPV){
+			System.out.println(s);
+		}
 	}
 	
 	int progressiveDeepening(){
@@ -112,7 +115,8 @@ public class AlphaBetaMinimax {
 				Collections.sort(rootsChildrenScore);
 				return depth;
 			}
-			System.out.println("PV at depth " + depth + ": "+ new PV(board));
+			
+			depthsPV.add("PV at depth " + depth + ": "+ new PV(board));
 		}
 		
 		return depth;
@@ -256,6 +260,7 @@ public class AlphaBetaMinimax {
 			if (nullWindow) break; //only do first move if null window search
 			
 		}
+		
 		//Push entry to the TranspositionTable
 		HashEntry newEntry;
 		if(maxValue >= beta){

@@ -27,8 +27,8 @@ public class Game {
 	public static void main(String[] args) {
 		
 		Board b = Utils.boardFromFEN(setup);
-		//System.exit(0);
-
+		
+		/*
 		List<Piece> list = new ArrayList<Piece>();
 
 		Piece r1 = new Rook(0, 0, true);
@@ -103,7 +103,7 @@ public class Game {
 		list.add(P7);
 		list.add(P8);
 		
-		/*Piece Q = new Queen(0, 6, true);
+		Piece Q = new Queen(0, 6, true);
 		Piece k = new King(2, 7, false);
 		Piece p = new Pawn(1, 1, false);
 		Piece K = new King(0, 7, true);
@@ -111,9 +111,9 @@ public class Game {
 		list.add(Q);
 		list.add(k);
 		list.add(p);
-		list.add(K);*/
+		list.add(K);
 
-		//Board b = new Board(list, playerMovesFirst);
+		Board b = new Board(list, playerMovesFirst); */
 		
 		Zobrist.zobristFillArray();
 
@@ -132,6 +132,8 @@ public class Game {
 	}
 
 	static void takePlayerMove(Board b) {
+		
+		b.fullMoveCounter++;
 		
 		/*for (Entry<Integer, HashEntry> entry : TranspositionTable.trans.entrySet() ) {
 		    System.out.println(entry.getKey() + " " + entry.getValue());
