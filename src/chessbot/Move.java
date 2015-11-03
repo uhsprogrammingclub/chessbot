@@ -282,10 +282,6 @@ public class Move {
 		if (this.promotionMove != other.promotionMove || this.castleMove != other.castleMove) {
 			return false;
 		}
-		
-		if (this.promotionPiece != null && !this.promotionPiece.symbol.equals(other.promotionPiece.symbol)){
-			return false;
-		}
 		if (this.to.equals(other.to) && this.from.equals(other.from)){
 			return true;
 		} else {
