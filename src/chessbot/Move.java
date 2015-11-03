@@ -190,13 +190,13 @@ public class Move {
 			}
 			
 			if(piece.symbol.equals("r")){
-				if (from.x == 7){
+				if (from.x == 0){
 					if(piece.player){
 						board.playerQSideCastle = false;
 					}else{
 						board.botQSideCastle = false;
 					}
-				}else if (from.x == 0){
+				}else if (from.x == 7){
 					if(piece.player){
 						board.playerKSideCastle = false;
 					}else{

@@ -39,8 +39,8 @@ public class Board {
 		
 		aString += " |-----------------|\n";
 		// Nested loops getting values
-		for (int y = 0; y <= 8; y++) {
-			if (y != 8) {
+		for (int y = 7; y >= -1; y--) {
+			if (y != -1) {
 				aString += (y + 1) + "|";
 				for (int x = 0; x < 8; x++) {
 					aString += " " + locations[x + y*8].toString();

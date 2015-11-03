@@ -85,7 +85,7 @@ public class GridLayoutManager extends JFrame{
 				Piece p = b.locations[i+j*8];
 				
 				//Flip the board
-				int newJ = j;
+				int newJ = 7-j;
 				int newI = i;
 				
 				if(!p.player){
@@ -145,11 +145,11 @@ public class GridLayoutManager extends JFrame{
 							
 							if(Game.squareFrom == null){
 								
-								Game.squareFrom = new Point(j, i);
+								Game.squareFrom = new Point(j,7-i);
 							
 							}else{
 								
-								Game.squareTo = new Point(j, i);
+								Game.squareTo = new Point(j,7-i);
 						
 							}
 							

@@ -12,8 +12,7 @@ public class Utils {
 		if (p.symbol.equals("p")) {
 			
 			// get direction of the pawn
-			int dir = p.player ? -1 : 1;
-			
+			int dir = p.player ? 1 : -1;
 			Point move = new Point(pos.x, pos.y + dir);
 
 			if (move.squareExists()) {
@@ -28,7 +27,7 @@ public class Utils {
 					}
 					
 					// check if pawn can move 2 squares.
-					if ((p.player && pos.y == 6) || (!p.player && pos.y == 1)) {
+					if ((p.player && pos.y == 1) || (!p.player && pos.y == 6)) {
 						Point move2 = new Point(pos.x, pos.y + dir * 2);
 						if (move2.squareExists() && b.isEmptySquare(move2)) {
 							moves.add(new Move(b, move2, p, null));
@@ -111,7 +110,7 @@ public class Utils {
 		// evaluate moves if it's a pawn
 		if (p.symbol.equals("p")) {
 			// get direction of the pawn
-			int dir = p.player ? -1 : 1;
+			int dir = p.player ? 1 : -1;
 
 			// check if spot diagonally to the right
 			Point move = new Point(pos.x + 1, pos.y + dir);
@@ -406,7 +405,7 @@ public class Utils {
 		//Read piece input
 		String[] piecesSplitRows = piecePlacement.split("/");
 		
-		int y = 0;
+		int y = 7;
 		
 		for(String s : piecesSplitRows){
 			
@@ -455,7 +454,7 @@ public class Utils {
 		
 			}
 			
-			y++;
+			y--;
 	
 		}
 		
@@ -498,37 +497,36 @@ public class Utils {
 		String FEN = "";
 		
 		//Adding the pieces to the FEN string
-		int adjEmpty = 0;
-		int numRow = 0;
-		for(Piece p : b.locations){
-			
-			numRow++;
-			
-			//If the piece is not empty add it to the string
-			if(p.worth != 0){
+		
+		for (int y = 7; y >= 0; y--){
+			int adjEmpty = 0;
+			for (int x = 0; x < 8; x++){
+				Piece p = b.locations[x + y*8];
 				
-				if(adjEmpty > 0){
-					FEN += Integer.toString(adjEmpty);
+				//If the piece is not empty add it to the string
+				if(p.worth != 0){
+					
+					if(adjEmpty > 0){
+						FEN += Integer.toString(adjEmpty);
+					}
+					
+					FEN += p.player ? p.symbol.toUpperCase() : p.symbol;
+					
+					adjEmpty = 0;
+					
+				}else{
+					adjEmpty++;
 				}
 				
-				FEN += p.player ? p.symbol.toUpperCase() : p.symbol;
-				
-				adjEmpty = 0;
-				
-			}else{
-				adjEmpty++;
+				if(x == 7){
+					FEN += "/";
+				}
 			}
-			
-			if(adjEmpty > 0 && numRow == 8){
+			if(adjEmpty > 0){
 				FEN += Integer.toString(adjEmpty);
-				adjEmpty = 0;
-			}
-			
-			if(numRow == 8){
-				FEN += "/";
-				numRow = 0;
 			}
 		}
+
 		
 		//Chop off the last slash from the piece placement
 		FEN = FEN.substring(0, FEN.length()-1) + " ";
