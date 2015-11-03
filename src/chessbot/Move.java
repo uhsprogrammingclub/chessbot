@@ -284,6 +284,15 @@ public class Move {
 		if (promotionMove){
 			s += "=" + promotionPiece;
 		}
+		if (castleMove){
+			if (to.x == 6){
+				s += " 0-0";
+			}else if (to.x == 2){
+				s += " 0-0-0";
+			}else{
+				System.out.println("ERROR: Invalid castle move destination.");
+			}
+		}
 		return s;
 	}
 
