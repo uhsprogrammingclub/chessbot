@@ -154,7 +154,7 @@ public class Move {
 					}
 					//Check if it is a queen-side castle move
 					else{
-						castleRookMove = new Move(board, new Point(2, from.y), board.getPiece(new Point(0, from.y)), null);
+						castleRookMove = new Move(board, new Point(3, from.y), board.getPiece(new Point(0, from.y)), null);
 					}
 				}
 				castleRookMove.execute();
