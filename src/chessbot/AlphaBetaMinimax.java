@@ -5,16 +5,16 @@ import java.util.*;
 public class AlphaBetaMinimax {
 	
 	//Speed up techniques
-	boolean PVSearch = false;
-	boolean killerHeuristic = false;
-	boolean TTMoveReordering = false;
-	boolean useTTEvals = false;
-	boolean iterativeDeepeningMoveReordering = false;
+	boolean PVSearch = true;
+	boolean killerHeuristic = true;
+	boolean TTMoveReordering = true;
+	boolean useTTEvals = true;
+	boolean iterativeDeepeningMoveReordering = true;
 	boolean captureExtensions = false;
 	boolean checkExtensions = false;
 
 	Board board;
-	int maxComputations = 10000;
+	int maxComputations = 20000;
 	List<MoveAndScore> rootsChildrenScore = new ArrayList<>();
 	List<MoveAndScore> currentRootsChildrenScore = new ArrayList<>();
 	List<String> depthsPV = new ArrayList<>();
@@ -43,11 +43,11 @@ public class AlphaBetaMinimax {
 		
 		if (move.equals(m1)){
 			return;
-		}else if (move.equals(m1)){
+		}else if (move.equals(m2)){
 			killerMoves.set(depth*3, m2);
 			killerMoves.set(depth*3+1, m1);
 			return;
-		}else if (move.equals(m1)){
+		}else if (move.equals(m3)){
 			killerMoves.set(depth*3, m3);
 			killerMoves.set(depth*3+1, m1);
 			killerMoves.set(depth*3+2, m2);
@@ -147,24 +147,25 @@ public class AlphaBetaMinimax {
 		HashEntry oldEntry = TranspositionTable.trans.get(index);
 		
 		List<Move> movesAvailible = new ArrayList<Move>();
+		List<Move> allAvailible = board.allMoves(board.playerMove);
 		
 		if(oldEntry != null //if there is an old entry
 			&& oldEntry.zobrist == zHash){  //and the boards are the same
 			
 			if (useTTEvals && oldEntry.depthLeft >= (maxDepth - depth) ){
-				if(oldEntry.nodeType == HashEntry.PV_NODE){ //the evaluated node is PV
+				if(depth != 0 && oldEntry.nodeType == HashEntry.PV_NODE){ //the evaluated node is PV
 					return oldEntry.eval; //passes up the pre-computed evaluation
-				}else if(oldEntry.nodeType == HashEntry.CUT_NODE && oldEntry.eval > beta){ //beta cutoff
+				}else if(depth != 0 && oldEntry.nodeType == HashEntry.CUT_NODE && oldEntry.eval > beta){ //beta cutoff
 					return oldEntry.eval;
-				}else if(oldEntry.nodeType == HashEntry.ALL_NODE && oldEntry.eval < alpha){ //beta cutoff
+				}else if(depth != 0 && oldEntry.nodeType == HashEntry.ALL_NODE && oldEntry.eval < alpha){ //beta cutoff
 					return alpha;
 				}else{
-					if (!movesAvailible.contains(oldEntry.move)){
+					if (!movesAvailible.contains(oldEntry.move) && allAvailible.contains(oldEntry.move)){
 						movesAvailible.add(new Move(oldEntry.move)); // make the move be computed first
 					}
 				}
 			}else if (TTMoveReordering){ // if the entry we have is not accurate enough
-				if (!movesAvailible.contains(oldEntry.move)){
+				if (!movesAvailible.contains(oldEntry.move) && allAvailible.contains(oldEntry.move)){
 					movesAvailible.add(new Move(oldEntry.move)); // make the move be computed first
 				}
 			}
@@ -179,18 +180,16 @@ public class AlphaBetaMinimax {
 
 			if (iterativeDeepeningMoveReordering) {
 				for (MoveAndScore ms: rootsChildrenScore){
-					if (!movesAvailible.contains(ms.move)){
+					if (!movesAvailible.contains(ms.move) && allAvailible.contains(ms.move)){
 						movesAvailible.add(new Move(ms.move));
 					}
 				}
 			}
 		}
 		
-		List<Move> allAvailible = board.allMoves(board.playerMove);
-		
 		if (killerHeuristic){
 			for (Move m: getKillerMoves(depth)){
-				if (allAvailible.contains(m)){
+				if (!movesAvailible.contains(m) && allAvailible.contains(m)){
 					movesAvailible.add(new Move(m));
 				}
 			}
@@ -201,14 +200,12 @@ public class AlphaBetaMinimax {
 				movesAvailible.add(m);
 			}
 		}
-		
+	
+		//Collections.shuffle(movesAvailible); //should give out same move
+
 		double maxValue = MIN;
 		Move bestMove = null;
 		boolean newAlpha = false;
-		boolean nullWindow = false;
-		if (alpha == beta-0.00001){
-			nullWindow = true;
-		}
 		for (Move move: movesAvailible) {
 			
 			int desiredDepth = maxDepth;
@@ -220,13 +217,13 @@ public class AlphaBetaMinimax {
 			move.execute();
 			
 			double currentScore;
-			if (!newAlpha && !nullWindow && !PVSearch){
+			if (!newAlpha || !PVSearch){
 				currentScore = -negaMax( -beta, -alpha, depth + 1, desiredDepth);
 				movesEvaluated++;
 			}else{
 				currentScore = -negaMax( -alpha-0.00001, -alpha, depth + 1, desiredDepth); //Do a null window search
 				movesEvaluated++;
-				if (currentScore > alpha && currentScore < beta && !nullWindow){ //if move has the possibility of increasing alpha and this isn't a null window search
+				if (currentScore > alpha && currentScore < beta){ //if move has the possibility of increasing alpha 
 					currentScore = -negaMax( -beta, -alpha, depth + 1, desiredDepth); //do a full-window search
 					movesEvaluated++;
 				}
@@ -257,7 +254,6 @@ public class AlphaBetaMinimax {
 				addKillerMove(depth, move);
 				break;
 			}
-			if (nullWindow) break; //only do first move if null window search
 			
 		}
 		
@@ -270,10 +266,10 @@ public class AlphaBetaMinimax {
 		}else{
 			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.PV_NODE, bestMove);
 		}
-		if (!nullWindow){ //don't add entry to hash table because eval is not accurate
-			TranspositionTable.addEntry(newEntry); //add the move entry. only gets placed if eval is higher than previous entry
-		}
+		TranspositionTable.addEntry(newEntry); //add the move entry. only gets placed if eval is higher than previous entry
+		
 		return maxValue;
+		
 	}
 
 }

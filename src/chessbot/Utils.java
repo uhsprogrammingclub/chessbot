@@ -517,14 +517,11 @@ public class Utils {
 				}else{
 					adjEmpty++;
 				}
-				
-				if(x == 7){
-					FEN += "/";
-				}
 			}
 			if(adjEmpty > 0){
 				FEN += Integer.toString(adjEmpty);
 			}
+			FEN += "/";
 		}
 
 		

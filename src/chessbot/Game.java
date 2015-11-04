@@ -7,9 +7,12 @@ import java.util.*;
 
 public class Game {
 	
-	//Forsyth-Edwards Notation (FEN) game setup
+	//Forsyth-Edwards Notation (FEN) game setup default
 	static String setup = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"; 
 	
+	//Forsyth-Edwards Notation (FEN) game setup test
+	//static String setup = "rnb3nr/ppppkppp/4pq2/4P2Q/8/2P5/PP3PPP/RNB1KBNR b KQ - 0 7"; 
+		
 	//Scanner to take Human input
 	static Scanner s = new Scanner(System.in);
 	
@@ -27,93 +30,7 @@ public class Game {
 	public static void main(String[] args) {
 		
 		Board b = Utils.boardFromFEN(setup);
-		
-		/*
-		List<Piece> list = new ArrayList<Piece>();
-
-		Piece r1 = new Rook(0, 0, true);
-		Piece n1 = new Knight(1, 0, true);
-		Piece b1 = new Bishop(2, 0, true);
-		Piece q = new Queen(3, 0, true);
-		Piece k = new King(4, 0, true);
-		Piece b2 = new Bishop(5, 0, true);
-		Piece n2 = new Knight(6, 0, true);
-		Piece r2 = new Rook(7, 0, true);
-
-		Piece p1 = new Pawn(0, 1, true);
-		Piece p2 = new Pawn(1, 1, true);
-		Piece p3 = new Pawn(2, 1, true);
-		Piece p4 = new Pawn(3, 1, true);
-		Piece p5 = new Pawn(4, 1, true);
-		Piece p6 = new Pawn(5, 1, true);
-		Piece p7 = new Pawn(6, 1, true);
-		Piece p8 = new Pawn(7, 1, true);
-
-		Piece R1 = new Rook(0, 7, false);
-		Piece N1 = new Knight(1, 7, false);
-		Piece B1 = new Bishop(2, 7, false);
-		Piece Q = new Queen(3, 7, false);
-		Piece K = new King(4, 7, false);
-		Piece B2 = new Bishop(5, 7, false);
-		Piece N2 = new Knight(6, 7, false);
-		Piece R2 = new Rook(7, 7, false);
-
-		Piece P1 = new Pawn(0, 6, false);
-		Piece P2 = new Pawn(1, 6, false);
-		Piece P3 = new Pawn(2, 6, false);
-		Piece P4 = new Pawn(3, 6, false);
-		Piece P5 = new Pawn(4, 6, false);
-		Piece P6 = new Pawn(5, 6, false);
-		Piece P7 = new Pawn(6, 6, false);
-		Piece P8 = new Pawn(7, 6, false);
-
-		list.add(r1);
-		list.add(n1);
-		list.add(b1);
-		list.add(q);
-		list.add(k);
-		list.add(b2);
-		list.add(n2);
-		list.add(r2);
-
-		list.add(p1);
-		list.add(p2);
-		list.add(p3);
-		list.add(p4);
-		list.add(p5);
-		list.add(p6);
-		list.add(p7);
-		list.add(p8);
-
-		list.add(R1);
-		list.add(N1);
-		list.add(B1);
-		list.add(Q);
-		list.add(K);
-		list.add(B2);
-		list.add(N2);
-		list.add(R2);
-
-		list.add(P1);
-		list.add(P2);
-		list.add(P3);
-		list.add(P4);
-		list.add(P5);
-		list.add(P6);
-		list.add(P7);
-		list.add(P8);
-		
-		Piece Q = new Queen(0, 6, true);
-		Piece k = new King(2, 7, false);
-		Piece p = new Pawn(1, 1, false);
-		Piece K = new King(0, 7, true);
-
-		list.add(Q);
-		list.add(k);
-		list.add(p);
-		list.add(K);
-
-		Board b = new Board(list, playerMovesFirst); */
+		playerMovesFirst = b.playerMove;
 		
 		Zobrist.zobristFillArray();
 
@@ -135,10 +52,6 @@ public class Game {
 		
 		b.fullMoveCounter++;
 		
-		/*for (Entry<Integer, HashEntry> entry : TranspositionTable.trans.entrySet() ) {
-		    System.out.println(entry.getKey() + " " + entry.getValue());
-		}*/
-		
 		//Clear GUI input
 		squareFrom = null;
 		squareTo = null;
@@ -154,21 +67,6 @@ public class Game {
 			
 			Point from = Game.squareFrom;
 			Point to = Game.squareTo;
-			
-			/*
-			System.out.println(b);
-			System.out.print("[A-H][1-8] [A-H][1-8]: ");
-			String[] sp = s.nextLine().split(" ");
-			
-			Point from = new Point("I5");
-			Point to = new Point("I5");
-			
-			if(sp.length != 1){
-				 from = new Point(sp[0].replaceAll("\\s+",""));
-				 to = new Point(sp[1].replaceAll("\\s+",""));
-			}else{
-				System.out.println("You need to seperate your moves with a single space.");
-			}*/
 			
 			if(from != null && to != null){
 				
@@ -245,6 +143,14 @@ public class Game {
 		System.out.println("\nBot: " +move);
 
 		move.execute();
+		
+		System.out.println("Pieces: ");
+		
+		for (Piece p : b.pieceList){
+			if (p.alive == true && p.worth != 0){ 
+				System.out.print(p + ", ");
+			}
+		}
 		gui.updateBoard(b);
 		
 		if (!b.isGameOver()) {
