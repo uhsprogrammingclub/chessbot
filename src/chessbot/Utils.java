@@ -537,6 +537,9 @@ public class Utils {
 		FEN += b.playerQSideCastle ? "Q" : "";
 		FEN += b.botKSideCastle ? "k" : "";
 		FEN += b.botQSideCastle ? "q" : "";
+		if (!b.playerKSideCastle && !b.playerQSideCastle && !b.botKSideCastle && !b.botQSideCastle){
+			FEN += "-";
+		}
 		FEN += " ";
 		
 		//This is where we will define what happens with En Passant when that's done

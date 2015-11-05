@@ -10,8 +10,6 @@ public class AlphaBetaMinimax {
 	boolean TTMoveReordering = true;
 	boolean useTTEvals = true;
 	boolean iterativeDeepeningMoveReordering = true;
-	boolean captureExtensions = false;
-	boolean checkExtensions = false;
 
 	Board board;
 	int maxComputations = 20000;
@@ -124,11 +122,6 @@ public class AlphaBetaMinimax {
 	
 	
 	double negaMax(double alpha, double beta, int depth, int maxDepth){
-		
-		if (checkExtensions && depth == maxDepth && board.isCheck(board.playerMove) && (maxDepth < evaluateToDepth + 1 )){
-			maxDepth++; //look ahead if last move caused a check
-		}
-		
 		if (depth == maxDepth || board.isGameOver() == true) {
 			if (computationsAtDepth.get(depth) == null){
 				computationsAtDepth.put(depth, 0);
@@ -158,7 +151,7 @@ public class AlphaBetaMinimax {
 				}else if(depth != 0 && oldEntry.nodeType == HashEntry.CUT_NODE && oldEntry.eval > beta){ //beta cutoff
 					return oldEntry.eval;
 				}else if(depth != 0 && oldEntry.nodeType == HashEntry.ALL_NODE && oldEntry.eval < alpha){ //beta cutoff
-					return alpha;
+					return oldEntry.eval;
 				}else{
 					if (!movesAvailible.contains(oldEntry.move) && allAvailible.contains(oldEntry.move)){
 						movesAvailible.add(new Move(oldEntry.move)); // make the move be computed first
@@ -207,24 +200,17 @@ public class AlphaBetaMinimax {
 		Move bestMove = null;
 		boolean newAlpha = false;
 		for (Move move: movesAvailible) {
-			
-			int desiredDepth = maxDepth;
-			
-			if (depth == maxDepth-1 //if last move to be made
-				&& move.destinationPc.worth != 0 && (desiredDepth < evaluateToDepth + 1 )){ //and its a capture move
-				desiredDepth++; //make sure there is another move
-			}
+					
 			move.execute();
-			
 			double currentScore;
 			if (!newAlpha || !PVSearch){
-				currentScore = -negaMax( -beta, -alpha, depth + 1, desiredDepth);
+				currentScore = -negaMax( -beta, -alpha, depth + 1, maxDepth);
 				movesEvaluated++;
 			}else{
-				currentScore = -negaMax( -alpha-0.00001, -alpha, depth + 1, desiredDepth); //Do a null window search
+				currentScore = -negaMax( -alpha-0.00001, -alpha, depth + 1, maxDepth); //Do a null window search
 				movesEvaluated++;
 				if (currentScore > alpha && currentScore < beta){ //if move has the possibility of increasing alpha 
-					currentScore = -negaMax( -beta, -alpha, depth + 1, desiredDepth); //do a full-window search
+					currentScore = -negaMax( -beta, -alpha, depth + 1, maxDepth); //do a full-window search
 					movesEvaluated++;
 				}
 			}
@@ -267,7 +253,6 @@ public class AlphaBetaMinimax {
 			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.PV_NODE, bestMove);
 		}
 		TranspositionTable.addEntry(newEntry); //add the move entry. only gets placed if eval is higher than previous entry
-		
 		return maxValue;
 		
 	}

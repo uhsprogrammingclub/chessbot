@@ -11,7 +11,7 @@ public class Game {
 	static String setup = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"; 
 	
 	//Forsyth-Edwards Notation (FEN) game setup test
-	//static String setup = "rnb3nr/ppppkppp/4pq2/4P2Q/8/2P5/PP3PPP/RNB1KBNR b KQ - 0 7"; 
+	//static String setup = "N1k3n1/5pp1/8/RB2p1p1/P7/1P6/2KP4/7r b - - 0 1"; 
 		
 	//Scanner to take Human input
 	static Scanner s = new Scanner(System.in);
@@ -144,11 +144,11 @@ public class Game {
 
 		move.execute();
 		
-		System.out.println("Pieces: ");
+		//System.out.println("Pieces: ");
 		
 		for (Piece p : b.pieceList){
 			if (p.alive == true && p.worth != 0){ 
-				System.out.print(p + ", ");
+				//System.out.print(p + ", ");
 			}
 		}
 		gui.updateBoard(b);
