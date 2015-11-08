@@ -322,6 +322,7 @@ public class Board {
 		List<Move> moves = allMoves(player);
 		double totalMoves = moves.size();
 		score += totalMoves/300;
+
 	
 		return score;
 	}

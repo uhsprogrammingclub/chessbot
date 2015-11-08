@@ -229,7 +229,7 @@ public class AlphaBetaMinimax {
 			
 			if (currentScore == -404){
 				move.reverse();
-				if (depth == 0){
+				if (depth == 0 && bestMove != null){
 					HashEntry newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.PV_NODE, bestMove);
 					PVLine.set(depth, new MoveAndScore(bestMove, maxValue));
 					TranspositionTable.addEntry(newEntry);
@@ -263,11 +263,11 @@ public class AlphaBetaMinimax {
 		//Push entry to the TranspositionTable
 		HashEntry newEntry = null;
 		if(maxValue >= beta){
-			newEntry = new HashEntry(zHash, maxDepth - depth, beta, HashEntry.CUT_NODE, bestMove);
+			newEntry = new HashEntry(zHash, maxDepth - depth, beta, HashEntry.CUT_NODE, new Move(bestMove));
 		}else if (!newAlpha){
-			newEntry = new HashEntry(zHash, maxDepth - depth, alpha, HashEntry.ALL_NODE, bestMove);
+			newEntry = new HashEntry(zHash, maxDepth - depth, alpha, HashEntry.ALL_NODE, new Move(bestMove));
 		}else if (beta - alpha > 0.00001){
-			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.PV_NODE, bestMove);
+			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.PV_NODE, new Move(bestMove));
 			PVLine.set(depth, new MoveAndScore(bestMove, maxValue));
 		}
 		TranspositionTable.addEntry(newEntry); //add the move entry. only gets placed if eval is higher than previous entry

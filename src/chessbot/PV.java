@@ -19,7 +19,7 @@ public class PV {
 		if(oldEntry != null //if there is an old entry
 				&& oldEntry.zobrist == currentZHash){ //and the boards are the same
 			hashList.add(oldEntry);
-			
+
 			if (oldEntry.move.executed){
 				System.out.println("PV in loop");
 				return;
