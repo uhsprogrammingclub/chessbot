@@ -11,7 +11,7 @@ public class MoveAndScore implements Comparable<MoveAndScore>{
 	
 	@Override
 	public String toString(){
-		return "[ " + move + " Score: " + score + "]";
+		return move + " " + Math.round(score*100)/100.0;
 	}
 	
 	@Override
@@ -24,6 +24,6 @@ public class MoveAndScore implements Comparable<MoveAndScore>{
 	@Override
 	public boolean equals(Object other) {
 		MoveAndScore o = (MoveAndScore)other;
-		return this.score == o.score && this.move == o.move;
+		return this.move.equals(o.move);
     }
 }

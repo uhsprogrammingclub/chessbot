@@ -21,6 +21,8 @@ public class AlphaBetaMinimax {
 	int finalDepth = 1;
 	int movesEvaluated = 0;
 	
+	List<MoveAndScore> PVLine = new ArrayList<MoveAndScore>();
+	
 	List<Move> killerMoves = new ArrayList<Move>();
 	
 	Hashtable<Integer, Integer> computationsAtDepth = new Hashtable<Integer, Integer>(100);
@@ -97,6 +99,7 @@ public class AlphaBetaMinimax {
 		for(String s : depthsPV){
 			System.out.println(s);
 		}
+		//System.out.println("PV line at final depth " + finalDepth + ": "+ PVLine.toString());
 	}
 	
 	int progressiveDeepening(){
@@ -109,12 +112,18 @@ public class AlphaBetaMinimax {
 				rootsChildrenScore.addAll(currentRootsChildrenScore);
 				Collections.sort(rootsChildrenScore);
 			}else{
+				for (MoveAndScore m : currentRootsChildrenScore){
+					if (rootsChildrenScore.contains(m)){
+						rootsChildrenScore.remove(m);
+					}
+				}
 				rootsChildrenScore.addAll(currentRootsChildrenScore);
 				Collections.sort(rootsChildrenScore);
 				return depth;
 			}
 			
 			depthsPV.add("PV at depth " + depth + ": "+ new PV(board));
+			//depthsPV.add("PV line at depth " + depth + ": "+ PVLine.toString());
 		}
 		
 		return depth;
@@ -131,6 +140,9 @@ public class AlphaBetaMinimax {
 			staticComputations++;
 			if (staticComputations > maxComputations) return 404; //arbitrary number to end the search
 			return board.evaluateBoard() * ( board.playerMove ? -1 : 1 );	
+		}
+		if (PVLine.size() < depth+1){
+			PVLine.add(depth, null);
 		}
 		
 		//Get hash of current board
@@ -217,18 +229,24 @@ public class AlphaBetaMinimax {
 			
 			if (currentScore == -404){
 				move.reverse();
+				if (depth == 0){
+					HashEntry newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.PV_NODE, bestMove);
+					PVLine.set(depth, new MoveAndScore(bestMove, maxValue));
+					TranspositionTable.addEntry(newEntry);
+				}
 				return 404;
 			}
 			
 			if (currentScore > maxValue) {
 				bestMove = move;
 				if (depth == 0){
-					currentRootsChildrenScore.add(new MoveAndScore(move, currentScore));
+					currentRootsChildrenScore.add(new MoveAndScore(bestMove, currentScore));
 				}
 			}
+			
 
 			maxValue = Math.max(currentScore, maxValue);
-			if (alpha > currentScore) newAlpha = true; //if alpha increased, next search should be a null window search
+			if (currentScore > alpha) newAlpha = true; //if alpha increased, next search should be a null window search
 			alpha = Math.max(currentScore, alpha); 
 			
 			// reset board
@@ -242,15 +260,15 @@ public class AlphaBetaMinimax {
 			}
 			
 		}
-		
 		//Push entry to the TranspositionTable
-		HashEntry newEntry;
+		HashEntry newEntry = null;
 		if(maxValue >= beta){
 			newEntry = new HashEntry(zHash, maxDepth - depth, beta, HashEntry.CUT_NODE, bestMove);
 		}else if (!newAlpha){
 			newEntry = new HashEntry(zHash, maxDepth - depth, alpha, HashEntry.ALL_NODE, bestMove);
-		}else{
+		}else if (beta - alpha > 0.00001){
 			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.PV_NODE, bestMove);
+			PVLine.set(depth, new MoveAndScore(bestMove, maxValue));
 		}
 		TranspositionTable.addEntry(newEntry); //add the move entry. only gets placed if eval is higher than previous entry
 		return maxValue;
