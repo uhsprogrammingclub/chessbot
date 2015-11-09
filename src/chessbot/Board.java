@@ -197,6 +197,29 @@ public class Board {
 		
 		playerMove = playerGoesFirst;
 	}
+	
+	//Find all possible capture moves
+	public List<Move> loudMoves(boolean player){
+		
+		List<Move> loudMoves = new ArrayList<Move>();
+		
+		for(Move m : allMoves(player)){
+			
+			if(m.promotionMove || m.destinationPc.worth > 0){
+				loudMoves.add(m);
+				continue;
+			}
+			/*
+			m.execute();	
+			if (this.isCheck(!player)) {
+				loudMoves.add(m);
+			} 
+			m.reverse();
+			*/
+		}
+		
+		return loudMoves;
+	}
 
 	// Find all possible moves
 	public List<Move> allMoves(boolean player) {

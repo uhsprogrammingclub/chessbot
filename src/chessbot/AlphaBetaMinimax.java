@@ -4,18 +4,27 @@ import java.util.*;
 
 public class AlphaBetaMinimax {
 	
+	//Constants
+	static final int MAX_COMPUTATIONS = 100000;
+	static final double PRECISION = 0.00001;
+	static final int DEPTH_LIMIT = 25;
+	
 	//Speed up techniques
-	boolean PVSearch = true;
-	boolean killerHeuristic = true;
-	boolean TTMoveReordering = true;
-	boolean useTTEvals = true;
-	boolean iterativeDeepeningMoveReordering = true;
-
+	boolean PVSearch = true; //Using null window search
+	boolean killerHeuristic = true; //Records 3 killer moves per depth to evaluate first
+	boolean TTMoveReordering = true; //Transposition entries are evaluated first
+	boolean useTTEvals = true; //Use previous TT entries when encountered
+	boolean iterativeDeepeningMoveReordering = true; //Evaluate the best moves at the previous depth first
+	boolean quiescenceSearch = false; //Complete basic quiescence search after finishing main search to counter horizon effect
+	
 	Board board;
-	int maxComputations = 20000;
+	
 	List<MoveAndScore> rootsChildrenScore = new ArrayList<>();
 	List<MoveAndScore> currentRootsChildrenScore = new ArrayList<>();
+	
 	List<String> depthsPV = new ArrayList<>();
+	
+	//Defaulting variables
 	int staticComputations = 0;
 	int evaluateToDepth = 0;
 	int finalDepth = 1;
@@ -104,7 +113,7 @@ public class AlphaBetaMinimax {
 	
 	int progressiveDeepening(){
 		int depth;
-		for (depth = 1; depth < 25; depth++){
+		for (depth = 1; depth < DEPTH_LIMIT; depth++){
 			evaluateToDepth = depth;
 			double result = negaMax(MIN, MAX, 0, depth);
 			if (result != 404 ){
@@ -129,18 +138,63 @@ public class AlphaBetaMinimax {
 		return depth;
 	}
 	
+	//Basic Quiescence Search
+	double qSearch(double alpha, double beta){
+		
+		
+		if (staticComputations > MAX_COMPUTATIONS) return 404; //arbitrary number to end the search
+		staticComputations++;
+		
+		double currentScore = board.evaluateBoard() * ( board.playerMove ? -1 : 1 );
+		
+		if(currentScore >= beta){
+			return beta;
+		}
+		
+		if(currentScore > alpha){
+			alpha = currentScore;
+		}
+		
+		for(Move m : board.loudMoves(board.playerMove)){
+			
+			m.execute();
+			currentScore = -qSearch(-beta, -alpha);
+			m.reverse();
+			
+			if(currentScore >= beta){
+				return beta;
+			}
+			
+			if(currentScore > alpha){
+				alpha = currentScore;
+			}
+		}
+		
+		//If the position is quiet
+		return alpha;
+	}
 	
 	double negaMax(double alpha, double beta, int depth, int maxDepth){
+		
 		if (depth == maxDepth || board.isGameOver() == true) {
+			
 			if (computationsAtDepth.get(depth) == null){
 				computationsAtDepth.put(depth, 0);
 			}
+			
 			computationsAtDepth.put(depth, computationsAtDepth.get(depth) + 1);
 			
-			staticComputations++;
-			if (staticComputations > maxComputations) return 404; //arbitrary number to end the search
-			return board.evaluateBoard() * ( board.playerMove ? -1 : 1 );	
+			if(quiescenceSearch){
+				return qSearch(alpha, beta);
+				
+			}else{
+				staticComputations++;
+				if (staticComputations > MAX_COMPUTATIONS) return 404; //arbitrary number to end the search
+				return board.evaluateBoard() * ( board.playerMove ? -1 : 1 );	
+			}
+			//return quiescenceSearch ? 0 : board.evaluateBoard() * ( board.playerMove ? -1 : 1 );	
 		}
+		
 		if (PVLine.size() < depth+1){
 			PVLine.add(depth, null);
 		}
@@ -219,7 +273,7 @@ public class AlphaBetaMinimax {
 				currentScore = -negaMax( -beta, -alpha, depth + 1, maxDepth);
 				movesEvaluated++;
 			}else{
-				currentScore = -negaMax( -alpha-0.00001, -alpha, depth + 1, maxDepth); //Do a null window search
+				currentScore = -negaMax( -alpha-PRECISION, -alpha, depth + 1, maxDepth); //Do a null window search
 				movesEvaluated++;
 				if (currentScore > alpha && currentScore < beta){ //if move has the possibility of increasing alpha 
 					currentScore = -negaMax( -beta, -alpha, depth + 1, maxDepth); //do a full-window search
@@ -266,7 +320,7 @@ public class AlphaBetaMinimax {
 			newEntry = new HashEntry(zHash, maxDepth - depth, beta, HashEntry.CUT_NODE, new Move(bestMove));
 		}else if (!newAlpha){
 			newEntry = new HashEntry(zHash, maxDepth - depth, alpha, HashEntry.ALL_NODE, new Move(bestMove));
-		}else if (beta - alpha > 0.00001){
+		}else if (beta - alpha > PRECISION){
 			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.PV_NODE, new Move(bestMove));
 			PVLine.set(depth, new MoveAndScore(bestMove, maxValue));
 		}
