@@ -209,6 +209,7 @@ public class Board {
 				loudMoves.add(m);
 				continue;
 			}
+			
 			/*
 			m.execute();	
 			if (this.isCheck(!player)) {
@@ -216,6 +217,7 @@ public class Board {
 			} 
 			m.reverse();
 			*/
+			
 		}
 		
 		return loudMoves;

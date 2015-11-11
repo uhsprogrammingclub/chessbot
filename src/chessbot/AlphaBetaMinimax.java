@@ -15,7 +15,7 @@ public class AlphaBetaMinimax {
 	boolean TTMoveReordering = true; //Transposition entries are evaluated first
 	boolean useTTEvals = true; //Use previous TT entries when encountered
 	boolean iterativeDeepeningMoveReordering = true; //Evaluate the best moves at the previous depth first
-	boolean quiescenceSearch = false; //Complete basic quiescence search after finishing main search to counter horizon effect
+	boolean quiescenceSearch = true; //Complete basic quiescence search after finishing main search to counter horizon effect
 	
 	Board board;
 	
@@ -35,6 +35,8 @@ public class AlphaBetaMinimax {
 	List<Move> killerMoves = new ArrayList<Move>();
 	
 	Hashtable<Integer, Integer> computationsAtDepth = new Hashtable<Integer, Integer>(100);
+	
+	List<Integer> evaluationDepths = new ArrayList<Integer>();
 	
 	int MIN = Integer.MIN_VALUE+1;
 	int MAX = Integer.MAX_VALUE;
@@ -114,6 +116,10 @@ public class AlphaBetaMinimax {
 	int progressiveDeepening(){
 		int depth;
 		for (depth = 1; depth < DEPTH_LIMIT; depth++){
+			
+			//Add entry to the array to record static computations at each depth
+			evaluationDepths.add(depth-1, 0);
+			
 			evaluateToDepth = depth;
 			double result = negaMax(MIN, MAX, 0, depth);
 			if (result != 404 ){
@@ -141,37 +147,39 @@ public class AlphaBetaMinimax {
 	//Basic Quiescence Search
 	double qSearch(double alpha, double beta){
 		
-		
-		if (staticComputations > MAX_COMPUTATIONS) return 404; //arbitrary number to end the search
+		//Increment the static computations
 		staticComputations++;
+		if (staticComputations > MAX_COMPUTATIONS) return 404;
 		
-		double currentScore = board.evaluateBoard() * ( board.playerMove ? -1 : 1 );
+		double standPat = board.evaluateBoard() * ( board.playerMove ? -1 : 1 );	
 		
-		if(currentScore >= beta){
-			return beta;
+		//Look for a beta cutoff
+		if(standPat >= beta){
+			return standPat; //Fail-soft
 		}
 		
-		if(currentScore > alpha){
-			alpha = currentScore;
+		//Update the alpha if the position is an improvement
+		if(alpha < standPat){
+			alpha = standPat;
 		}
 		
+		//Examine all captures
 		for(Move m : board.loudMoves(board.playerMove)){
 			
 			m.execute();
-			currentScore = -qSearch(-beta, -alpha);
+			double currentScore = -qSearch(-beta, -alpha);
 			m.reverse();
 			
 			if(currentScore >= beta){
-				return beta;
+				return currentScore;
 			}
 			
-			if(currentScore > alpha){
-				alpha = currentScore;
-			}
+			alpha = Math.max(currentScore, alpha);
+			
 		}
 		
-		//If the position is quiet
 		return alpha;
+		
 	}
 	
 	double negaMax(double alpha, double beta, int depth, int maxDepth){
@@ -185,14 +193,14 @@ public class AlphaBetaMinimax {
 			computationsAtDepth.put(depth, computationsAtDepth.get(depth) + 1);
 			
 			if(quiescenceSearch){
-				return qSearch(alpha, beta);
+				return qSearch(-beta, -alpha);
 				
 			}else{
 				staticComputations++;
 				if (staticComputations > MAX_COMPUTATIONS) return 404; //arbitrary number to end the search
 				return board.evaluateBoard() * ( board.playerMove ? -1 : 1 );	
 			}
-			//return quiescenceSearch ? 0 : board.evaluateBoard() * ( board.playerMove ? -1 : 1 );	
+			//return quiescenceSearch(-beta, -alpha) ? 0 : board.evaluateBoard() * ( board.playerMove ? -1 : 1 );	
 		}
 		
 		if (PVLine.size() < depth+1){
