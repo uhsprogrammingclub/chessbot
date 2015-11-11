@@ -15,18 +15,18 @@ public class PV {
 		long currentZHash = Zobrist.getZobristHash(b);
 		int index = Zobrist.getIndex(currentZHash);
 		//find entry with same index
-		HashEntry oldEntry = TranspositionTable.trans.get(index);			
-		if(oldEntry != null //if there is an old entry
-				&& oldEntry.zobrist == currentZHash){ //and the boards are the same
-			hashList.add(oldEntry);
+		HashEntry entry = TranspositionTable.trans.get(index);			
+		if(entry != null //if there is an old entry
+				&& entry.zobrist == currentZHash && entry.nodeType == HashEntry.PV_NODE){ //and the boards are the same
+			hashList.add(entry);
 
-			if (oldEntry.move.executed){
+			if (entry.move.executed){
 				System.out.println("PV in loop");
 				return;
 			}
-			oldEntry.move.execute();
+			entry.move.execute();
 			findHashEntry(b);
-			oldEntry.move.reverse();
+			entry.move.reverse();
 		}
 		
 	}
