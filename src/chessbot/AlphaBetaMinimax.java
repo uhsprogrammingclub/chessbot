@@ -22,13 +22,14 @@ public class AlphaBetaMinimax {
 	int movesEvaluated = 0;
 	
 	List<MoveAndScore> PVLine = new ArrayList<MoveAndScore>();
+	List<MoveAndScore> currentPVLine = new ArrayList<MoveAndScore>();
 	
 	List<Move> killerMoves = new ArrayList<Move>();
 	
 	Hashtable<Integer, Integer> computationsAtDepth = new Hashtable<Integer, Integer>(100);
 	
-	int MIN = Integer.MIN_VALUE+1;
-	int MAX = Integer.MAX_VALUE;
+	int MIN = -1000000000;
+	int MAX = 1000000000;
 	
 	void addKillerMove(int depth, Move move){
 		if (killerMoves.size() < (depth+1)*3){
@@ -99,18 +100,21 @@ public class AlphaBetaMinimax {
 		for(String s : depthsPV){
 			System.out.println(s);
 		}
-		//System.out.println("PV line at final depth " + finalDepth + ": "+ PVLine.toString());
+		System.out.println("PV line at final depth " + finalDepth + ": "+ PVLine.toString());
 	}
 	
 	int progressiveDeepening(){
 		int depth;
 		for (depth = 1; depth < 25; depth++){
 			evaluateToDepth = depth;
-			double result = negaMax(MIN, MAX, 0, depth);
-			if (result != 404 ){
+			List<HashEntry> NewPVLine = new ArrayList<HashEntry>();
+			int result = negaMax(MIN, MAX, 0, depth, NewPVLine);
+			if (result != 40400 ){
 				rootsChildrenScore.clear();
 				rootsChildrenScore.addAll(currentRootsChildrenScore);
 				Collections.sort(rootsChildrenScore);
+				PVLine.clear();
+				PVLine.addAll(currentPVLine);
 			}else{
 				for (MoveAndScore m : currentRootsChildrenScore){
 					if (rootsChildrenScore.contains(m)){
@@ -119,18 +123,31 @@ public class AlphaBetaMinimax {
 				}
 				rootsChildrenScore.addAll(currentRootsChildrenScore);
 				Collections.sort(rootsChildrenScore);
+				
+				if (PVLine.size() == 0 || PVLine.get(0).move.equals(currentPVLine.get(0).move) || PVLine.get(0).score < currentPVLine.get(0).score){
+					PVLine.clear();
+					PVLine.addAll(currentPVLine);
+				}
 				return depth;
 			}
-			
+			System.out.println("PV at depth " + depth + ": "+ new PV(board));
+			System.out.println("PV line at depth " + depth + ": "+ PVLine.toString());
 			depthsPV.add("PV at depth " + depth + ": "+ new PV(board));
-			//depthsPV.add("PV line at depth " + depth + ": "+ PVLine.toString());
+			depthsPV.add("PV line at depth " + depth + ": "+ PVLine.toString());
 		}
 		
 		return depth;
 	}
 	
 	
-	double negaMax(double alpha, double beta, int depth, int maxDepth){
+	int negaMax(int alpha, int beta, int depth, int maxDepth, List<HashEntry> parentLine){
+		//System.out.println("d:"+depth+",a:"+alpha+",b:"+beta);
+		//Get hash of current board
+		long zHash = Zobrist.getZobristHash(board);
+		int index = Zobrist.getIndex(zHash);
+		//find entry with same index
+		HashEntry oldEntry = TranspositionTable.trans.get(index);
+				
 		if (depth == maxDepth || board.isGameOver() == true) {
 			if (computationsAtDepth.get(depth) == null){
 				computationsAtDepth.put(depth, 0);
@@ -138,18 +155,14 @@ public class AlphaBetaMinimax {
 			computationsAtDepth.put(depth, computationsAtDepth.get(depth) + 1);
 			
 			staticComputations++;
-			if (staticComputations > maxComputations) return 404; //arbitrary number to end the search
-			return board.evaluateBoard() * ( board.playerMove ? -1 : 1 );	
+			if (staticComputations > maxComputations) return 40400; //arbitrary number to end the search
+			if (oldEntry != null && oldEntry.zobrist == zHash && oldEntry.nodeType == HashEntry.PV_NODE){
+				parentLine.clear();
+				return oldEntry.eval; //passes up the pre-computed evaluation
+			}else{
+				return board.evaluateBoard() * ( board.playerMove ? -1 : 1 );
+			}
 		}
-		if (PVLine.size() < depth+1){
-			PVLine.add(depth, null);
-		}
-		
-		//Get hash of current board
-		long zHash = Zobrist.getZobristHash(board);
-		int index = Zobrist.getIndex(zHash);
-		//find entry with same index
-		HashEntry oldEntry = TranspositionTable.trans.get(index);
 		
 		List<Move> movesAvailible = new ArrayList<Move>();
 		List<Move> allAvailible = board.allMoves(board.playerMove);
@@ -158,11 +171,21 @@ public class AlphaBetaMinimax {
 			&& oldEntry.zobrist == zHash){  //and the boards are the same
 			
 			if (useTTEvals && oldEntry.depthLeft >= (maxDepth - depth) ){
-				if(depth != 0 && oldEntry.nodeType == HashEntry.PV_NODE){ //the evaluated node is PV
-					return oldEntry.eval; //passes up the pre-computed evaluation
-				}else if(depth != 0 && oldEntry.nodeType == HashEntry.CUT_NODE && oldEntry.eval > beta){ //beta cutoff
+				if(oldEntry.nodeType == HashEntry.PV_NODE){ //the evaluated node is PV
+					if (depth != 0){
+						parentLine.clear();
+						return oldEntry.eval; //passes up the pre-computed evaluation
+					}else{
+						System.out.println("USING OLD EVAL ON DEPTH 0");
+						currentPVLine.clear();
+						currentPVLine.add(new MoveAndScore(new Move(oldEntry.move), oldEntry.eval));
+						currentRootsChildrenScore.clear();
+						currentRootsChildrenScore.add(new MoveAndScore(new Move(oldEntry.move), oldEntry.eval));
+						return oldEntry.eval;
+					}
+				}else if(depth != 0 && oldEntry.nodeType == HashEntry.CUT_NODE && oldEntry.eval >= beta){ //beta cutoff
 					return oldEntry.eval;
-				}else if(depth != 0 && oldEntry.nodeType == HashEntry.ALL_NODE && oldEntry.eval < alpha){ //beta cutoff
+				}else if(depth != 0 && oldEntry.nodeType == HashEntry.ALL_NODE && oldEntry.eval <= alpha){ //beta cutoff
 					return oldEntry.eval;
 				}else{
 					if (!movesAvailible.contains(oldEntry.move) && allAvailible.contains(oldEntry.move)){
@@ -192,6 +215,7 @@ public class AlphaBetaMinimax {
 			}
 		}
 		
+		
 		if (killerHeuristic){
 			for (Move m: getKillerMoves(depth)){
 				if (!movesAvailible.contains(m) && allAvailible.contains(m)){
@@ -208,56 +232,79 @@ public class AlphaBetaMinimax {
 	
 		//Collections.shuffle(movesAvailible); //should give out same move
 
-		double maxValue = MIN;
+		int maxValue = MIN;
 		Move bestMove = null;
 		boolean newAlpha = false;
+		int originalA = alpha;
+		
+		List<HashEntry> nodeLine = new ArrayList<HashEntry>();
+		
 		for (Move move: movesAvailible) {
 					
 			move.execute();
-			double currentScore;
+			int currentScore;
 			if (!newAlpha || !PVSearch){
-				currentScore = -negaMax( -beta, -alpha, depth + 1, maxDepth);
+				currentScore = -negaMax( -beta, -alpha, depth + 1, maxDepth, nodeLine);
 				movesEvaluated++;
 			}else{
-				currentScore = -negaMax( -alpha-0.00001, -alpha, depth + 1, maxDepth); //Do a null window search
+				currentScore = -negaMax( -alpha-1, -alpha, depth + 1, maxDepth, nodeLine); //Do a null window search
 				movesEvaluated++;
 				if (currentScore > alpha && currentScore < beta){ //if move has the possibility of increasing alpha 
-					currentScore = -negaMax( -beta, -alpha, depth + 1, maxDepth); //do a full-window search
+					currentScore = -negaMax( -beta, -alpha, depth + 1, maxDepth, nodeLine); //do a full-window search
 					movesEvaluated++;
 				}
 			}
 			
-			if (currentScore == -404){
-				move.reverse();
-				if (depth == 0 && bestMove != null){
-					HashEntry newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.PV_NODE, bestMove);
-					PVLine.set(depth, new MoveAndScore(bestMove, maxValue));
-					TranspositionTable.addEntry(newEntry);
-				}
-				return 404;
+			// reset board
+			move.reverse();
+						
+			
+			if (currentScore == -40400){
+				return 40400;
 			}
+			
 			
 			if (currentScore > maxValue) {
 				bestMove = move;
 				if (depth == 0){
-					currentRootsChildrenScore.add(new MoveAndScore(bestMove, currentScore));
+					HashEntry newEntry = new HashEntry(zHash, maxDepth - depth, currentScore, HashEntry.PV_NODE, new Move(move));
+					parentLine.clear();
+					parentLine.add(depth, newEntry);
+					parentLine.addAll(nodeLine);
+					currentPVLine.clear();
+					for (HashEntry h: parentLine){
+						//if (h.move == null){
+							System.out.println("KDFLN "+h);
+						//}
+						if (h.move.executed){
+							System.out.println("QWERTYUIO:"+ move);
+						}
+						currentPVLine.add(new MoveAndScore(h.move, h.eval));
+						TranspositionTable.addEntry(h);
+					}
+					//NewPVLine.clear();
+					//NewPVLine.add(depth, null);
+					currentRootsChildrenScore.add(new MoveAndScore(new Move(bestMove), currentScore));
 				}
 			}
 			
 
 			maxValue = Math.max(currentScore, maxValue);
-			if (currentScore > alpha) newAlpha = true; //if alpha increased, next search should be a null window search
-			alpha = Math.max(currentScore, alpha); 
-			
-			// reset board
-			move.reverse();
 			
 			// If move is too good to be true and pruning needs to been done, don't evaluate the rest of the
-			// sibling states
+			// sibling state
 			if (maxValue >= beta){
-				addKillerMove(depth, move);
+				//if (newAlpha && NewPVLine.size() > depth+1){
+					//for (int i = NewPVLine.size()-1; i > depth; i--){
+						//NewPVLine.remove(i);
+					//}
+				//}
+				addKillerMove(depth, new Move(move));
 				break;
 			}
+			
+			if (currentScore > alpha) newAlpha = true; //if alpha increased, next search should be a null window search
+			alpha = Math.max(currentScore, alpha); 
 			
 		}
 		//Push entry to the TranspositionTable
@@ -266,11 +313,32 @@ public class AlphaBetaMinimax {
 			newEntry = new HashEntry(zHash, maxDepth - depth, beta, HashEntry.CUT_NODE, new Move(bestMove));
 		}else if (!newAlpha){
 			newEntry = new HashEntry(zHash, maxDepth - depth, alpha, HashEntry.ALL_NODE, new Move(bestMove));
-		}else if (beta - alpha > 0.00001){
-			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.PV_NODE, new Move(bestMove));
-			PVLine.set(depth, new MoveAndScore(bestMove, maxValue));
+		}else{ //if (beta > alpha && Math.abs(beta - alpha) > 1){
+			//if (bestMove.toString().equals("bF8->B4")){
+				System.out.println("NEW PV NODE AT DEPTH " + depth + " " + zHash + "a:"+originalA+",b:"+beta+",b-a:"+(beta-alpha)+",move:"+bestMove+",e:"+maxValue);
+			//}
+			HashEntry entry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.PV_NODE, new Move(bestMove));
+			//NewPVLine.set(depth, entry);
+			nodeLine.add(0, entry);
+			//if (parentLine == null){
+				//parentLine = new ArrayList<HashEntry>();
+			//}else{
+				//System.out.println("REPLACING PV LINE");
+			//}
+			System.out.println("nodeLine: "+nodeLine);
+			System.out.println("parentLine: "+parentLine);
+			//for (int i = PVLine.size() - nodeLine.size(); i >= 0; i--){
+				//PVLine.remove(PVLine.size()-1);
+			//}
+			parentLine.clear();
+			parentLine.addAll(nodeLine);
+			System.out.println("New parentLine: "+parentLine);
+			
+		//}else{
+			//System.out.println("PV SEARCH PV NODE; a:"+alpha+",b:"+beta+",b-a:"+(beta-alpha)+",move:"+bestMove+",e:"+maxValue); 
 		}
 		TranspositionTable.addEntry(newEntry); //add the move entry. only gets placed if eval is higher than previous entry
+
 		return maxValue;
 		
 	}

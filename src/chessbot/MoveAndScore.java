@@ -2,16 +2,16 @@ package chessbot;
 
 public class MoveAndScore implements Comparable<MoveAndScore>{
 	Move move;
-	double score;
+	int score;
 	
-	public MoveAndScore(Move m, double s){
+	public MoveAndScore(Move m, int s){
 		move = m;
 		score = s;
 	}
 	
 	@Override
 	public String toString(){
-		return move + " " + Math.round(score*100)/100.0;
+		return move + " " + score;
 	}
 	
 	@Override

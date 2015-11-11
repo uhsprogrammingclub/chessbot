@@ -11,7 +11,7 @@ public class Game {
 	static String setup = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"; 
 	
 	//Forsyth-Edwards Notation (FEN) game setup test
-	//static String setup = "r1bqkbnr/pppp1ppp/4p3/2P5/3Pn3/5N2/PP3PPP/RNBQK2R b KQkq - 0 7"; 
+	//static String setup = "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 0 2"; 
 		
 	//Scanner to take Human input
 	static Scanner s = new Scanner(System.in);

@@ -291,15 +291,15 @@ public class Board {
 
 	// Function that retrieves numeric value assigned to position. High values
 	// are good for the player, low values good for the computer
-	public double evaluateBoard() {
-		double score = scoreBoard(false) - scoreBoard(true);
+	public int evaluateBoard() {
+		int score = scoreBoard(false) - scoreBoard(true);
 		
 		if(allMoves(false).size() == 0 && isCheck(false)){
-			score -= 10000;
+			score -= 1000000;
 		}
 		
 		if(allMoves(true).size() == 0 && isCheck(true)){
-			score += 10000;
+			score += 1000000;
 		}
 		
 		return score;
@@ -307,21 +307,21 @@ public class Board {
 
 	// Analyze the board, and assign a numeric value to it for the position
 	// based on how favorable it is for the designated player.
-	public double scoreBoard(boolean player) {
+	public int scoreBoard(boolean player) {
 
 		// Default the score to zero
-		double score = 0;
+		int score = 0;
 
 		// Sum the worth of all of the pieces to get a base score
 		for (Piece p : pieceList) {
 			if (p.player == player && p.alive)
-				score += p.getWorth();
+				score += p.getWorth()*100;
 		}
 		
 		//Sum all of the moves 
 		List<Move> moves = allMoves(player);
-		double totalMoves = moves.size();
-		score += totalMoves/300;
+		int totalMoves = moves.size();
+		score += totalMoves/3;
 
 	
 		return score;
