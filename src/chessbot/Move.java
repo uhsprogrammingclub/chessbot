@@ -25,10 +25,6 @@ public class Move {
 		board = m.board;
 		from = m.from;
 		to = m.to;
-		executed = m.executed;
-		if (m.executed){
-			System.out.println("HTXJFCYGKVUHLBUN:HUBGVKCFJXGKUH:GVYCFKJYGKVHU");
-		}
 		
 		playerKSideCastleO = board.playerKSideCastle;
 	    playerQSideCastleO = board.playerQSideCastle;

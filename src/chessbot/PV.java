@@ -36,8 +36,7 @@ public class PV {
 		String s = "";
 		for (HashEntry h: hashList){
 			s += h.move;
-			s += " ("+h.eval+ " node:"+h.nodeType+")";
-			//s += " ("+h.zobrist+")";
+			s += " ("+h.eval/100.0+ " node:"+h.nodeType+")";
 			s += "; ";
 		}
 		return s;

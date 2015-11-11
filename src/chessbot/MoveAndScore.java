@@ -11,7 +11,7 @@ public class MoveAndScore implements Comparable<MoveAndScore>{
 	
 	@Override
 	public String toString(){
-		return move + " " + score;
+		return move + " " + score/100.0;
 	}
 	
 	@Override

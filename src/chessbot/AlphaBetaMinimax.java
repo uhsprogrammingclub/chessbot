@@ -130,10 +130,9 @@ public class AlphaBetaMinimax {
 				}
 				return depth;
 			}
-			System.out.println("PV at depth " + depth + ": "+ new PV(board));
-			System.out.println("PV line at depth " + depth + ": "+ PVLine.toString());
+			
 			depthsPV.add("PV at depth " + depth + ": "+ new PV(board));
-			depthsPV.add("PV line at depth " + depth + ": "+ PVLine.toString());
+			//depthsPV.add("PV line at depth " + depth + ": "+ PVLine.toString());
 		}
 		
 		return depth;
@@ -141,7 +140,6 @@ public class AlphaBetaMinimax {
 	
 	
 	int negaMax(int alpha, int beta, int depth, int maxDepth, List<HashEntry> parentLine){
-		//System.out.println("d:"+depth+",a:"+alpha+",b:"+beta);
 		//Get hash of current board
 		long zHash = Zobrist.getZobristHash(board);
 		int index = Zobrist.getIndex(zHash);
@@ -176,7 +174,6 @@ public class AlphaBetaMinimax {
 						parentLine.clear();
 						return oldEntry.eval; //passes up the pre-computed evaluation
 					}else{
-						System.out.println("USING OLD EVAL ON DEPTH 0");
 						currentPVLine.clear();
 						currentPVLine.add(new MoveAndScore(new Move(oldEntry.move), oldEntry.eval));
 						currentRootsChildrenScore.clear();
@@ -235,7 +232,6 @@ public class AlphaBetaMinimax {
 		int maxValue = MIN;
 		Move bestMove = null;
 		boolean newAlpha = false;
-		int originalA = alpha;
 		
 		List<HashEntry> nodeLine = new ArrayList<HashEntry>();
 		
@@ -256,8 +252,7 @@ public class AlphaBetaMinimax {
 			}
 			
 			// reset board
-			move.reverse();
-						
+			move.reverse();			
 			
 			if (currentScore == -40400){
 				return 40400;
@@ -269,21 +264,13 @@ public class AlphaBetaMinimax {
 				if (depth == 0){
 					HashEntry newEntry = new HashEntry(zHash, maxDepth - depth, currentScore, HashEntry.PV_NODE, new Move(move));
 					parentLine.clear();
-					parentLine.add(depth, newEntry);
+					parentLine.add(newEntry);
 					parentLine.addAll(nodeLine);
 					currentPVLine.clear();
 					for (HashEntry h: parentLine){
-						//if (h.move == null){
-							System.out.println("KDFLN "+h);
-						//}
-						if (h.move.executed){
-							System.out.println("QWERTYUIO:"+ move);
-						}
 						currentPVLine.add(new MoveAndScore(h.move, h.eval));
 						TranspositionTable.addEntry(h);
 					}
-					//NewPVLine.clear();
-					//NewPVLine.add(depth, null);
 					currentRootsChildrenScore.add(new MoveAndScore(new Move(bestMove), currentScore));
 				}
 			}
@@ -294,11 +281,6 @@ public class AlphaBetaMinimax {
 			// If move is too good to be true and pruning needs to been done, don't evaluate the rest of the
 			// sibling state
 			if (maxValue >= beta){
-				//if (newAlpha && NewPVLine.size() > depth+1){
-					//for (int i = NewPVLine.size()-1; i > depth; i--){
-						//NewPVLine.remove(i);
-					//}
-				//}
 				addKillerMove(depth, new Move(move));
 				break;
 			}
@@ -313,29 +295,11 @@ public class AlphaBetaMinimax {
 			newEntry = new HashEntry(zHash, maxDepth - depth, beta, HashEntry.CUT_NODE, new Move(bestMove));
 		}else if (!newAlpha){
 			newEntry = new HashEntry(zHash, maxDepth - depth, alpha, HashEntry.ALL_NODE, new Move(bestMove));
-		}else{ //if (beta > alpha && Math.abs(beta - alpha) > 1){
-			//if (bestMove.toString().equals("bF8->B4")){
-				System.out.println("NEW PV NODE AT DEPTH " + depth + " " + zHash + "a:"+originalA+",b:"+beta+",b-a:"+(beta-alpha)+",move:"+bestMove+",e:"+maxValue);
-			//}
+		}else{
 			HashEntry entry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.PV_NODE, new Move(bestMove));
-			//NewPVLine.set(depth, entry);
 			nodeLine.add(0, entry);
-			//if (parentLine == null){
-				//parentLine = new ArrayList<HashEntry>();
-			//}else{
-				//System.out.println("REPLACING PV LINE");
-			//}
-			System.out.println("nodeLine: "+nodeLine);
-			System.out.println("parentLine: "+parentLine);
-			//for (int i = PVLine.size() - nodeLine.size(); i >= 0; i--){
-				//PVLine.remove(PVLine.size()-1);
-			//}
 			parentLine.clear();
 			parentLine.addAll(nodeLine);
-			System.out.println("New parentLine: "+parentLine);
-			
-		//}else{
-			//System.out.println("PV SEARCH PV NODE; a:"+alpha+",b:"+beta+",b-a:"+(beta-alpha)+",move:"+bestMove+",e:"+maxValue); 
 		}
 		TranspositionTable.addEntry(newEntry); //add the move entry. only gets placed if eval is higher than previous entry
 
