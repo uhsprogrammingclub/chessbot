@@ -10,6 +10,7 @@ public class AlphaBetaMinimax {
 	static final int DEPTH_LIMIT = 25;
 	static final int MIN = -1000000000;
 	static final int MAX = 1000000000;
+	static final int EXIT_CODE = 40404;
 
 	// Speed up techniques
 	boolean PVSearch = true; // Using null window search
@@ -140,7 +141,7 @@ public class AlphaBetaMinimax {
 			evaluateToDepth = depth;
 			List<HashEntry> NewPVLine = new ArrayList<HashEntry>();
 			int result = negaMax(MIN, MAX, 0, depth, NewPVLine);
-			if (result != 40400) {
+			if (result != EXIT_CODE) {
 				rootsChildrenScore.clear();
 				rootsChildrenScore.addAll(currentRootsChildrenScore);
 				Collections.sort(rootsChildrenScore);
@@ -174,8 +175,9 @@ public class AlphaBetaMinimax {
 
 		// Increment the static computations
 		staticComputations++;
-		if (staticComputations > MAX_COMPUTATIONS)
-			return 40400;
+		if (staticComputations > MAX_COMPUTATIONS){
+			return EXIT_CODE;
+		}
 
 		int standPat = board.evaluateBoard() * (board.playerMove ? -1 : 1);
 
@@ -189,18 +191,24 @@ public class AlphaBetaMinimax {
 			alpha = standPat;
 		}
 
+		int maxValue = standPat;
 		// Examine all captures
 		for (Move m : board.loudMoves(board.playerMove)) {
 
 			m.execute();
 			int currentScore = -qSearch(-beta, -alpha);
 			m.reverse();
+			
+			if (currentScore == -EXIT_CODE){
+				return EXIT_CODE;
+			}
 
 			if (currentScore >= beta) {
 				return currentScore;
 			}
 
 			alpha = Math.max(currentScore, alpha);
+			maxValue = Math.max(currentScore, maxValue);
 
 		}
 
@@ -233,16 +241,19 @@ public class AlphaBetaMinimax {
 				parentLine.clear();
 				return oldEntry.eval; //passes up the pre-computed evaluation
 			}else{
-				
-				return quiescenceSearch ? qSearch(-beta, -alpha) : board.evaluateBoard() * ( board.playerMove ? -1 : 1 );
+				if(quiescenceSearch){
+					return qSearch(alpha, beta);
+				}else{
+					staticComputations++;
+					if (staticComputations > MAX_COMPUTATIONS){
+						return EXIT_CODE;
+					}
+
+					return board.evaluateBoard() * ( board.playerMove ? -1 : 1 );
+				}
 				
 			}
 			
-		}
-
-		
-		if (PVLine.size() < depth+1){
-			PVLine.add(depth, null);
 		}
 		
 		List<Move> movesAvailible = new ArrayList<Move>();
@@ -338,8 +349,8 @@ public class AlphaBetaMinimax {
 			// reset board
 			move.reverse();			
 			
-			if (currentScore == -40400){
-				return 40400;
+			if (currentScore == -EXIT_CODE){
+				return EXIT_CODE;
 			}
 			
 			

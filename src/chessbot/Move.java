@@ -270,6 +270,13 @@ public class Move {
 		}
 		return true;
 	}
+	
+	boolean isLoud(){
+		if(promotionMove || isCapture()){
+			return true;
+		}
+		return false;
+	}
 
 	@Override
 	public String toString() {

@@ -12,6 +12,7 @@ public class Game {
 	
 	//Suicide setup
 	static String setup = "rnbqkbnr/pppp1ppp/8/4p3/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2";
+	//static String setup = "rnb1kbnr/pppp1ppp/8/8/2BpP2q/5Q2/PPP2PPP/RNB1K1NR b KQkq - 0 2";
 	//static String setup = "rnb1kbnr/pppp1ppp/8/4p3/3PP2q/5N2/PPP2PPP/RNBQKB1R b KQkq - 0 1";
 	//Forsyth-Edwards Notation (FEN) game setup test
 	//static String setup = "r1bqkbnr/pppp1ppp/4p3/2P5/3Pn3/5N2/PP3PPP/RNBQK2R b KQkq - 0 7"; 

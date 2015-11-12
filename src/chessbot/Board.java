@@ -205,7 +205,7 @@ public class Board {
 		
 		for(Move m : allMoves(player)){
 			
-			if(m.promotionMove || m.destinationPc.worth > 0){
+			if(m.isLoud()){
 				loudMoves.add(m);
 				continue;
 			}

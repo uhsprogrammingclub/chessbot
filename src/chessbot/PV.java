@@ -17,7 +17,7 @@ public class PV {
 		//find entry with same index
 		HashEntry entry = TranspositionTable.trans.get(index);			
 		if(entry != null //if there is an old entry
-				&& entry.zobrist == currentZHash && entry.nodeType == HashEntry.PV_NODE){ //and the boards are the same
+				&& entry.zobrist == currentZHash /*&& entry.nodeType == HashEntry.PV_NODE*/){ //and the boards are the same
 			hashList.add(entry);
 
 			if (entry.move.executed){
