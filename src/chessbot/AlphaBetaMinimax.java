@@ -13,23 +13,20 @@ public class AlphaBetaMinimax {
 
 	// Speed up techniques
 	boolean PVSearch = true; // Using null window search
-	boolean killerHeuristic = true; // Records 3 killer moves per depth to
-									// evaluate first
-	boolean TTMoveReordering = true; // Transposition entries are evaluated
-										// first
+	boolean killerHeuristic = true; // Records 3 killer moves per depth to evaluate first
+	boolean TTMoveReordering = true; // Transposition entries are evaluated first
 	boolean useTTEvals = true; // Use previous TT entries when encountered
-	boolean iterativeDeepeningMoveReordering = true; // Evaluate the best moves
-														// at the previous depth
-														// first
-	boolean quiescenceSearch = true; // Complete basic quiescence search after
-										// finishing main search to counter
-										// horizon effect
+	boolean iterativeDeepeningMoveReordering = true; // Evaluate the best moves at the previous depth first
+	boolean quiescenceSearch = true; // Complete basic quiescence search after finishing main search to counter horizon effect
 
+	// Initialize board
 	Board board;
 
+	// Create arrays to hold root children 
 	List<MoveAndScore> rootsChildrenScore = new ArrayList<>();
 	List<MoveAndScore> currentRootsChildrenScore = new ArrayList<>();
 
+	// To hold the principal variation at each depth (serves no functional purpose)
 	List<String> depthsPV = new ArrayList<>();
 
 	// Defaulting variables
@@ -38,15 +35,22 @@ public class AlphaBetaMinimax {
 	int finalDepth = 1;
 	int movesEvaluated = 0;
 
+	//Initializing the PV Link lists
 	List<MoveAndScore> PVLine = new ArrayList<MoveAndScore>();
 	List<MoveAndScore> currentPVLine = new ArrayList<MoveAndScore>();
 
+	//Initialize killerMoves list of Move objects
 	List<Move> killerMoves = new ArrayList<Move>();
 
+	//Hashtable to store number of computations at each depth (serves no functional purpose)
 	Hashtable<Integer, Integer> computationsAtDepth = new Hashtable<Integer, Integer>(100);
-
+	
+	//Experimental method to hold computations at depth - not finished, but serves no functional purpose
 	List<Integer> evaluationDepths = new ArrayList<Integer>();
 
+	//Function that takes an input of the depth and the move to add to the killerMoves list
+	//A move is considered a killer move if it resulted in a beta cutoff at a different branch at the same depth
+	//Stores three killer moves per depth
 	void addKillerMove(int depth, Move move) {
 		if (killerMoves.size() < (depth + 1) * 3) {
 			for (int i = killerMoves.size(); i < (depth + 1) * 3; i++) {
@@ -77,6 +81,7 @@ public class AlphaBetaMinimax {
 
 	}
 
+	//Function that returns the list of the three killer moves at that depth
 	List<Move> getKillerMoves(int depth) {
 		if (killerMoves.size() < (depth + 1) * 3) {
 			for (int i = killerMoves.size(); i < (depth + 1) * 3; i++) {
@@ -102,12 +107,14 @@ public class AlphaBetaMinimax {
 		return moves;
 	}
 
+	//Function that sorts then returns the first (theoretically the best) move from the root moves
 	public Move bestMove() {
 		Collections.sort(rootsChildrenScore);
 
 		return new Move(rootsChildrenScore.get(0).move);
 	}
 
+	//Constructor for the class
 	public AlphaBetaMinimax(Board board) {
 		this.board = board;
 		finalDepth = progressiveDeepening();
@@ -120,6 +127,8 @@ public class AlphaBetaMinimax {
 		System.out.println("PV line at final depth " + finalDepth + ": " + PVLine.toString());
 	}
 
+	//Function that calls the main Negamax function
+	//Increments the maximum depth allowed until total static computations is exceeded
 	int progressiveDeepening() {
 		int depth;
 		for (depth = 1; depth < DEPTH_LIMIT; depth++) {
@@ -155,8 +164,6 @@ public class AlphaBetaMinimax {
 			}
 
 			depthsPV.add("PV at depth " + depth + ": " + new PV(board));
-			// depthsPV.add("PV line at depth " + depth + ": "+
-			// PVLine.toString());
 		}
 
 		return depth;
@@ -206,9 +213,14 @@ public class AlphaBetaMinimax {
 		//Get hash of current board
 		long zHash = Zobrist.getZobristHash(board);
 		int index = Zobrist.getIndex(zHash);
+		
 		//find entry with same index
 		HashEntry oldEntry = TranspositionTable.trans.get(index);
+		
+		//Initialize the PV line for this node
+		List<HashEntry> nodeLine = new ArrayList<HashEntry>();
 
+		//Test if it is the final depth or the game is over
 		if (depth == maxDepth || board.isGameOver() == true) {
 			
 			if (computationsAtDepth.get(depth) == null){
@@ -217,19 +229,20 @@ public class AlphaBetaMinimax {
 			
 			computationsAtDepth.put(depth, computationsAtDepth.get(depth) + 1);
 			
-			if(quiescenceSearch){
-				return qSearch(-beta, -alpha);
-				
+			if (oldEntry != null && oldEntry.zobrist == zHash && oldEntry.nodeType == HashEntry.PV_NODE){
+				parentLine.clear();
+				return oldEntry.eval; //passes up the pre-computed evaluation
 			}else{
-				staticComputations++;
-				if (staticComputations > MAX_COMPUTATIONS) return 40400; //arbitrary number to end the search
-				if (oldEntry != null && oldEntry.zobrist == zHash && oldEntry.nodeType == HashEntry.PV_NODE){
-					parentLine.clear();
-					return oldEntry.eval; //passes up the pre-computed evaluation
+
+				if(quiescenceSearch){
+					return qSearch(-beta, -alpha);
+					
 				}else{
 					return board.evaluateBoard() * ( board.playerMove ? -1 : 1 );
 				}
+				
 			}
+			
 		}
 
 		
@@ -307,8 +320,6 @@ public class AlphaBetaMinimax {
 		int maxValue = MIN;
 		Move bestMove = null;
 		boolean newAlpha = false;
-		
-		List<HashEntry> nodeLine = new ArrayList<HashEntry>();
 		
 		for (Move move: movesAvailible) {
 					
