@@ -17,7 +17,7 @@ public class AlphaBetaMinimax {
 	boolean TTMoveReordering = true; // Transposition entries are evaluated first
 	boolean useTTEvals = true; // Use previous TT entries when encountered
 	boolean iterativeDeepeningMoveReordering = true; // Evaluate the best moves at the previous depth first
-	boolean quiescenceSearch = true; // Complete basic quiescence search after finishing main search to counter horizon effect
+	boolean quiescenceSearch = false; // Complete basic quiescence search after finishing main search to counter horizon effect
 
 	// Initialize board
 	Board board;
