@@ -233,13 +233,8 @@ public class AlphaBetaMinimax {
 				parentLine.clear();
 				return oldEntry.eval; //passes up the pre-computed evaluation
 			}else{
-
-				if(quiescenceSearch){
-					return qSearch(-beta, -alpha);
-					
-				}else{
-					return board.evaluateBoard() * ( board.playerMove ? -1 : 1 );
-				}
+				
+				return quiescenceSearch ? qSearch(-beta, -alpha) : board.evaluateBoard() * ( board.playerMove ? -1 : 1 );
 				
 			}
 			
