@@ -4,7 +4,7 @@ public class HashEntry {
 	
 	public long zobrist;
 	public int depthLeft;
-	public double eval;
+	public int eval;
 	public int nodeType;
 	public Move move;
 	
@@ -12,7 +12,7 @@ public class HashEntry {
 	static int CUT_NODE = 2;
 	static int ALL_NODE = 3;
 	
-	public HashEntry(long zobrist, int depthLeft, double eval, int nodeType, Move move){
+	public HashEntry(long zobrist, int depthLeft, int eval, int nodeType, Move move){
 		this.zobrist = zobrist;
 		this.depthLeft = depthLeft;
 		this.eval = eval;

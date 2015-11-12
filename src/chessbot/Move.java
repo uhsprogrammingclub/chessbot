@@ -22,7 +22,6 @@ public class Move {
 	//boolean checkMove = false; //if the move causes a check
 	
 	public Move(Move m){
-		
 		board = m.board;
 		from = m.from;
 		to = m.to;

@@ -13,7 +13,7 @@ public class TranspositionTable {
 		long zobrist = entry.zobrist;
 		int index = Zobrist.getIndex(zobrist);
 		HashEntry oldEntry = TranspositionTable.trans.get(index);
-		
+
 		if(oldEntry == null 
 				|| oldEntry.depthLeft < entry.depthLeft || oldEntry.zobrist != entry.zobrist){
 			trans.put(index, entry);
@@ -25,13 +25,12 @@ public class TranspositionTable {
 					|| oldEntry.nodeType == HashEntry.ALL_NODE && oldEntry.eval > entry.eval){
 					trans.put(index, entry);
 				}
-			}else if(oldEntry.nodeType != HashEntry.PV_NODE || entry.nodeType == HashEntry.PV_NODE){
+			}
+			if(entry.nodeType == HashEntry.PV_NODE){
 				trans.put(index, entry);
 			}
-			if (oldEntry.nodeType == HashEntry.PV_NODE && entry.nodeType == HashEntry.PV_NODE && oldEntry.zobrist == entry.zobrist && oldEntry.eval != entry.eval){
-				System.out.println(oldEntry + "vs."+entry );
-			}
 		}
+		
 	}
 	
 }
