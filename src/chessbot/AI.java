@@ -2,52 +2,36 @@ package chessbot;
 
 import java.util.*;
 
-public class AlphaBetaMinimax {
-
+public class AI {
+	
+	//AIController
+	AIController AIC = new AIController();
+	
 	// Constants
-	static final int MAX_COMPUTATIONS = 10000;
-	static final double PRECISION = 0.00001;
-	static final int DEPTH_LIMIT = 25;
-	static final int MIN = -1000000000;
-	static final int MAX = 1000000000;
-	static final int EXIT_CODE = 40404;
-
-	// Speed up techniques
-	boolean PVSearch = true; // Using null window search
-	boolean killerHeuristic = true; // Records 3 killer moves per depth to evaluate first
-	boolean TTMoveReordering = true; // Transposition entries are evaluated first
-	boolean useTTEvals = true; // Use previous TT entries when encountered
-	boolean iterativeDeepeningMoveReordering = true; // Evaluate the best moves at the previous depth first
-	boolean quiescenceSearch = true; // Complete basic quiescence search after finishing main search to counter horizon effect
+	static final int INFINITY = 1000000000;
 
 	// Initialize board
 	Board board;
-
-	// Create arrays to hold root children 
-	List<MoveAndScore> rootsChildrenScore = new ArrayList<>();
-	List<MoveAndScore> currentRootsChildrenScore = new ArrayList<>();
-
-	// To hold the principal variation at each depth (serves no functional purpose)
-	List<String> depthsPV = new ArrayList<>();
-
-	// Defaulting variables
-	int staticComputations = 0;
-	int evaluateToDepth = 0;
-	int finalDepth = 1;
-	int movesEvaluated = 0;
-
-	//Initializing the PV Link lists
-	List<MoveAndScore> PVLine = new ArrayList<MoveAndScore>();
-	List<MoveAndScore> currentPVLine = new ArrayList<MoveAndScore>();
-
+	
 	//Initialize killerMoves list of Move objects
 	List<Move> killerMoves = new ArrayList<Move>();
-
-	//Hashtable to store number of computations at each depth (serves no functional purpose)
-	Hashtable<Integer, Integer> computationsAtDepth = new Hashtable<Integer, Integer>(100);
 	
-	//Experimental method to hold computations at depth - not finished, but serves no functional purpose
-	List<Integer> evaluationDepths = new ArrayList<Integer>();
+	//Function that calls the main Negamax function
+	//Increments the maximum depth allowed until total static computations is exceeded
+	void search() {
+		int currentDepth;
+		for (currentDepth = 1; currentDepth <= AIC.DEPTH_LIMIT; currentDepth++) {
+
+			AIC.evaluateToDepth = currentDepth;
+			List<HashEntry> NewPVLine = new ArrayList<HashEntry>();
+			negaMax(-INFINITY, INFINITY, 0, currentDepth, NewPVLine);
+			if (AIC.stopSearching) {
+				return;
+			}
+			AIC.depthsPV.add("PV at depth " + currentDepth + ": " + new PV(board));
+		}
+
+	}
 
 	//Function that takes an input of the depth and the move to add to the killerMoves list
 	//A move is considered a killer move if it resulted in a beta cutoff at a different branch at the same depth
@@ -108,79 +92,31 @@ public class AlphaBetaMinimax {
 		return moves;
 	}
 
-	//Function that sorts then returns the first (theoretically the best) move from the root moves
-	public Move bestMove() {
-		Collections.sort(rootsChildrenScore);
-
-		return new Move(rootsChildrenScore.get(0).move);
-	}
-
 	//Constructor for the class
-	public AlphaBetaMinimax(Board board) {
+	public AI(Board board) {
 		this.board = board;
-		finalDepth = progressiveDeepening();
+		search();
 
-		depthsPV.add("PV at final depth " + finalDepth + ": " + new PV(board));
+		AIC.depthsPV.add("PV at final depth " + AIC.evaluateToDepth + ": " + new PV(board));
 
-		for (String s : depthsPV) {
+		for (String s : AIC.depthsPV) {
 			System.out.println(s);
 		}
-		System.out.println("PV line at final depth " + finalDepth + ": " + PVLine.toString());
-	}
-
-	//Function that calls the main Negamax function
-	//Increments the maximum depth allowed until total static computations is exceeded
-	int progressiveDeepening() {
-		int depth;
-		for (depth = 1; depth < DEPTH_LIMIT; depth++) {
-
-			// Add entry to the array to record static computations at each
-			// depth
-			evaluationDepths.add(depth - 1, 0);
-
-			evaluateToDepth = depth;
-			List<HashEntry> NewPVLine = new ArrayList<HashEntry>();
-			int result = negaMax(MIN, MAX, 0, depth, NewPVLine);
-			if (result != EXIT_CODE) {
-				rootsChildrenScore.clear();
-				rootsChildrenScore.addAll(currentRootsChildrenScore);
-				Collections.sort(rootsChildrenScore);
-				PVLine.clear();
-				PVLine.addAll(currentPVLine);
-			} else {
-				for (MoveAndScore m : currentRootsChildrenScore) {
-					if (rootsChildrenScore.contains(m)) {
-						rootsChildrenScore.remove(m);
-					}
-				}
-				rootsChildrenScore.addAll(currentRootsChildrenScore);
-				Collections.sort(rootsChildrenScore);
-
-				if (PVLine.size() == 0 || PVLine.get(0).move.equals(currentPVLine.get(0).move)
-						|| PVLine.get(0).score < currentPVLine.get(0).score) {
-					PVLine.clear();
-					PVLine.addAll(currentPVLine);
-				}
-				return depth;
-			}
-
-			depthsPV.add("PV at depth " + depth + ": " + new PV(board));
-		}
-
-		return depth;
+		System.out.println("PV line at final depth " + AIC.evaluateToDepth + ": " + AIC.PVLine.toString());
 	}
 
 	// Basic Quiescence Search
 	int qSearch(int alpha, int beta) {
-
+		AIC.totalNodes++;
+		AIC.checkTimeLimit();
 		// Increment the static computations
-		staticComputations++;
-		if (staticComputations > MAX_COMPUTATIONS){
-			return EXIT_CODE;
+		AIC.staticComputations++;
+		if (AIC.stopSearching){
+			return 0;
 		}
 
 		int standPat = board.evaluateBoard() * (board.playerMove ? -1 : 1);
-
+		
 		// Look for a beta cutoff
 		if (standPat >= beta) {
 			return standPat; // Fail-soft
@@ -193,17 +129,23 @@ public class AlphaBetaMinimax {
 
 		int maxValue = standPat;
 		// Examine all captures
+		int moveNum = 0;
 		for (Move m : board.loudMoves(board.playerMove)) {
-
+			moveNum++;
+			
 			m.execute();
 			int currentScore = -qSearch(-beta, -alpha);
 			m.reverse();
 			
-			if (currentScore == -EXIT_CODE){
-				return EXIT_CODE;
+			if (AIC.stopSearching){
+				return 0;
 			}
 
 			if (currentScore >= beta) {
+				if (moveNum == 1){
+					AIC.fhf++;
+				}
+				AIC.fh++;
 				return currentScore;
 			}
 
@@ -217,6 +159,8 @@ public class AlphaBetaMinimax {
 	}
 
 	int negaMax(int alpha, int beta, int depth, int maxDepth, List<HashEntry> parentLine){
+		AIC.totalNodes++;
+		AIC.checkTimeLimit();
 		
 		//Get hash of current board
 		long zHash = Zobrist.getZobristHash(board);
@@ -231,22 +175,22 @@ public class AlphaBetaMinimax {
 		//Test if it is the final depth or the game is over
 		if (depth == maxDepth || board.isGameOver() == true) {
 			
-			if (computationsAtDepth.get(depth) == null){
-				computationsAtDepth.put(depth, 0);
+			if (AIC.computationsAtDepth.get(depth) == null){
+				AIC.computationsAtDepth.put(depth, 0);
 			}
 			
-			computationsAtDepth.put(depth, computationsAtDepth.get(depth) + 1);
+			AIC.computationsAtDepth.put(depth, AIC.computationsAtDepth.get(depth) + 1);
 			
 			if (oldEntry != null && oldEntry.zobrist == zHash && oldEntry.nodeType == HashEntry.PV_NODE){
 				parentLine.clear();
 				return oldEntry.eval; //passes up the pre-computed evaluation
 			}else{
-				if(quiescenceSearch){
+				if(AIC.quiescenceSearch){
 					return qSearch(alpha, beta);
 				}else{
-					staticComputations++;
-					if (staticComputations > MAX_COMPUTATIONS){
-						return EXIT_CODE;
+					AIC.staticComputations++;
+					if (AIC.stopSearching){
+						return 0;
 					}
 
 					return board.evaluateBoard() * ( board.playerMove ? -1 : 1 );
@@ -258,19 +202,26 @@ public class AlphaBetaMinimax {
 		List<Move> movesAvailible = new ArrayList<Move>();
 		List<Move> allAvailible = board.allMoves(board.playerMove);
 		
+		if(depth == 0){
+			if (AIC.iterativeDeepeningMoveReordering) {
+				if (AIC.bestRootMove != null && allAvailible.contains(AIC.bestRootMove.move)){
+					movesAvailible.add(new Move(AIC.bestRootMove.move));
+				}
+			}
+		}
+		
 		if(oldEntry != null //if there is an old entry
 			&& oldEntry.zobrist == zHash){  //and the boards are the same
 			
-			if (useTTEvals && oldEntry.depthLeft >= (maxDepth - depth) ){
+			if (AIC.useTTEvals && oldEntry.depthLeft >= (maxDepth - depth) ){
 				if(oldEntry.nodeType == HashEntry.PV_NODE){ //the evaluated node is PV
 					if (depth != 0){
 						parentLine.clear();
 						return oldEntry.eval; //passes up the pre-computed evaluation
 					}else{
-						currentPVLine.clear();
-						currentPVLine.add(new MoveAndScore(new Move(oldEntry.move), oldEntry.eval));
-						currentRootsChildrenScore.clear();
-						currentRootsChildrenScore.add(new MoveAndScore(new Move(oldEntry.move), oldEntry.eval));
+						AIC.PVLine.clear();
+						AIC.PVLine.add(new MoveAndScore(new Move(oldEntry.move), oldEntry.eval));
+						AIC.bestRootMove = new MoveAndScore(new Move(oldEntry.move), oldEntry.eval);
 						return oldEntry.eval;
 					}
 				}else if(depth != 0 && oldEntry.nodeType == HashEntry.CUT_NODE && oldEntry.eval >= beta){ //beta cutoff
@@ -282,7 +233,7 @@ public class AlphaBetaMinimax {
 						movesAvailible.add(new Move(oldEntry.move)); // make the move be computed first
 					}
 				}
-			}else if (TTMoveReordering){ // if the entry we have is not accurate enough
+			}else if (AIC.TTMoveReordering){ // if the entry we have is not accurate enough
 				if (!movesAvailible.contains(oldEntry.move) && allAvailible.contains(oldEntry.move)){
 					movesAvailible.add(new Move(oldEntry.move)); // make the move be computed first
 				}
@@ -290,23 +241,7 @@ public class AlphaBetaMinimax {
 		
 		}
 		
-		if(depth == 0){
-			staticComputations = 0;
-			currentRootsChildrenScore.clear();
-			//add the moves from previous depth iteration with the highest moves in the first place. 
-			Collections.sort(rootsChildrenScore);
-
-			if (iterativeDeepeningMoveReordering) {
-				for (MoveAndScore ms: rootsChildrenScore){
-					if (!movesAvailible.contains(ms.move) && allAvailible.contains(ms.move)){
-						movesAvailible.add(new Move(ms.move));
-					}
-				}
-			}
-		}
-		
-		
-		if (killerHeuristic){
+		if (AIC.killerHeuristic){
 			for (Move m: getKillerMoves(depth)){
 				if (!movesAvailible.contains(m) && allAvailible.contains(m)){
 					movesAvailible.add(new Move(m));
@@ -322,25 +257,22 @@ public class AlphaBetaMinimax {
 	
 		//Collections.shuffle(movesAvailible); //should give out same move
 
-		int maxValue = MIN;
+		int maxValue = -INFINITY;
 		Move bestMove = null;
 		boolean newAlpha = false;
+		int moveNum = 0;
 		
 		for (Move move: movesAvailible) {
-					
+			moveNum++;	
 			move.execute();
 			int currentScore;
-			if (!newAlpha || !PVSearch){
+			if (!newAlpha || !AIC.PVSearch){
 				currentScore = -negaMax( -beta, -alpha, depth + 1, maxDepth, nodeLine);
-				movesEvaluated++;
 			}else{
-
 				currentScore = -negaMax( -alpha-1, -alpha, depth + 1, maxDepth, nodeLine); //Do a null window search
-				movesEvaluated++;
 				
 				if (currentScore > alpha && currentScore < beta){ //if move has the possibility of increasing alpha 
 					currentScore = -negaMax( -beta, -alpha, depth + 1, maxDepth, nodeLine); //do a full-window search
-					movesEvaluated++;
 				}
 				
 			}
@@ -348,8 +280,8 @@ public class AlphaBetaMinimax {
 			// reset board
 			move.reverse();			
 			
-			if (currentScore == -EXIT_CODE){
-				return EXIT_CODE;
+			if (AIC.stopSearching){
+				return 0;
 			}
 			
 			
@@ -360,12 +292,12 @@ public class AlphaBetaMinimax {
 					parentLine.clear();
 					parentLine.add(newEntry);
 					parentLine.addAll(nodeLine);
-					currentPVLine.clear();
+					AIC.PVLine.clear();
 					for (HashEntry h: parentLine){
-						currentPVLine.add(new MoveAndScore(h.move, h.eval));
+						AIC.PVLine.add(new MoveAndScore(h.move, h.eval));
 						TranspositionTable.addEntry(h);
 					}
-					currentRootsChildrenScore.add(new MoveAndScore(new Move(bestMove), currentScore));
+					AIC.bestRootMove = new MoveAndScore(new Move(bestMove), currentScore);
 				}
 			}
 			
@@ -375,6 +307,10 @@ public class AlphaBetaMinimax {
 			// If move is too good to be true and pruning needs to been done, don't evaluate the rest of the
 			// sibling state
 			if (maxValue >= beta){
+				if (moveNum == 1){
+					AIC.fhf++;
+				}
+				AIC.fh++;
 				addKillerMove(depth, new Move(move));
 				break;
 			}

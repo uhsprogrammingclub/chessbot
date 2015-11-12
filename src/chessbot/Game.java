@@ -70,8 +70,8 @@ public class Game {
 	
 	public int getBotMove(Board b){
 		
-		AlphaBetaMinimax ai = new AlphaBetaMinimax(b);
-		Move move = ai.bestMove();
+		AI ai = new AI(b);
+		Move move = ai.AIC.bestRootMove.move;
 		move.execute();
 		
 		return b.evaluateBoard();
@@ -155,21 +155,11 @@ public class Game {
 		System.out.println(b);
 		System.out.println("Processing move...");
 		
-		long startTime = System.currentTimeMillis();
-		AlphaBetaMinimax ai = new AlphaBetaMinimax(b);
-		long endTime = System.currentTimeMillis();
+		AI ai = new AI(b);
 		
-		for(MoveAndScore m : ai.rootsChildrenScore){
-			System.out.println("Root Move: " + m);
-		}
-		System.out.println("Time expended: " + (endTime-startTime)/1000.0);
-		System.out.println("Final Depth: " + ai.finalDepth);
-		System.out.println("Moves Evaluated: " + ai.movesEvaluated);
-		System.out.println("Static computations at each depth: " + ai.computationsAtDepth);
-		System.out.println("Total static computations: " + ai.staticComputations);
-		System.out.println("Transposition Table Size: " + TranspositionTable.trans.size());
+		System.out.println(ai.AIC);
 		
-		Move move = ai.bestMove();
+		Move move = ai.AIC.bestRootMove.move;
 		
 		System.out.println("\nBot: " +move);
 
