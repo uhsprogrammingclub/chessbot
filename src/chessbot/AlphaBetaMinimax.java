@@ -5,7 +5,7 @@ import java.util.*;
 public class AlphaBetaMinimax {
 
 	// Constants
-	static final int MAX_COMPUTATIONS = 100000;
+	static final int MAX_COMPUTATIONS = 10000;
 	static final double PRECISION = 0.00001;
 	static final int DEPTH_LIMIT = 25;
 	static final int MIN = -1000000000;
@@ -253,7 +253,6 @@ public class AlphaBetaMinimax {
 				}
 				
 			}
-			
 		}
 		
 		List<Move> movesAvailible = new ArrayList<Move>();
