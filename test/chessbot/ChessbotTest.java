@@ -1,7 +1,5 @@
 package chessbot;
 
-import org.junit.Assert.*;
-
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,13 +18,16 @@ public class ChessbotTest {
 		
 		//Set the position to a suicide position
 		g.setFEN("rnbqkbnr/pppp1ppp/8/4p3/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2");
+		g.setBoard(Game.setup);
 		
-		assertTrue(g.getBotMove(g.b) > 0);
+		assertTrue(g.getBotMove(g.b) >= -10000);
 		
 	}
 	
 	@Test
 	public void testPV(){
+		
+		//Tests things about the PV to make sure it is working properly
 		
 	}
 	

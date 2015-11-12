@@ -5,7 +5,7 @@ import java.util.*;
 public class AlphaBetaMinimax {
 
 	// Constants
-	static final int MAX_COMPUTATIONS = 100000;
+	static final int MAX_COMPUTATIONS = 10000;
 	static final double PRECISION = 0.00001;
 	static final int DEPTH_LIMIT = 25;
 	static final int MIN = -1000000000;
@@ -17,7 +17,7 @@ public class AlphaBetaMinimax {
 	boolean TTMoveReordering = true; // Transposition entries are evaluated first
 	boolean useTTEvals = true; // Use previous TT entries when encountered
 	boolean iterativeDeepeningMoveReordering = true; // Evaluate the best moves at the previous depth first
-	boolean quiescenceSearch = false; // Complete basic quiescence search after finishing main search to counter horizon effect
+	boolean quiescenceSearch = true; // Complete basic quiescence search after finishing main search to counter horizon effect
 
 	// Initialize board
 	Board board;
@@ -234,15 +234,16 @@ public class AlphaBetaMinimax {
 				return oldEntry.eval; //passes up the pre-computed evaluation
 			}else{
 				
-				return quiescenceSearch ? qSearch(-beta, -alpha) : board.evaluateBoard() * ( board.playerMove ? -1 : 1 );
-				
-			}
-			
-		}
+				if (quiescenceSearch) {
+					return qSearch(alpha, beta);
+				} else {
+					staticComputations++;
+					if (staticComputations > MAX_COMPUTATIONS)
+						return 40400;
 
-		
-		if (PVLine.size() < depth+1){
-			PVLine.add(depth, null);
+					return board.evaluateBoard() * (board.playerMove ? -1 : 1);
+				}
+			}
 		}
 		
 		List<Move> movesAvailible = new ArrayList<Move>();

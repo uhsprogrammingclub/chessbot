@@ -24,6 +24,10 @@ public class Game {
 	//The current board of the game
 	Board b;
 	
+	public Game(){
+		Zobrist.zobristFillArray();
+	}
+	
 	public void setFEN(String FEN){
 		setup = FEN;
 	}
@@ -32,9 +36,10 @@ public class Game {
 		b = Utils.boardFromFEN(setup);
 	}
 	
-	public static void main(String args){
+	public static void main(String[] args){
 		
 		Game g = new Game();
+		g.setFEN("rnbqkbnr/pppp1ppp/8/4p3/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2");
 		g.init();
 		
 	}
@@ -45,8 +50,6 @@ public class Game {
 		initGUI();
 		
 		playerMovesFirst = b.playerMove;
-		
-		Zobrist.zobristFillArray();
 
 		if (botVBot){
 			botMakeMove(b);
@@ -62,6 +65,15 @@ public class Game {
 	public void initGUI(){
 		gui = new GridLayoutManager();
 		gui.updateBoard(b);
+	}
+	
+	public int getBotMove(Board b){
+		
+		AlphaBetaMinimax ai = new AlphaBetaMinimax(b);
+		Move move = ai.bestMove();
+		move.execute();
+		
+		return b.evaluateBoard();
 	}
 
 	static void takePlayerMove(Board b) {
@@ -133,14 +145,6 @@ public class Game {
 		
 	}
 	
-	public int getBotMove(Board b){
-		
-		AlphaBetaMinimax ai = new AlphaBetaMinimax(b);
-		Move move = ai.bestMove();
-		move.execute();
-		
-		return b.evaluateBoard();
-	}
 
 	static void botMakeMove(Board b) {
 		
