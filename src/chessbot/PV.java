@@ -17,8 +17,12 @@ public class PV {
 		//find entry with same index
 		HashEntry entry = TranspositionTable.trans.get(index);			
 		if(entry != null //if there is an old entry
-				&& entry.zobrist == currentZHash /*&& entry.nodeType == HashEntry.PV_NODE*/){ //and the boards are the same
+				&& entry.zobrist == currentZHash ){ //and the boards are the same
 			hashList.add(entry);
+			
+			if (entry.move == null){
+				return;
+			}
 
 			if (entry.move.executed){
 				System.out.println("PV in loop");
@@ -35,9 +39,11 @@ public class PV {
 	public String toString() {
 		String s = "";
 		for (HashEntry h: hashList){
-			s += h.move;
-			s += " ("+h.eval/100.0+ " node:"+h.nodeType+")";
-			s += "; ";
+			if (h.move != null){
+				s += h.move;
+				s += " ("+h.eval/100.0+ " node:"+h.nodeType+")";
+				s += "; ";
+			}
 		}
 		return s;
 	}

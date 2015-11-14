@@ -117,6 +117,9 @@ public class AI {
 
 		int standPat = board.evaluateBoard() * (board.playerMove ? -1 : 1);
 		
+		long zHash = Zobrist.getZobristHash(board);
+		boolean newAlpha = false;
+		
 		// Look for a beta cutoff
 		if (standPat >= beta) {
 			return standPat; // Fail-soft
@@ -124,12 +127,14 @@ public class AI {
 
 		// Update the alpha if the position is an improvement
 		if (alpha < standPat) {
+			newAlpha = true;
 			alpha = standPat;
 		}
 
 		int maxValue = standPat;
 		// Examine all captures
 		int moveNum = 0;
+		Move bestMove = null;
 		for (Move m : board.loudMoves(board.playerMove)) {
 			moveNum++;
 			
@@ -141,20 +146,42 @@ public class AI {
 				return 0;
 			}
 
+			maxValue = Math.max(currentScore, maxValue);
+			
 			if (currentScore >= beta) {
 				if (moveNum == 1){
 					AIC.fhf++;
 				}
 				AIC.fh++;
-				return currentScore;
+				break;
 			}
 
+			if (alpha < currentScore) {
+				bestMove = m;
+				newAlpha = true;
+			}
+			
 			alpha = Math.max(currentScore, alpha);
-			maxValue = Math.max(currentScore, maxValue);
 
 		}
+		
+		HashEntry newEntry = null;
+		Move entryMove = null;
+		if (bestMove != null){
+			entryMove = new Move(bestMove);
+		}
+		if(maxValue >= beta){
+			newEntry = new HashEntry(zHash, 0, beta, HashEntry.CUT_NODE, entryMove);
+		}else if (!newAlpha){
+			newEntry = new HashEntry(zHash, 0, alpha, HashEntry.ALL_NODE, entryMove);
 
-		return alpha;
+		}else{
+			newEntry = new HashEntry(zHash, 0, maxValue, HashEntry.PV_NODE, entryMove);
+		}
+		TranspositionTable.addEntry(newEntry); //add the move entry. only gets placed if eval is higher than previous entry
+
+
+		return maxValue;
 
 	}
 
@@ -289,13 +316,14 @@ public class AI {
 				bestMove = move;
 				if (depth == 0){
 					HashEntry newEntry = new HashEntry(zHash, maxDepth - depth, currentScore, HashEntry.PV_NODE, new Move(move));
+					TranspositionTable.addEntry(newEntry);
 					parentLine.clear();
 					parentLine.add(newEntry);
 					parentLine.addAll(nodeLine);
 					AIC.PVLine.clear();
 					for (HashEntry h: parentLine){
 						AIC.PVLine.add(new MoveAndScore(h.move, h.eval));
-						TranspositionTable.addEntry(h);
+						//TranspositionTable.addEntry(h);
 					}
 					AIC.bestRootMove = new MoveAndScore(new Move(bestMove), currentScore);
 				}
@@ -327,8 +355,8 @@ public class AI {
 			newEntry = new HashEntry(zHash, maxDepth - depth, alpha, HashEntry.ALL_NODE, new Move(bestMove));
 
 		}else{
-			HashEntry entry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.PV_NODE, new Move(bestMove));
-			nodeLine.add(0, entry);
+			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.PV_NODE, new Move(bestMove));
+			nodeLine.add(0, newEntry);
 			parentLine.clear();
 			parentLine.addAll(nodeLine);
 		}
