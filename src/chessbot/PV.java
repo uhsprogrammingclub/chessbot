@@ -18,10 +18,10 @@ public class PV {
 		HashEntry entry = TranspositionTable.trans.get(index);			
 		if(entry != null //if there is an old entry
 				&& entry.zobrist == currentZHash ){ //and the boards are the same
-			hashList.add(entry);
 			if (entry.move == null){
 				return;
 			}
+			hashList.add(entry);
 
 			if (entry.move.executed){
 				System.out.println("PV in loop");

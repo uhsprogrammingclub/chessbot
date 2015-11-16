@@ -8,7 +8,7 @@ public class AIController {
 	
 	// Constants
 	final int DEPTH_LIMIT = 64;
-	final double TIME_LIMIT = 12000;
+	final double TIME_LIMIT = 10000;
 	final int INFINITY = 1000000000;
 	
 	//Search stats
@@ -22,10 +22,10 @@ public class AIController {
 	int evaluateToDepth = 0;
 	
 	// Speed up techniques
-	boolean PVSearch = false; // Using null window search
+	boolean PVSearch = true; // Using null window search
 	boolean killerHeuristic = true; // Records 3 killer moves per depth to evaluate first
 	boolean TTMoveReordering = true; // Transposition entries are evaluated first
-	boolean useTTEvals = !true; // Use previous TT entries when encountered
+	boolean useTTEvals = true; // Use previous TT entries when encountered
 	boolean iterativeDeepeningMoveReordering = true; // Evaluate the best moves at the previous depth first
 	boolean quiescenceSearch = true; // Complete basic quiescence search after finishing main search to counter horizon effect
 
@@ -57,6 +57,7 @@ public class AIController {
 		s+="Nodes Evaluated: " + totalNodes + "\n";
 		s+="Fail High Nodes: " + fh + "\n";
 		s+="Fail High First Nodes: " + fhf + "\n";
+		s+="Efficiency: " + fhf*100/fh + "%\n";
 		s+="Static computations at each depth: " + computationsAtDepth + "\n";
 		s+="Total static computations: " + staticComputations + "\n";
 		s+="Transposition Table Size: " + TranspositionTable.trans.size() + "\n";
