@@ -397,6 +397,7 @@ public class Board {
 		
 		int[][] knightPieceSquares = {
 				
+			/* Old Knight Table
 			{ -50,-40,-30,-30,-30,-30,-40,-50 },
 			{ -40,-20,  0,  0,  0,  0,-20,-40 },
 			{ -30,  0, 10, 15, 15, 10,  0,-30 },
@@ -404,26 +405,91 @@ public class Board {
 			{ -30,  0, 15, 20, 20, 15,  0,-30 },
 			{ -30,  5, 10, 15, 15, 10,  5,-30 },
 			{ -40,-20,  0,  5,  5,  0,-20,-40 },
-			{ -50,-40,-30,-30,-30,-30,-40,-50 }
+			{ -50,-40,-30,-30,-30,-30,-40,-50 }*/
+			
+			{ -50,-40,-20,-15,-15,-20,-40,-50 },
+			{ -30,-15, -5, -5, -5, -5,-15,-30 },
+			{ -20,  0, 10, 15, 15, 10,  0,-20 },
+			{ -20,  0, 15, 25, 25, 15,  0,-20 },
+			{ -20,  5, 20, 25, 25, 20,  5,-20 },
+			{ -20, 10, 15, 20, 20, 15, 10,-20 },
+			{ -30,-15,  5, 10, 10,  5,-15,-30 },
+			{ -50,-40,-20,-15,-15,-20,-40,-50 }
+			
+		};
+		
+		int[][] bishopPieceSquares = {
+				
+			{ -20,-10,-10,-10,-10,-10,-10,-20 },
+			{ -10,  0,  0,  0,  0,  0,  0,-10 },
+			{ -10,  0,  5, 10, 10,  5,  0,-10 },
+			{ -10,  5,  5, 10, 10,  5,  5,-10 },
+			{ -10,  0, 10, 10, 10, 10,  0,-10 },
+			{ -10, 10, 10, 10, 10, 10, 10,-10 },
+			{ -10,  5,  0,  0,  0,  0,  5,-10 },
+			{ -20,-10,-10,-10,-10,-10,-10,-20 }
+		};
+		
+		int[][] queenPieceSquares = {
+				
+			{ -20,-10,-10, -5, -5,-10,-10,-20 },
+			{ -10,  0,  0,  0,  0,  0,  0,-10 },
+			{ -10,  0,  5,  5,  5,  5,  0,-10 },
+			{  -5,  0,  5,  5,  5,  5,  0, -5 },
+			{   0,  0,  5,  5,  5,  5,  0, -5 },
+			{ -10,  5,  5,  5,  5,  5,  0,-10 },
+			{ -10,  0,  5,  0,  0,  0,  0,-10 },
+			{ -20,-10,-10, -5, -5,-10,-10,-20 }
+			
+		};
+		
+		int[][] rookPieceSquares = {
+				
+			{ 0,  0,  0,  0,  0,  0,  0,  0 },
+			{  5, 10, 10, 10, 10, 10, 10,  5 },
+			{ -5,  0,  0,  0,  0,  0,  0, -5 },
+			{ -5,  0,  0,  0,  0,  0,  0, -5 },
+			{ -5,  0,  0,  0,  0,  0,  0, -5 },
+			{ -5,  0,  0,  0,  0,  0,  0, -5 },
+			{ -5,  0,  0,  0,  0,  0,  0, -5 },
+			{  0,  0,  0,  5,  5,  0,  0,  0 }
+			
+		};
+		
+		int[][] kingPieceSquares = {
+				
+			{ -30,-40,-40,-50,-50,-40,-40,-30 },
+			{ -30,-40,-40,-50,-50,-40,-40,-30 },
+			{ -30,-40,-40,-50,-50,-40,-40,-30 },
+			{ -30,-40,-40,-50,-50,-40,-40,-30 },
+			{ -20,-30,-30,-40,-40,-30,-30,-20 },
+			{ -10,-20,-20,-20,-20,-20,-20,-10 },
+			{  20, 20,  0,  0,  0,  0, 20, 20 },
+			{  20, 30, 10,  0,  0, 10, 30, 20 }
 			
 		};
 		
 		if(p.symbol.equals("p")){
-			
-			System.out.println(Arrays.deepToString(pawnPieceSquares));
-			System.out.println(Arrays.deepToString(gridFromPerspective(pawnPieceSquares, p.player)));
-			
-			System.out.println(this);
-			System.out.println(p);
-			System.out.println(p.getY() + " " + p.getX());
-			System.out.println(gridFromPerspective(pawnPieceSquares, p.player)[p.getY()][p.getX()]); 
-			//return 0;
 			return gridFromPerspective(pawnPieceSquares, p.player)[p.getY()][p.getX()];
 		}
 		else if(p.symbol.equals("n")){
 			return gridFromPerspective(knightPieceSquares, p.player)[p.getY()][p.getX()];
 		}
+		else if(p.symbol.equals("b")){
+			return gridFromPerspective(bishopPieceSquares, p.player)[p.getY()][p.getX()];
+		}
+		else if(p.symbol.equals("q")){
+			return gridFromPerspective(queenPieceSquares, p.player)[p.getY()][p.getX()];
+		}
+		else if(p.symbol.equals("r")){
+			return gridFromPerspective(rookPieceSquares, p.player)[p.getY()][p.getX()];
+		}
+		else if(p.symbol.equals("k")){
+			return gridFromPerspective(kingPieceSquares, p.player)[p.getY()][p.getX()];
+		}
 		else{
+			System.out.println("Invalid piece for Piece Square Function");
+			System.exit(0);
 			return 0;
 		}
 	}
