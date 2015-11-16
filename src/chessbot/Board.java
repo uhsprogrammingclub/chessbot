@@ -350,15 +350,81 @@ public class Board {
 		// Sum the worth of all of the pieces to get a base score
 		for (Piece p : pieceList) {
 			if (p.player == player && p.alive)
-				score += p.getWorth()*100;
+				score += p.getWorth() + getPieceSquare(p);
 		}
 		
 		//Sum all of the moves 
-		List<Move> moves = allMoves(player);
+		/*List<Move> moves = allMoves(player);
 		int totalMoves = moves.size();
-		score += totalMoves/3;
+		score += totalMoves/3;*/
 
 	
 		return score;
+	}
+	
+	public int[][] gridFromPerspective(int[][] grid, boolean player){
+		
+		if(!player){
+			return grid;
+		}else{
+			
+			int[][] flippedGrid = new int[8][8];
+			
+			for(int i = 0; i < grid.length; i++){
+				for(int j = 0; j < grid[i].length; j++){
+					flippedGrid[i][j] = grid[7-i][j];
+				}
+			}
+			
+			return flippedGrid;
+		}
+	}
+	
+	public int getPieceSquare(Piece p){
+		
+		int[][] pawnPieceSquares = {
+				
+			{ 0,  0,  0,  0,  0,  0,  0,  0 },
+			{50, 50, 50, 50, 50, 50, 50, 50 },
+			{10, 10, 20, 30, 30, 20, 10, 10 },
+			{ 5,  5, 10, 25, 25, 10,  5,  5 },
+			{ 0,  0,  0, 20, 20,  0,  0,  0 },
+			{ 5, -5,-10,  0,  0,-10, -5,  5 },
+			{ 5, 10, 10,-20,-20, 10, 10,  5 },
+			{ 0,  0,  0,  0,  0,  0,  0,  0 }
+				  
+		};
+		
+		int[][] knightPieceSquares = {
+				
+			{ -50,-40,-30,-30,-30,-30,-40,-50 },
+			{ -40,-20,  0,  0,  0,  0,-20,-40 },
+			{ -30,  0, 10, 15, 15, 10,  0,-30 },
+			{ -30,  5, 15, 20, 20, 15,  5,-30 },
+			{ -30,  0, 15, 20, 20, 15,  0,-30 },
+			{ -30,  5, 10, 15, 15, 10,  5,-30 },
+			{ -40,-20,  0,  5,  5,  0,-20,-40 },
+			{ -50,-40,-30,-30,-30,-30,-40,-50 }
+			
+		};
+		
+		if(p.symbol.equals("p")){
+			
+			System.out.println(Arrays.deepToString(pawnPieceSquares));
+			System.out.println(Arrays.deepToString(gridFromPerspective(pawnPieceSquares, p.player)));
+			
+			System.out.println(this);
+			System.out.println(p);
+			System.out.println(p.getY() + " " + p.getX());
+			System.out.println(gridFromPerspective(pawnPieceSquares, p.player)[p.getY()][p.getX()]); 
+			//return 0;
+			return gridFromPerspective(pawnPieceSquares, p.player)[p.getY()][p.getX()];
+		}
+		else if(p.symbol.equals("n")){
+			return gridFromPerspective(knightPieceSquares, p.player)[p.getY()][p.getX()];
+		}
+		else{
+			return 0;
+		}
 	}
 }

@@ -24,7 +24,7 @@ public class Rook extends Piece {
 	public Rook(int x, int y, boolean p) {
 
 		// Setting base values for the Queen piece
-		worth = 5;
+		worth = 500;
 		player = p;
 		symbol = "r";
 
