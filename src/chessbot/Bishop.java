@@ -22,7 +22,7 @@ public class Bishop extends Piece {
 	public Bishop(int x, int y, boolean p) {
 
 		// Setting base values for the Queen piece
-		worth = 3;
+		worth = 330;
 		player = p;
 		symbol = "b";
 

@@ -352,15 +352,147 @@ public class Board {
 		// Sum the worth of all of the pieces to get a base score
 		for (Piece p : pieceList) {
 			if (p.player == player && p.alive)
-				score += p.getWorth()*100;
+				score += p.getWorth() + getPieceSquare(p);
 		}
 		
 		//Sum all of the moves 
-		List<Move> moves = allMoves(player);
+		/*List<Move> moves = allMoves(player);
 		int totalMoves = moves.size();
-		score += totalMoves/3;
+		score += totalMoves/3;*/
 
 	
 		return score;
+	}
+	
+	public int[][] gridFromPerspective(int[][] grid, boolean player){
+		
+		if(!player){
+			return grid;
+		}else{
+			
+			int[][] flippedGrid = new int[8][8];
+			
+			for(int i = 0; i < grid.length; i++){
+				for(int j = 0; j < grid[i].length; j++){
+					flippedGrid[i][j] = grid[7-i][j];
+				}
+			}
+			
+			return flippedGrid;
+		}
+	}
+	
+	public int getPieceSquare(Piece p){
+		
+		int[][] pawnPieceSquares = {
+				
+			{ 0,  0,  0,  0,  0,  0,  0,  0 },
+			{50, 50, 50, 50, 50, 50, 50, 50 },
+			{10, 10, 20, 30, 30, 20, 10, 10 },
+			{ 5,  5, 10, 25, 25, 10,  5,  5 },
+			{ 0,  0,  0, 20, 20,  0,  0,  0 },
+			{ 5, -5,-10,  0,  0,-10, -5,  5 },
+			{ 5, 10, 10,-20,-20, 10, 10,  5 },
+			{ 0,  0,  0,  0,  0,  0,  0,  0 }
+				  
+		};
+		
+		int[][] knightPieceSquares = {
+				
+			/* Old Knight Table
+			{ -50,-40,-30,-30,-30,-30,-40,-50 },
+			{ -40,-20,  0,  0,  0,  0,-20,-40 },
+			{ -30,  0, 10, 15, 15, 10,  0,-30 },
+			{ -30,  5, 15, 20, 20, 15,  5,-30 },
+			{ -30,  0, 15, 20, 20, 15,  0,-30 },
+			{ -30,  5, 10, 15, 15, 10,  5,-30 },
+			{ -40,-20,  0,  5,  5,  0,-20,-40 },
+			{ -50,-40,-30,-30,-30,-30,-40,-50 }*/
+			
+			{ -50,-40,-20,-15,-15,-20,-40,-50 },
+			{ -30,-15, -5, -5, -5, -5,-15,-30 },
+			{ -20,  0, 10, 15, 15, 10,  0,-20 },
+			{ -20,  0, 15, 25, 25, 15,  0,-20 },
+			{ -20,  5, 20, 25, 25, 20,  5,-20 },
+			{ -20, 10, 15, 20, 20, 15, 10,-20 },
+			{ -30,-15,  5, 10, 10,  5,-15,-30 },
+			{ -50,-40,-20,-15,-15,-20,-40,-50 }
+			
+		};
+		
+		int[][] bishopPieceSquares = {
+				
+			{ -20,-10,-10,-10,-10,-10,-10,-20 },
+			{ -10,  0,  0,  0,  0,  0,  0,-10 },
+			{ -10,  0,  5, 10, 10,  5,  0,-10 },
+			{ -10,  5,  5, 10, 10,  5,  5,-10 },
+			{ -10,  0, 10, 10, 10, 10,  0,-10 },
+			{ -10, 10, 10, 10, 10, 10, 10,-10 },
+			{ -10,  5,  0,  0,  0,  0,  5,-10 },
+			{ -20,-10,-10,-10,-10,-10,-10,-20 }
+		};
+		
+		int[][] queenPieceSquares = {
+				
+			{ -20,-10,-10, -5, -5,-10,-10,-20 },
+			{ -10,  0,  0,  0,  0,  0,  0,-10 },
+			{ -10,  0,  5,  5,  5,  5,  0,-10 },
+			{  -5,  0,  5,  5,  5,  5,  0, -5 },
+			{   0,  0,  5,  5,  5,  5,  0, -5 },
+			{ -10,  5,  5,  5,  5,  5,  0,-10 },
+			{ -10,  0,  5,  0,  0,  0,  0,-10 },
+			{ -20,-10,-10, -5, -5,-10,-10,-20 }
+			
+		};
+		
+		int[][] rookPieceSquares = {
+				
+			{ 0,  0,  0,  0,  0,  0,  0,  0 },
+			{  5, 10, 10, 10, 10, 10, 10,  5 },
+			{ -5,  0,  0,  0,  0,  0,  0, -5 },
+			{ -5,  0,  0,  0,  0,  0,  0, -5 },
+			{ -5,  0,  0,  0,  0,  0,  0, -5 },
+			{ -5,  0,  0,  0,  0,  0,  0, -5 },
+			{ -5,  0,  0,  0,  0,  0,  0, -5 },
+			{  0,  0,  0,  5,  5,  0,  0,  0 }
+			
+		};
+		
+		int[][] kingPieceSquares = {
+				
+			{ -30,-40,-40,-50,-50,-40,-40,-30 },
+			{ -30,-40,-40,-50,-50,-40,-40,-30 },
+			{ -30,-40,-40,-50,-50,-40,-40,-30 },
+			{ -30,-40,-40,-50,-50,-40,-40,-30 },
+			{ -20,-30,-30,-40,-40,-30,-30,-20 },
+			{ -10,-20,-20,-20,-20,-20,-20,-10 },
+			{  20, 20,  0,  0,  0,  0, 20, 20 },
+			{  20, 30, 10,  0,  0, 10, 30, 20 }
+			
+		};
+		
+		if(p.symbol.equals("p")){
+			return gridFromPerspective(pawnPieceSquares, p.player)[p.getY()][p.getX()];
+		}
+		else if(p.symbol.equals("n")){
+			return gridFromPerspective(knightPieceSquares, p.player)[p.getY()][p.getX()];
+		}
+		else if(p.symbol.equals("b")){
+			return gridFromPerspective(bishopPieceSquares, p.player)[p.getY()][p.getX()];
+		}
+		else if(p.symbol.equals("q")){
+			return gridFromPerspective(queenPieceSquares, p.player)[p.getY()][p.getX()];
+		}
+		else if(p.symbol.equals("r")){
+			return gridFromPerspective(rookPieceSquares, p.player)[p.getY()][p.getX()];
+		}
+		else if(p.symbol.equals("k")){
+			return gridFromPerspective(kingPieceSquares, p.player)[p.getY()][p.getX()];
+		}
+		else{
+			System.out.println("Invalid piece for Piece Square Function");
+			System.exit(0);
+			return 0;
+		}
 	}
 }

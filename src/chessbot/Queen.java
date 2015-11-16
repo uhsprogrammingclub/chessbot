@@ -28,7 +28,7 @@ public class Queen extends Piece {
 	public Queen(int x, int y, boolean p) {
 
 		// Setting base values for the Queen piece
-		worth = 9;
+		worth = 900;
 		player = p;
 		symbol = "q";
 

@@ -26,7 +26,7 @@ public class Pawn extends Piece {
 	public Pawn(int x, int y, boolean p) {
 
 		// Setting base values for the Pawn piece
-		worth = 1;
+		worth = 100;
 		player = p;
 		symbol = "p";
 
