@@ -200,28 +200,37 @@ public class Board {
 	}
 	
 	//Find all possible capture moves
-	public List<Move> loudMoves(boolean player){
+	public List<Move> captureMoves(boolean player){
 		
-		List<Move> loudMoves = new ArrayList<Move>();
+		List<Move> captureMoves = new ArrayList<Move>();
+		List<Move> allMoves = allMoves(player);
 		
-		for(Move m : allMoves(player)){
+		for(Move m : allMoves){
 			
 			if(m.isLoud()){
-				loudMoves.add(m);
-				continue;
+				captureMoves.add(m);
 			}
-			
-			/*
-			m.execute();	
-			if (this.isCheck(!player)) {
-				loudMoves.add(m);
-			} 
-			m.reverse();
-			*/
 			
 		}
 		
-		return loudMoves;
+		return captureMoves;
+	}
+	
+	//Find all possible check moves
+	public List<Move> checkMoves(boolean player){
+		
+		List<Move> checkMoves = new ArrayList<Move>();
+		List<Move> allMoves = allMoves(player);
+		
+		for(Move m : allMoves){
+			
+			if(m.isCheck()){
+				checkMoves.add(m);
+			}
+			
+		}
+		
+		return checkMoves;
 	}
 
 	// Find all possible moves

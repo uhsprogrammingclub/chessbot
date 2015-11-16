@@ -119,11 +119,6 @@ public class AI {
 		
 		long zHash = Zobrist.getZobristHash(board);
 		boolean newAlpha = false;
-		
-		// Look for a beta cutoff
-		if (standPat >= beta) {
-			return standPat; // Fail-soft
-		}
 
 		// Update the alpha if the position is an improvement
 		if (alpha < standPat) {
@@ -135,7 +130,28 @@ public class AI {
 		// Examine all captures
 		int moveNum = 0;
 		Move bestMove = null;
-		for (Move m : board.loudMoves(board.playerMove)) {
+		List<Move> moves = new ArrayList<Move>();
+		if (board.isCheck(board.playerMove)){
+			moves = board.allMoves(board.playerMove);
+			if (AIC.sortMoves){
+				Collections.sort(moves);
+			}
+		}else{
+			// Look for a beta cutoff
+			if (standPat >= beta) {
+				return standPat; // Fail-soft
+			}
+			
+			List<Move> captureMoves = board.captureMoves(board.playerMove);
+			List<Move> checkMoves = board.checkMoves(board.playerMove);
+			if (AIC.sortMoves){
+				Collections.sort(captureMoves);
+				Collections.sort(checkMoves);
+			}
+			moves.addAll(captureMoves);
+			//moves.addAll(checkMoves);
+		}
+		for (Move m : moves) {
 			moveNum++;
 			
 			m.execute();

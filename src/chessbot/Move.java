@@ -280,6 +280,16 @@ public class Move implements Comparable<Move>{
 		}
 		return false;
 	}
+	
+	boolean isCheck(){
+		boolean result = false;
+		execute();	
+		if (board.isCheck(board.playerMove)) {
+			result = true;
+		} 
+		reverse();
+		return result;
+	}
 
 	@Override
 	public String toString() {
