@@ -272,8 +272,6 @@ public class Board {
 				}
 			}
 		}
-		Collections.sort(rawMoves);
-		//System.out.println(rawMoves);
 		return rawMoves;
 	}
 

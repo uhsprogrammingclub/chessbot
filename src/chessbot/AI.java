@@ -165,19 +165,10 @@ public class AI {
 
 		}
 		
-		HashEntry newEntry = null;
-		Move entryMove = null;
-		if (bestMove != null){
-			entryMove = new Move(bestMove);
+		if (bestMove != null && maxValue < beta && newAlpha){
+			HashEntry newEntry = new HashEntry(zHash, 0, maxValue, HashEntry.PV_NODE, new Move(bestMove));
+			TranspositionTable.addEntry(newEntry); //add the move entry. only gets placed if eval is higher than previous entry
 		}
-		if(maxValue >= beta){
-			newEntry = new HashEntry(zHash, 0, maxValue, HashEntry.CUT_NODE, entryMove);
-		}else if (!newAlpha){
-			newEntry = new HashEntry(zHash, 0, maxValue, HashEntry.ALL_NODE, entryMove);
-		}else{
-			newEntry = new HashEntry(zHash, 0, maxValue, HashEntry.PV_NODE, entryMove);
-		}
-		TranspositionTable.addEntry(newEntry); //add the move entry. only gets placed if eval is higher than previous entry
 
 		return maxValue;
 
@@ -224,13 +215,16 @@ public class AI {
 			}
 		}
 		
-		List<Move> movesAvailible = new ArrayList<Move>();
+		List<Move> orderedMoves = new ArrayList<Move>();
 		List<Move> allAvailible = board.allMoves(board.playerMove);
+		if (AIC.sortMoves){
+			Collections.sort(allAvailible);
+		}
 		
 		if(depth == 0){
 			if (AIC.iterativeDeepeningMoveReordering) {
 				if (AIC.bestRootMove != null && allAvailible.contains(AIC.bestRootMove.move)){
-					movesAvailible.add(new Move(AIC.bestRootMove.move));
+					orderedMoves.add(new Move(AIC.bestRootMove.move));
 				}
 			}
 		}
@@ -254,13 +248,13 @@ public class AI {
 				}else if(depth != 0 && oldEntry.nodeType == HashEntry.ALL_NODE && oldEntry.eval <= alpha){ //beta cutoff
 					return oldEntry.eval;
 				}else{
-					if (!movesAvailible.contains(oldEntry.move) && allAvailible.contains(oldEntry.move)){
-						movesAvailible.add(new Move(oldEntry.move)); // make the move be computed first
+					if (!orderedMoves.contains(oldEntry.move) && allAvailible.contains(oldEntry.move)){
+						orderedMoves.add(new Move(oldEntry.move)); // make the move be computed first
 					}
 				}
 			}else if (AIC.TTMoveReordering){ // if the entry we have is not accurate enough
-				if (!movesAvailible.contains(oldEntry.move) && allAvailible.contains(oldEntry.move)){
-					movesAvailible.add(new Move(oldEntry.move)); // make the move be computed first
+				if (!orderedMoves.contains(oldEntry.move) && allAvailible.contains(oldEntry.move)){
+					orderedMoves.add(new Move(oldEntry.move)); // make the move be computed first
 				}
 			}
 		
@@ -268,15 +262,15 @@ public class AI {
 		
 		if (AIC.killerHeuristic){
 			for (Move m: getKillerMoves(depth)){
-				if (!movesAvailible.contains(m) && allAvailible.contains(m)){
-					movesAvailible.add(new Move(m));
+				if (!orderedMoves.contains(m) && allAvailible.contains(m)){
+					orderedMoves.add(new Move(m));
 				}
 			}
 		}
 		
 		for (Move m: allAvailible){
-			if (!movesAvailible.contains(m)){
-				movesAvailible.add(m);
+			if (!orderedMoves.contains(m)){
+				orderedMoves.add(m);
 			}
 		}
 	
@@ -287,7 +281,7 @@ public class AI {
 		boolean newAlpha = false;
 		int moveNum = 0;
 		
-		for (Move move: movesAvailible) {
+		for (Move move: orderedMoves) {
 			moveNum++;	
 			move.execute();
 			int currentScore;

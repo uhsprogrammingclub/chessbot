@@ -339,6 +339,12 @@ public class Move implements Comparable<Move>{
 			}else{
 				int thisValueDiff = this.destinationPc.worth - this.piece.worth;
 				int otherValueDiff = other.destinationPc.worth - other.piece.worth;
+				if (this.promotionMove){
+					thisValueDiff += this.promotionPiece.worth;
+				}
+				if (other.promotionMove){
+					otherValueDiff += other.promotionPiece.worth;
+				}
 				if (thisValueDiff > otherValueDiff){
 					return -1;
 				}else if (thisValueDiff < otherValueDiff){
@@ -350,6 +356,16 @@ public class Move implements Comparable<Move>{
 				return 1;
 			}
 		}
+		
+		//Middle out circle pattern
+		/*double thisDistFromCenter = Math.hypot((this.piece.getX()-3.5), (this.piece.getY()-3.5));
+		double otherDistFromCenter = Math.hypot((other.piece.getX()-3.5), (other.piece.getY()-3.5));
+		
+		if (thisDistFromCenter > otherDistFromCenter){
+			return 1;
+		}else if (thisDistFromCenter < otherDistFromCenter){
+			return -1;
+		}*/
 		
 		return 0;
     }
