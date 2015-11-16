@@ -43,6 +43,7 @@ public class Game {
 		//g.setFEN("rnbqkbnr/pppp1ppp/8/8/3pP3/8/8/K7 b KQkq E3 0 1");
 		g.setFEN(setup);
 		g.init();
+		g.start();
 		
 	}
 	
@@ -52,7 +53,9 @@ public class Game {
 		initGUI();
 		
 		playerMovesFirst = b.playerMove;
-
+	}
+	
+	public void start(){
 		if (botVBot){
 			botMakeMove(b);
 		}else{

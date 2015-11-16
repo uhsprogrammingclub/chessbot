@@ -27,6 +27,8 @@ public class ChessbotTest {
 	@Test
 	public void testPV(){
 		
+		g.setFEN("rnbqkbnr/pppp1ppp/8/4p3/3PP3/8/PPP2PPP/RNBQKBNR b KQkq - 0 2");
+		
 		//Tests things about the PV to make sure it is working properly
 		
 	}
