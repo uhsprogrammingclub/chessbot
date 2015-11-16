@@ -26,6 +26,10 @@ public class Move {
 		from = m.from;
 		to = m.to;
 		
+		if (m.executed){
+			System.out.println("ERROR: Copying an executed move.");
+		}
+		
 		playerKSideCastleO = board.playerKSideCastle;
 	    playerQSideCastleO = board.playerQSideCastle;
 	    botKSideCastleO = board.botKSideCastle;
@@ -242,7 +246,6 @@ public class Move {
 			
 			if(promotionMove){
 				board.pieceList.remove(promotionPiece);
-				
 				promotionPiece.alive = false;
 				piece.alive = true;
 				

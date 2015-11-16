@@ -8,7 +8,7 @@ public class AIController {
 	
 	// Constants
 	final int DEPTH_LIMIT = 64;
-	final double TIME_LIMIT = 10000;
+	final double TIME_LIMIT = 12000;
 	final int INFINITY = 1000000000;
 	
 	//Search stats
@@ -25,9 +25,9 @@ public class AIController {
 	boolean PVSearch = false; // Using null window search
 	boolean killerHeuristic = true; // Records 3 killer moves per depth to evaluate first
 	boolean TTMoveReordering = true; // Transposition entries are evaluated first
-	boolean useTTEvals = true; // Use previous TT entries when encountered
+	boolean useTTEvals = !true; // Use previous TT entries when encountered
 	boolean iterativeDeepeningMoveReordering = true; // Evaluate the best moves at the previous depth first
-	boolean quiescenceSearch = !true; // Complete basic quiescence search after finishing main search to counter horizon effect
+	boolean quiescenceSearch = true; // Complete basic quiescence search after finishing main search to counter horizon effect
 
 	//Hashtable to store number of computations at each depth (serves no functional purpose)
 	Hashtable<Integer, Integer> computationsAtDepth = new Hashtable<Integer, Integer>(100);

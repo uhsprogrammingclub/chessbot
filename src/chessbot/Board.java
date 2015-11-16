@@ -36,6 +36,7 @@ public class Board {
 
 		// String variable to eventually return		
 		String aString = "FEN: " + Utils.boardToFEN(this) + " Board Zobrist Hash: " + Zobrist.getZobristHash(this) + "\n";
+		aString += "piece List:"+pieceList +"\n";
 		
 		aString += " |-----------------|\n";
 		// Nested loops getting values

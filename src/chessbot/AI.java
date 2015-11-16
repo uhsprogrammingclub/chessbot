@@ -147,6 +147,11 @@ public class AI {
 			}
 
 			maxValue = Math.max(currentScore, maxValue);
+
+			if (alpha < currentScore) {
+				bestMove = m;
+				newAlpha = true;
+			}
 			
 			if (currentScore >= beta) {
 				if (moveNum == 1){
@@ -154,11 +159,6 @@ public class AI {
 				}
 				AIC.fh++;
 				break;
-			}
-
-			if (alpha < currentScore) {
-				bestMove = m;
-				newAlpha = true;
 			}
 			
 			alpha = Math.max(currentScore, alpha);
@@ -171,15 +171,18 @@ public class AI {
 			entryMove = new Move(bestMove);
 		}
 		if(maxValue >= beta){
-			newEntry = new HashEntry(zHash, 0, beta, HashEntry.CUT_NODE, entryMove);
+			newEntry = new HashEntry(zHash, 0, maxValue, HashEntry.CUT_NODE, entryMove, standPat);
 		}else if (!newAlpha){
-			newEntry = new HashEntry(zHash, 0, alpha, HashEntry.ALL_NODE, entryMove);
+			newEntry = new HashEntry(zHash, 0, maxValue, HashEntry.ALL_NODE, entryMove, standPat);
 
 		}else{
-			newEntry = new HashEntry(zHash, 0, maxValue, HashEntry.PV_NODE, entryMove);
+			//System.out.println(bestMove +",mv:"+maxValue+",sp:"+standPat);
+			newEntry = new HashEntry(zHash, 0, maxValue, HashEntry.PV_NODE, entryMove, standPat);
+			if (bestMove == null && standPat == 196){
+				System.out.println(",a:"+alpha+",b:"+beta+",sp:"+standPat+",z:"+zHash+",p:"+board.pieceList);
+			}
 		}
 		TranspositionTable.addEntry(newEntry); //add the move entry. only gets placed if eval is higher than previous entry
-
 
 		return maxValue;
 
@@ -208,7 +211,7 @@ public class AI {
 			
 			AIC.computationsAtDepth.put(depth, AIC.computationsAtDepth.get(depth) + 1);
 			
-			if (oldEntry != null && oldEntry.zobrist == zHash && oldEntry.nodeType == HashEntry.PV_NODE){
+			if (AIC.useTTEvals && oldEntry != null && oldEntry.zobrist == zHash && oldEntry.nodeType == HashEntry.PV_NODE){
 				parentLine.clear();
 				return oldEntry.eval; //passes up the pre-computed evaluation
 			}else{
@@ -290,6 +293,9 @@ public class AI {
 		int moveNum = 0;
 		
 		for (Move move: movesAvailible) {
+			if (depth == 0){
+				System.out.println(move);
+			}
 			moveNum++;	
 			move.execute();
 			int currentScore;
@@ -315,7 +321,7 @@ public class AI {
 			if (currentScore > maxValue) {
 				bestMove = move;
 				if (depth == 0){
-					HashEntry newEntry = new HashEntry(zHash, maxDepth - depth, currentScore, HashEntry.PV_NODE, new Move(move));
+					HashEntry newEntry = new HashEntry(zHash, maxDepth - depth, currentScore, HashEntry.PV_NODE, new Move(move), 0);
 					TranspositionTable.addEntry(newEntry);
 					parentLine.clear();
 					parentLine.add(newEntry);
@@ -350,18 +356,24 @@ public class AI {
 		//Push entry to the TranspositionTable
 		HashEntry newEntry = null;
 		if(maxValue >= beta){
-			newEntry = new HashEntry(zHash, maxDepth - depth, beta, HashEntry.CUT_NODE, new Move(bestMove));
+			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.CUT_NODE, new Move(bestMove), 0);
 		}else if (!newAlpha){
-			newEntry = new HashEntry(zHash, maxDepth - depth, alpha, HashEntry.ALL_NODE, new Move(bestMove));
+			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.ALL_NODE, new Move(bestMove), 0);
 
 		}else{
-			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.PV_NODE, new Move(bestMove));
+			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.PV_NODE, new Move(bestMove), 0);
 			nodeLine.add(0, newEntry);
 			parentLine.clear();
 			parentLine.addAll(nodeLine);
 		}
 		TranspositionTable.addEntry(newEntry); //add the move entry. only gets placed if eval is higher than previous entry
 
+		if (depth == 1){
+			System.out.print(maxValue + ": " + bestMove + ", ");
+			bestMove.execute();
+			System.out.println(new PV(board));
+			bestMove.reverse();
+		}
 		return maxValue;
 		
 	}

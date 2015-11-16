@@ -19,7 +19,6 @@ public class PV {
 		if(entry != null //if there is an old entry
 				&& entry.zobrist == currentZHash ){ //and the boards are the same
 			hashList.add(entry);
-			
 			if (entry.move == null){
 				return;
 			}
@@ -39,11 +38,9 @@ public class PV {
 	public String toString() {
 		String s = "";
 		for (HashEntry h: hashList){
-			if (h.move != null){
-				s += h.move;
-				s += " ("+h.eval/100.0+ " node:"+h.nodeType+")";
-				s += "; ";
-			}
+			s += h.move;
+			s += " ("+h.eval/100.0+ " node:"+h.nodeType+")";
+			s += "; ";
 		}
 		return s;
 	}

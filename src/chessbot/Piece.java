@@ -40,6 +40,9 @@ public abstract class Piece {
 	public String toString() {
 		String s = "";
 		s += player ? symbol.toUpperCase() : symbol;
+		if (!alive){
+			s = "("+s+")";
+		}
 		return s;
 	}
 
@@ -52,7 +55,7 @@ public abstract class Piece {
 			return false;
 		}
 		final Piece other = (Piece) obj;
-		if (this.position.equals(other.position) && this.symbol.equals(other.symbol) && this.player == other.player) {
+		if (this.position.equals(other.position) && this.symbol.equals(other.symbol) && this.player == other.player && this.alive == other.alive) {
 			return true;
 		} else {
 			return false;
