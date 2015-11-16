@@ -25,6 +25,8 @@ public class Board {
 	boolean botKSideCastle;
 	boolean botQSideCastle;
 	
+	Point enPassantTarget = null;
+	
 	
 	int halfmoveClock = 0;
 	int fullMoveCounter = 0;

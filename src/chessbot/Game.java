@@ -40,7 +40,7 @@ public class Game {
 	public static void main(String[] args){
 		
 		Game g = new Game();
-		//g.setFEN("rnb1k1nr/pppp2pp/5p2/8/1bBpP2q/5Q2/PPP1NPPP/RNB2RK1 b kq - 0 4");
+		//g.setFEN("rnbqkbnr/pppp1ppp/8/8/3pP3/8/8/K7 b KQkq E3 0 1");
 		g.setFEN(setup);
 		g.init();
 		

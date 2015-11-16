@@ -35,10 +35,7 @@ public class AIController {
 
 	// To hold the principal variation at each depth (serves no functional purpose)
 	List<String> depthsPV = new ArrayList<>();
-	
-	//Initializing the PV Link lists
-	List<MoveAndScore> PVLine = new ArrayList<MoveAndScore>();
-	
+
 	public AIController() {
 		startTime = System.currentTimeMillis();
 	}

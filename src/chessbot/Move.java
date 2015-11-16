@@ -11,10 +11,14 @@ public class Move implements Comparable<Move>{
 	Piece promotionPiece = null;
 	boolean promotionMove = false;
 	
+	boolean enPassantMove = false;
+	Piece enPassantCapture = null;
+	
 	boolean playerKSideCastleO = false;
 	boolean playerQSideCastleO = false;
 	boolean botKSideCastleO = false;
 	boolean botQSideCastleO = false;
+	Point enPassantTargetO = null;
 	
 	boolean castleMove = false;
 	Move castleRookMove = null;
@@ -34,9 +38,13 @@ public class Move implements Comparable<Move>{
 	    playerQSideCastleO = board.playerQSideCastle;
 	    botKSideCastleO = board.botKSideCastle;
 		botQSideCastleO = board.botQSideCastle;
+		enPassantTargetO = board.enPassantTarget;
 		
 		promotionMove = m.promotionMove;
 		castleMove = m.castleMove;
+		enPassantMove = m.enPassantMove;
+		enPassantCapture = m.enPassantCapture;
+		
 		if (promotionMove){
 			if(m.promotionPiece.symbol.equals("q")){
 				this.promotionPiece = new Queen(m.to.x, m.to.y, m.promotionPiece.player);
@@ -65,6 +73,7 @@ public class Move implements Comparable<Move>{
 	    playerQSideCastleO = b.playerQSideCastle;
 	    botKSideCastleO = b.botKSideCastle;
 		botQSideCastleO = b.botQSideCastle;
+		enPassantTargetO = b.enPassantTarget;
 		
 		if(promotionPiece != null && !promotionPiece.equals("")){
 			promotionMove = true;
@@ -98,7 +107,12 @@ public class Move implements Comparable<Move>{
 		if (piece.symbol == "k" && Math.abs(to.x - from.x) == 2){
 			castleMove = true;
 		}
-		destinationPc = b.getPiece(pt);
+		destinationPc = b.getPiece(to);
+		
+		if (piece.symbol == "p" && to.x != from.x && b.isEmptySquare(to) ){
+			enPassantMove = true;
+			enPassantCapture = b.getPiece(new Point(to.x, from.y));
+		}
 	}
 
 	public Move(Board b, Point from, Point to, String promotionPiece) {
@@ -107,6 +121,7 @@ public class Move implements Comparable<Move>{
 	    playerQSideCastleO = b.playerQSideCastle;
 	    botKSideCastleO = b.botKSideCastle;
 		botQSideCastleO = b.botQSideCastle;
+		enPassantTargetO = b.enPassantTarget;
 		
 		if(promotionPiece != null && !promotionPiece.equals("")){
 			promotionMove = true;
@@ -142,6 +157,11 @@ public class Move implements Comparable<Move>{
 		
 		if (piece.symbol == "k" && Math.abs(to.x - from.x) == 2){
 			castleMove = true;
+		}
+		
+		if (piece.symbol == "p" && to.x != from.x && b.isEmptySquare(to) ){
+			enPassantMove = true;
+			enPassantCapture = b.getPiece(new Point(to.x, from.y));
 		}
 		
 	}
@@ -182,6 +202,11 @@ public class Move implements Comparable<Move>{
 		
 				board.setSquare(to, piece);
 			}
+			
+			if(enPassantMove){
+				enPassantCapture.alive = false;
+				board.setSquare(enPassantCapture.position, new Empty());
+			}
 		
 			//Change the castling variables depending on the piece being moved
 			if(piece.symbol.equals("k")){
@@ -192,6 +217,7 @@ public class Move implements Comparable<Move>{
 				}
 			}
 			
+			board.enPassantTarget = null;
 			if(piece.symbol.equals("r")){
 				if (from.x == 0){
 					if(piece.player){
@@ -205,6 +231,12 @@ public class Move implements Comparable<Move>{
 					}else{
 						board.botKSideCastle = false;
 					}
+				}
+			}else if(piece.symbol.equals("p")){
+				if (from.y == 1 && to.y == 3){
+					board.enPassantTarget = new Point(to.x, 2);
+				}else if (from.y == 6 && to.y == 4){
+					board.enPassantTarget = new Point(to.x, 5);
 				}
 			}
 			
@@ -250,11 +282,16 @@ public class Move implements Comparable<Move>{
 				piece.alive = true;
 				
 			}
+			if(enPassantMove){
+				enPassantCapture.alive = true;
+				board.setSquare(enPassantCapture.position, enPassantCapture);
+			}
 			
 			board.playerKSideCastle = playerKSideCastleO;
 			board.playerQSideCastle = playerQSideCastleO;
 			board.botKSideCastle = botKSideCastleO;
 			board.botQSideCastle = botQSideCastleO;	
+			board.enPassantTarget = enPassantTargetO;
 			
 			board.setSquare(to,  destinationPc);
 			board.setSquare(from, piece);
@@ -299,6 +336,9 @@ public class Move implements Comparable<Move>{
 		if (!destinationPc.toString().equals("-")){
 			s += "x" + destinationPc;
 		}
+		if (enPassantMove){
+			s += "x";
+		}
 		s += this.to;
 		if (promotionMove){
 			s += "=" + promotionPiece;
@@ -311,6 +351,9 @@ public class Move implements Comparable<Move>{
 			}else{
 				System.out.println("ERROR: Invalid castle move destination.");
 			}
+		}
+		if (enPassantMove){
+			s += "e.p.";
 		}
 		return s;
 	}
@@ -350,10 +393,10 @@ public class Move implements Comparable<Move>{
 				int thisValueDiff = this.destinationPc.worth - this.piece.worth;
 				int otherValueDiff = other.destinationPc.worth - other.piece.worth;
 				if (this.promotionMove){
-					thisValueDiff += this.promotionPiece.worth;
+					thisValueDiff = this.destinationPc.worth - this.promotionPiece.worth;
 				}
 				if (other.promotionMove){
-					otherValueDiff += other.promotionPiece.worth;
+					otherValueDiff = other.destinationPc.worth - other.promotionPiece.worth;
 				}
 				if (thisValueDiff > otherValueDiff){
 					return -1;
