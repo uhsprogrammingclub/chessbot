@@ -23,8 +23,7 @@ public class AI {
 		for (currentDepth = 1; currentDepth <= AIC.DEPTH_LIMIT; currentDepth++) {
 
 			AIC.evaluateToDepth = currentDepth;
-			List<HashEntry> NewPVLine = new ArrayList<HashEntry>();
-			negaMax(-INFINITY, INFINITY, 0, currentDepth, NewPVLine);
+			negaMax(-INFINITY, INFINITY, 0, currentDepth);
 			if (AIC.stopSearching) {
 				return;
 			}
@@ -102,7 +101,6 @@ public class AI {
 		for (String s : AIC.depthsPV) {
 			System.out.println(s);
 		}
-		System.out.println("PV line at final depth " + AIC.evaluateToDepth + ": " + AIC.PVLine.toString());
 	}
 
 	// Basic Quiescence Search
@@ -190,7 +188,7 @@ public class AI {
 
 	}
 
-	int negaMax(int alpha, int beta, int depth, int maxDepth, List<HashEntry> parentLine){
+	int negaMax(int alpha, int beta, int depth, int maxDepth){
 		AIC.totalNodes++;
 		AIC.checkTimeLimit();
 		
@@ -200,10 +198,7 @@ public class AI {
 		
 		//find entry with same index
 		HashEntry oldEntry = TranspositionTable.trans.get(index);
-		
-		//Initialize the PV line for this node
-		List<HashEntry> nodeLine = new ArrayList<HashEntry>();
-
+	
 		//Test if it is the final depth or the game is over
 		if (depth == maxDepth || board.isGameOver() == true) {
 			
@@ -214,7 +209,6 @@ public class AI {
 			AIC.computationsAtDepth.put(depth, AIC.computationsAtDepth.get(depth) + 1);
 			
 			if (AIC.useTTEvals && oldEntry != null && oldEntry.zobrist == zHash && oldEntry.nodeType == HashEntry.PV_NODE){
-				parentLine.clear();
 				return oldEntry.eval; //passes up the pre-computed evaluation
 			}else{
 				if(AIC.quiescenceSearch){
@@ -251,11 +245,8 @@ public class AI {
 			if (AIC.useTTEvals && oldEntry.depthLeft >= (maxDepth - depth) ){
 				if(oldEntry.nodeType == HashEntry.PV_NODE){ //the evaluated node is PV
 					if (depth != 0){
-						parentLine.clear();
 						return oldEntry.eval; //passes up the pre-computed evaluation
 					}else{
-						AIC.PVLine.clear();
-						AIC.PVLine.add(new MoveAndScore(new Move(oldEntry.move), oldEntry.eval));
 						AIC.bestRootMove = new MoveAndScore(new Move(oldEntry.move), oldEntry.eval);
 						return oldEntry.eval;
 					}
@@ -302,12 +293,12 @@ public class AI {
 			move.execute();
 			int currentScore;
 			if (!newAlpha || !AIC.PVSearch){
-				currentScore = -negaMax( -beta, -alpha, depth + 1, maxDepth, nodeLine);
+				currentScore = -negaMax( -beta, -alpha, depth + 1, maxDepth);
 			}else{
-				currentScore = -negaMax( -alpha-1, -alpha, depth + 1, maxDepth, nodeLine); //Do a null window search
+				currentScore = -negaMax( -alpha-1, -alpha, depth + 1, maxDepth); //Do a null window search
 				
 				if (currentScore > alpha && currentScore < beta){ //if move has the possibility of increasing alpha 
-					currentScore = -negaMax( -beta, -alpha, depth + 1, maxDepth, nodeLine); //do a full-window search
+					currentScore = -negaMax( -beta, -alpha, depth + 1, maxDepth); //do a full-window search
 				}
 				
 			}
@@ -325,14 +316,6 @@ public class AI {
 				if (depth == 0){
 					HashEntry newEntry = new HashEntry(zHash, maxDepth - depth, currentScore, HashEntry.PV_NODE, new Move(move));
 					TranspositionTable.addEntry(newEntry);
-					parentLine.clear();
-					parentLine.add(newEntry);
-					parentLine.addAll(nodeLine);
-					AIC.PVLine.clear();
-					for (HashEntry h: parentLine){
-						AIC.PVLine.add(new MoveAndScore(h.move, h.eval));
-						//TranspositionTable.addEntry(h);
-					}
 					AIC.bestRootMove = new MoveAndScore(new Move(bestMove), currentScore);
 				}
 			}
@@ -364,9 +347,6 @@ public class AI {
 
 		}else{
 			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.PV_NODE, new Move(bestMove));
-			nodeLine.add(0, newEntry);
-			parentLine.clear();
-			parentLine.addAll(nodeLine);
 		}
 		TranspositionTable.addEntry(newEntry); //add the move entry. only gets placed if eval is higher than previous entry
 
