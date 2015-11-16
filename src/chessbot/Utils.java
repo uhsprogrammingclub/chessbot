@@ -114,8 +114,7 @@ public class Utils {
 
 			// check if spot diagonally to the right
 			Point move = new Point(pos.x + 1, pos.y + dir);
-			if (move.squareExists() && !b.isEmptySquare(move) && b.getTeam(move) != p.player) {
-				
+			if (move.squareExists() && (!b.isEmptySquare(move) && b.getTeam(move) != p.player|| move.equals(b.enPassantTarget))) {
 				if(move.y == 0 || move.y == 7){
 					moves.add(new Move(b, move, p, "q"));
 					moves.add(new Move(b, move, p, "b"));
@@ -129,7 +128,7 @@ public class Utils {
 			// check if spot diagonally to the left
 			Point move2 = new Point(pos.x - 1, pos.y + dir);
 
-			if (move2.squareExists() && !b.isEmptySquare(move2) && b.getTeam(move2) != p.player) {
+			if (move2.squareExists() && (!b.isEmptySquare(move2) && b.getTeam(move2) != p.player || move2.equals(b.enPassantTarget))) {
 				if(move2.y == 0 || move2.y == 7){
 					moves.add(new Move(b, move2, p, "q"));
 					moves.add(new Move(b, move2, p, "n"));
@@ -398,7 +397,7 @@ public class Utils {
 		String piecePlacement = strSplit[0];
 		String sideToMove = strSplit[1];
 		String castlingRights = strSplit[2];
-		String enPassantTargets = strSplit[3];
+		String enPassantTarget = strSplit[3];
 		int halfMoveClock = Integer.parseInt(strSplit[4]);
 		int fullMoveCounter = Integer.parseInt(strSplit[5]);
 		
@@ -488,11 +487,16 @@ public class Utils {
 			}
 		}
 		
+		if (!enPassantTarget.equals("-")){
+			b.enPassantTarget = new Point(enPassantTarget);
+		}
+		
+		b.fullMoveCounter = fullMoveCounter;
+		
 		return b;
 	}
 	
 	static String boardToFEN(Board b){
-		
 		//String to ultimately return
 		String FEN = "";
 		
@@ -543,8 +547,12 @@ public class Utils {
 		FEN += " ";
 		
 		//This is where we will define what happens with En Passant when that's done
-		FEN += "- ";
-		
+		if (b.enPassantTarget == null){
+			FEN += "-";
+		}else{
+			FEN += b.enPassantTarget;	
+		}
+		FEN += " ";
 		//Add the half move clock
 		FEN += Integer.toString(b.halfmoveClock) + " ";
 		
