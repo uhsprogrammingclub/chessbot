@@ -8,7 +8,7 @@ public class AIController {
 	
 	// Constants
 	final int DEPTH_LIMIT = 64;
-	final double TIME_LIMIT = 10000;
+	final double TIME_LIMIT = 500;
 	final int INFINITY = 1000000000;
 	
 	//Search stats

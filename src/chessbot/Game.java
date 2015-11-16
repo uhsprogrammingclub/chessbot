@@ -6,7 +6,7 @@ public class Game {
 
 
 	//Default the FEN set up to the standard position
-	static String setup = "rnb1k1Br/pppp2pp/5p2/8/1b1pq3/8/PPPN1PPP/R1B2KNR b - - 0 7";
+	static String setup = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 		
 	//Scanner to take Human input
 	static Scanner s = new Scanner(System.in);
@@ -40,7 +40,8 @@ public class Game {
 	public static void main(String[] args){
 		
 		Game g = new Game();
-		g.setFEN("rnb1k1nr/pppp2pp/5p2/8/1bBpP2q/5Q2/PPP1NPPP/RNB2RK1 b kq - 0 4");
+		//g.setFEN("rnb1k1nr/pppp2pp/5p2/8/1bBpP2q/5Q2/PPP1NPPP/RNB2RK1 b kq - 0 4");
+		g.setFEN(setup);
 		g.init();
 		
 	}

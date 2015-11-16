@@ -1,6 +1,6 @@
 package chessbot;
 
-public class Move {
+public class Move implements Comparable<Move>{
 
 	Point from;
 	Point to;
@@ -330,4 +330,27 @@ public class Move {
 			return false;
 		}
 	}
+	
+	@Override
+	public int compareTo(Move other) {
+		if (this.isCapture()){
+			if (!other.isCapture()){
+				return -1;
+			}else{
+				int thisValueDiff = this.destinationPc.worth - this.piece.worth;
+				int otherValueDiff = other.destinationPc.worth - other.piece.worth;
+				if (thisValueDiff > otherValueDiff){
+					return -1;
+				}else if (thisValueDiff < otherValueDiff){
+					return 1;
+				}
+			}	
+		}else{
+			if (other.isCapture()){
+				return 1;
+			}
+		}
+		
+		return 0;
+    }
 }
