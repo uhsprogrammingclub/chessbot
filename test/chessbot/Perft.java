@@ -42,8 +42,8 @@ public class Perft {
 			
 			//Map array to correct variables
 			String FEN = strSplit[0];
+			//String FEN = "2kr4/7r/8/8/8/8/8/4K2R w K - 0 1";
 
-			
 			int[] depths = new int[strSplit.length-1];
 			
 			for (int i = 0; i<depths.length; i++){
@@ -53,13 +53,40 @@ public class Perft {
 			Board b = Utils.boardFromFEN(FEN);
 			
 			for (int i = 1; i<=depths.length; i++){
+				//i = 1;
+				System.out.println(b);
+				System.out.println("Starting Test To Depth: "+i);
 				leafNodes = 0;
-				PerftTest(b, i);
-				assertEquals("Depth "+i+": "+FEN, leafNodes, depths[i-1]);
-				System.out.println("leaf nodes: "+leafNodes + ", expected: " + depths[i-1] + "at depth "+i+": "+FEN);
+				
+				List<Move> moves = b.allMoves(b.playerMove);
+				Collections.sort(moves);
+				
+				int moveNum = 0;
+				for (Move m : moves){
+					moveNum++;
+					
+					int oldNodes = leafNodes;
+					m.execute();
+					PerftTest(b, i-1);
+					m.reverse();
+					
+					System.out.println("Move: "+ moveNum + " " + m + " " + (leafNodes-oldNodes));
+				}
+				
+				System.out.println("leaf nodes: "+leafNodes + ", expected: " + depths[i-1]);
+	
+				assertEquals("Depth "+i+": "+FEN, depths[i-1], leafNodes);
 			}
 			
 		}
+		
+		//String FEN = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1";
+		//Board b = Utils.boardFromFEN(FEN);
+		//leafNodes = 0;
+		//PerftTest(b, 4);
+		//assertEquals("Depth "+4+": "+FEN, leafNodes, 4085603);
+		//System.out.println("leaf nodes: "+leafNodes + ", expected: " + 4085603 + "at depth "+4+": "+FEN);
+		
 		
 	}
 	
