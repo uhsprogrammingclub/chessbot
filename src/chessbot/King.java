@@ -13,10 +13,10 @@ public class King extends Piece {
 		List<Move> moves = new ArrayList<Move>();
 
 		// Get castling moves
-		if(b.canCastleKSide(this)){
+		if(b.canCastleKSide(this) && !b.isCheck(player)){
 			moves.add(new Move(b, new Point(this.getX() + 2, this.getY()), this, null));
 		}
-		if(b.canCastleQSide(this)){
+		if(b.canCastleQSide(this) && !b.isCheck(player)){
 			moves.add(new Move(b, new Point(this.getX() - 2, this.getY()), this, null));
 		}
 		// Gets vertical moves

@@ -245,14 +245,16 @@ public class Move implements Comparable<Move>{
 				
 				//If it belongs to the player...
 				if(destinationPc.player){
-					
-					if(destinationPc.position.x == 0) board.playerQSideCastle = false;
-					if(destinationPc.position.x == 7) board.playerKSideCastle = false;
+					if (destinationPc.position.y == 0){
+						if(destinationPc.position.x == 0) board.playerQSideCastle = false;
+						if(destinationPc.position.x == 7) board.playerKSideCastle = false;
+					}
 					
 				}else{
-					
-					if(destinationPc.position.x == 0) board.botQSideCastle = false;
-					if(destinationPc.position.x == 7) board.botKSideCastle = false;
+					if (destinationPc.position.y == 7){
+						if(destinationPc.position.x == 0) board.botQSideCastle = false;
+						if(destinationPc.position.x == 7) board.botKSideCastle = false;
+					}
 					
 				}
 				
