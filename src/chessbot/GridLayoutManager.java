@@ -13,6 +13,11 @@ public class GridLayoutManager extends JFrame{
 	/**
 	 * 
 	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * 
+	 */
 
 	private Container contents;
 	
@@ -21,6 +26,7 @@ public class GridLayoutManager extends JFrame{
 
 	//Colors
 	private Color colorBlack = Color.DARK_GRAY;
+	private Color highlightColor = Color.ORANGE;
 	
 	//Variable that says whether the board is active for the player
 	private static boolean active = true;
@@ -57,10 +63,10 @@ public class GridLayoutManager extends JFrame{
 		for(int i = 0; i < 8; i++){
 			for(int j = 0; j < 8; j++){
 				squares[i][j] = new JButton();
+				squares[i][j].setOpaque(true);
 				squares[i][j].setBorder( new LineBorder(Color.WHITE) );
 				if((i + j) % 2 != 0){
 					
-					squares[i][j].setOpaque(true);
 					squares[i][j].setBackground(colorBlack);
 					squares[i][j].setBorder( new LineBorder(colorBlack) );
 					
@@ -146,13 +152,28 @@ public class GridLayoutManager extends JFrame{
 							if(Game.squareFrom == null){
 								
 								Game.squareFrom = new Point(j,7-i);
+								
+								squares[i][j].setOpaque(true);
+								squares[i][j].setBackground(highlightColor);
+								squares[i][j].setBorder( new LineBorder(highlightColor) );
+							
 							
 							}else{
 								
 								Game.squareTo = new Point(j,7-i);
+								
+								int oldY = 7 - Game.squareFrom.y;
+								int oldX = Game.squareFrom.x;
+								
+								if((oldY + oldX) % 2 != 0){
+									squares[oldY][oldX].setBackground(colorBlack);
+									squares[oldY][oldX].setBorder( new LineBorder(colorBlack) );
+								}else{
+									squares[oldY][oldX].setOpaque(false);
+									squares[oldY][oldX].setBorder( new LineBorder(Color.WHITE) );
+								}
 						
 							}
-							
 							return;
 						}
 					}
