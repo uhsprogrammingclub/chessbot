@@ -23,28 +23,10 @@ public class Move implements Comparable<Move>{
 	boolean castleMove = false;
 	Move castleRookMove = null;
 	
-	long originalZobrist;
-	String originalBoard;
-	
-	//boolean checkMove = false; //if the move causes a check
-	
 	public Move(Move m){
 		board = m.board;
 		from = m.from;
 		to = m.to;
-		//originalZobrist = Zobrist.getZobristHash(board);
-		//originalBoard = board.toString();
-		
-		if (originalZobrist != m.originalZobrist){
-			
-			System.out.println("Different zobrist when copying: "+originalZobrist +" vs. "+ m.originalZobrist);
-			System.out.println("The move: "+ m);
-			System.out.println(board);
-			
-			System.out.println("\n\nOriginal board: "+ m.originalBoard);
-			
-			System.exit(0);
-		}
 		
 		if (m.executed){
 			System.out.println("ERROR: Copying an executed move.");
@@ -82,7 +64,6 @@ public class Move implements Comparable<Move>{
 		
 		piece = board.getPiece(from);
 		destinationPc = board.getPiece(to);
-		//System.out.println("creating "+ originalZobrist +": "+ this);
 	}
 
 	public Move(Board b, Point pt, Piece pc, String promotionPiece) {
@@ -121,10 +102,7 @@ public class Move implements Comparable<Move>{
 		piece = pc;
 		from = new Point(pc.position.x, pc.position.y);
 		to = pt;
-		//originalZobrist = Zobrist.getZobristHash(board);
-		//originalBoard = board.toString();
-		
-		
+
 		if (piece.symbol == "k" && Math.abs(to.x - from.x) == 2){
 			castleMove = true;
 		}
@@ -134,7 +112,6 @@ public class Move implements Comparable<Move>{
 			enPassantMove = true;
 			enPassantCapture = b.getPiece(new Point(to.x, from.y));
 		}
-		//System.out.println("creating "+ originalZobrist +": "+ this);
 	}
 
 	public Move(Board b, Point from, Point to, String promotionPiece) {
@@ -172,9 +149,7 @@ public class Move implements Comparable<Move>{
 		board = b;
 		this.from = from;
 		this.to = to;
-		//originalZobrist = Zobrist.getZobristHash(board);
-		//originalBoard = board.toString();
-		
+
 		piece = b.getPiece(from);
 		destinationPc = b.getPiece(to);
 		
@@ -186,23 +161,10 @@ public class Move implements Comparable<Move>{
 			enPassantMove = true;
 			enPassantCapture = b.getPiece(new Point(to.x, from.y));
 		}
-		//System.out.println("creating "+ originalZobrist +": "+ this);
 	}
 
 	void execute() {
-		//System.out.println("executing "+ originalZobrist +": "+ this);
 		if (!executed) {
-			/*if (originalZobrist != Zobrist.getZobristHash(board)){
-				System.out.println("Different zobrist before execute: "+originalZobrist +" vs. "+ Zobrist.getZobristHash(board));
-				System.out.println("\n\n For move:"+ this);
-				System.out.println("\n\n Old board:"+ originalBoard);
-				System.out.println("\n\n Current board:"+ board);
-				System.exit(0);
-			}*/
-			
-			if (!piece.equals(board.getPiece(from))){
-				System.out.println("wrong piece: "+ this + "\n" + board);
-			}
 			board.moveHistory.add(this.toString());
 			if (castleMove){
 				if (castleRookMove == null){
@@ -234,9 +196,7 @@ public class Move implements Comparable<Move>{
 				promotionPiece.alive = true;
 				piece.alive = false;
 			}else{
-				//System.out.println("BEFORE:"+board);
 				board.setSquare(to, piece);
-				//System.out.println("AFTER:"+board);
 			}
 			
 			if(enPassantMove){
@@ -306,7 +266,6 @@ public class Move implements Comparable<Move>{
 	}
 
 	void reverse() {
-		//System.out.println("reversing "+ originalZobrist +": "+ this);
 		if (executed) {
 			board.moveHistory.remove(board.moveHistory.size()-1);
 			
@@ -340,14 +299,6 @@ public class Move implements Comparable<Move>{
 			
 			board.playerMove = !board.playerMove;
 			
-			/*if (originalZobrist != Zobrist.getZobristHash(board)){
-				System.out.println("Different zobrist after reverse: "+originalZobrist +" vs. "+ Zobrist.getZobristHash(board));
-				System.out.println("\n\n For move:"+ this);
-				System.out.println("\n\n Old board:"+ originalBoard);
-				System.out.println("\n\n Current board:"+ board);
-				System.exit(0);
-			}*/
-			
 		}else{
 			System.out.println("ERROR: Trying to reverse a move that was never called.");
 			System.exit(0);
@@ -369,21 +320,12 @@ public class Move implements Comparable<Move>{
 	}
 	
 	boolean isCheck(){
-		//System.out.println("Checking for check "+originalZobrist+": "+this);
-		//System.out.println(Zobrist.getZobristHash(board));
 		boolean result = false;
-		if (board.isGameOver())
-			System.out.println("Why is there a move");
-		if (board.isCheck(!board.playerMove)){
-			System.out.println(board);
-			System.out.println("WTF: "+ this);
-		}
 		execute();	
 		if (board.isCheck(board.playerMove)) {
 			result = true;
 		} 
 		reverse();
-		//System.out.println(Zobrist.getZobristHash(board));
 		return result;
 	}
 	
@@ -498,14 +440,14 @@ public class Move implements Comparable<Move>{
 		}
 		
 		//Middle out circle pattern
-		/*double thisDistFromCenter = Math.hypot((this.to.x-3.5), (this.to.y-3.5));
+		double thisDistFromCenter = Math.hypot((this.to.x-3.5), (this.to.y-3.5));
 		double otherDistFromCenter = Math.hypot((other.to.x-3.5), (other.to.y-3.5));
 		
 		if (thisDistFromCenter > otherDistFromCenter){
 			return 1;
 		}else if (thisDistFromCenter < otherDistFromCenter){
 			return -1;
-		}*/
+		}
 		
 		return 0;
     }

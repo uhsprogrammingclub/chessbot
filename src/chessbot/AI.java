@@ -147,7 +147,7 @@ public class AI {
 		Move bestMove = null;
 		List<Move> moves = new ArrayList<Move>();
 		if (board.isCheck(board.playerMove)){
-			moves = board.allMoves(board.playerMove);
+			moves = board.allMoves();
 			if (AIC.sortMoves){
 				Collections.sort(moves);
 			}
@@ -157,8 +157,8 @@ public class AI {
 				return standPat; // Fail-soft
 			}
 			
-			List<Move> captureMoves = board.captureMoves(board.playerMove);
-			List<Move> checkMoves = board.checkMoves(board.playerMove);
+			List<Move> captureMoves = board.captureMoves();
+			List<Move> checkMoves = board.checkMoves();
 			if (AIC.sortMoves){
 				Collections.sort(captureMoves);
 				Collections.sort(checkMoves);
@@ -245,7 +245,7 @@ public class AI {
 		}
 		
 		List<Move> orderedMoves = new ArrayList<Move>();
-		List<Move> allAvailible = board.allMoves(board.playerMove);
+		List<Move> allAvailible = board.allMoves();
 		if (AIC.sortMoves){
 			Collections.sort(allAvailible);
 		}

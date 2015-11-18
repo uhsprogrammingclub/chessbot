@@ -39,8 +39,8 @@ public class Board {
 
 		// String variable to eventually return		
 		String aString = "FEN: " + Utils.boardToFEN(this) + " Board Zobrist Hash: " + Zobrist.getZobristHash(this) + "\n";
-		aString += "Piece List: "+pieceList +"\n";
-		aString += "Move History: "+moveHistory +"\n";
+		//aString += "Piece List: "+pieceList +"\n";
+		//aString += "Move History: "+moveHistory +"\n";
 		
 		aString += " |-----------------|\n";
 		// Nested loops getting values
@@ -204,10 +204,10 @@ public class Board {
 	}
 	
 	//Find all possible capture moves
-	public List<Move> captureMoves(boolean player){
+	public List<Move> captureMoves(){
 		
 		List<Move> captureMoves = new ArrayList<Move>();
-		List<Move> allMoves = allMoves(player);
+		List<Move> allMoves = allMoves();
 		
 		for(Move m : allMoves){
 			
@@ -221,10 +221,10 @@ public class Board {
 	}
 	
 	//Find all possible check moves
-	public List<Move> checkMoves(boolean player){
+	public List<Move> checkMoves(){
 		
 		List<Move> checkMoves = new ArrayList<Move>();
-		List<Move> allMoves = allMoves(player);
+		List<Move> allMoves = allMoves();
 		
 		for(Move m : allMoves){
 			
@@ -238,36 +238,29 @@ public class Board {
 	}
 
 	// Find all possible moves
-	public List<Move> allMoves(boolean player) {
-		List<Move> rawMoves = rawMoves(player);
+	public List<Move> allMoves() {
+		List<Move> rawMoves = rawMoves();
 		// Remove moves that are illegal because of rules regarding check
 		for (Iterator<Move> iterator = rawMoves.iterator(); iterator.hasNext();) {
 			Move m = iterator.next();
 			m.execute();
-			if (this.isCheck(player)) {
+			if (this.isCheck(!playerMove)) {
 				m.reverse();
 				iterator.remove();
 			} else {
 				m.reverse();
 			}
 		}
-		if (playerMove != player){
-			System.out.println("WHAAAAT");
-		}
-		if (this.isCheck(player) && playerMove == player){
-			//System.out.println(this);
-			//System.out.println(rawMoves);
-		}
 		return rawMoves;
 
 	}
 
-	public List<Move> rawMoves(boolean player) {
+	public List<Move> rawMoves() {
 		// Array list of raw moves - may include illegal ones
 		List<Move> rawMoves = new ArrayList<Move>();
 
 		// Loop through all pieces on the board starting from the middle
-		for (int x = 0; x < 4; x++){
+		/*for (int x = 0; x < 4; x++){
 			for (int y = 0; y < 4; y++){
 				Piece p1 = getPiece(new Point(3-x, 4+y));
 				Piece p2 = getPiece(new Point(4+x, 4+y));
@@ -289,6 +282,11 @@ public class Board {
 					List<Move> moves = p4.findMoves(this);
 					rawMoves.addAll(moves);
 				}
+			}
+		}*/
+		for (Piece p: pieceList){
+			if (p.alive && p.player == playerMove){
+				rawMoves.addAll(p.findMoves(this));
 			}
 		}
 		return rawMoves;
@@ -330,7 +328,7 @@ public class Board {
 		if (isCheck(!playerMove)){
 			System.out.println("ERROR: Executed illegal move!");
 		}
-		if (allMoves(playerMove).size() == 0) {
+		if (allMoves().size() == 0) {
 			return true;
 		}
 		// Base case
@@ -343,7 +341,7 @@ public class Board {
 		int score = scoreBoard(false) - scoreBoard(true);
 		
 		if(isGameOver() && isCheck(playerMove)){
-			score += 1000000 * (playerMove ? -1 : 1);
+			score += 1000000 * (playerMove ? 1 : -1);
 		}
 	
 		

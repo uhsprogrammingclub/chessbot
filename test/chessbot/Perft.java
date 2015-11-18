@@ -58,7 +58,7 @@ public class Perft {
 				System.out.println("Starting Test To Depth: "+i);
 				leafNodes = 0;
 				
-				List<Move> moves = b.allMoves(b.playerMove);
+				List<Move> moves = b.allMoves();
 				Collections.sort(moves);
 				
 				int moveNum = 0;
@@ -97,7 +97,7 @@ public class Perft {
 			return;
 		}
 		
-		List<Move> moves = b.allMoves(b.playerMove);
+		List<Move> moves = b.allMoves();
 		Collections.sort(moves);
 		
 		for (Move m : moves){
