@@ -440,8 +440,8 @@ public class Move implements Comparable<Move>{
 		}
 		
 		//Middle out circle pattern
-		double thisDistFromCenter = Math.hypot((this.to.x-3.5), (this.to.y-3.5));
-		double otherDistFromCenter = Math.hypot((other.to.x-3.5), (other.to.y-3.5));
+		double thisDistFromCenter = Math.sqrt((this.to.x-3.5)*(this.to.x-3.5) + (this.to.y-3.5)*(this.to.y-3.5));
+		double otherDistFromCenter = Math.sqrt((other.to.x-3.5)*(other.to.x-3.5) + (other.to.y-3.5)*(other.to.y-3.5));
 		
 		if (thisDistFromCenter > otherDistFromCenter){
 			return 1;
