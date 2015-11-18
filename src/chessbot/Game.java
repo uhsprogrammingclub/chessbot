@@ -12,7 +12,7 @@ public class Game {
 	static Scanner s = new Scanner(System.in);
 	
 	//Boolean that determines whether the AI plays itself
-	static boolean botVBot = false;
+	static boolean botVBot = true;
 	static boolean playerMovesFirst = true;
 	
 	//Initialize the grid GUI layout
@@ -40,8 +40,8 @@ public class Game {
 	public static void main(String[] args){
 		
 		Game g = new Game();
-		//g.setFEN("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
-		g.setFEN(setup);
+		g.setFEN("6k1/ppr2pp1/4p3/4P1P1/2P2P2/1P4K1/P7/8 b - C3 0 0");
+		//g.setFEN(setup);
 		g.init();
 		g.start();
 		

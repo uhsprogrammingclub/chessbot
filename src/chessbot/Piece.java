@@ -40,6 +40,7 @@ public abstract class Piece {
 	public String toString() {
 		String s = "";
 		s += player ? symbol.toUpperCase() : symbol;
+		if (!alive) s = "("+s+")";
 		return s;
 	}
 

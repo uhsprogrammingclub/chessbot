@@ -27,6 +27,7 @@ public class Board {
 	
 	Point enPassantTarget = null;
 	
+	List<String> moveHistory = new ArrayList<String>();
 	
 	int halfmoveClock = 0;
 	int fullMoveCounter = 0;
@@ -38,7 +39,8 @@ public class Board {
 
 		// String variable to eventually return		
 		String aString = "FEN: " + Utils.boardToFEN(this) + " Board Zobrist Hash: " + Zobrist.getZobristHash(this) + "\n";
-		//aString += "Piece List:"+pieceList +"\n";
+		aString += "Piece List: "+pieceList +"\n";
+		aString += "Move History: "+moveHistory +"\n";
 		
 		aString += " |-----------------|\n";
 		// Nested loops getting values
@@ -249,7 +251,13 @@ public class Board {
 				m.reverse();
 			}
 		}
-
+		if (playerMove != player){
+			System.out.println("WHAAAAT");
+		}
+		if (this.isCheck(player) && playerMove == player){
+			//System.out.println(this);
+			//System.out.println(rawMoves);
+		}
 		return rawMoves;
 
 	}
@@ -319,7 +327,10 @@ public class Board {
 
 	// Function that identifies whether the game is over
 	public boolean isGameOver() {
-		if (allMoves(playerMove).size() == 0 || isCheck(!playerMove)) {
+		if (isCheck(!playerMove)){
+			System.out.println("ERROR: Executed illegal move!");
+		}
+		if (allMoves(playerMove).size() == 0) {
 			return true;
 		}
 		// Base case
@@ -331,13 +342,10 @@ public class Board {
 	public int evaluateBoard() {
 		int score = scoreBoard(false) - scoreBoard(true);
 		
-		if(allMoves(false).size() == 0 && isCheck(false)){
-			score -= 1000000;
+		if(isGameOver() && isCheck(playerMove)){
+			score += 1000000 * (playerMove ? -1 : 1);
 		}
-		
-		if(allMoves(true).size() == 0 && isCheck(true)){
-			score += 1000000;
-		}
+	
 		
 		return score;
 	}

@@ -20,14 +20,32 @@ public class AI {
 	//Increments the maximum depth allowed until total static computations is exceeded
 	void search() {
 		int currentDepth;
+		int alpha = -INFINITY;
+		int beta = INFINITY;
 		for (currentDepth = 1; currentDepth <= AIC.DEPTH_LIMIT; currentDepth++) {
 
+			int previousNodes = AIC.totalNodes;
 			AIC.evaluateToDepth = currentDepth;
-			negaMax(-INFINITY, INFINITY, 0, currentDepth);
+			int result = negaMax(alpha, beta, 0, currentDepth);
+			int nodesBeforeResearch = AIC.totalNodes;
+			if (result <= alpha){
+				alpha = -INFINITY;
+				result = negaMax(alpha, beta, 0, currentDepth);
+			}
+			if (result >= beta){
+				beta = INFINITY;
+				result = negaMax(alpha, beta, 0, currentDepth);
+			}
+			AIC.researches += AIC.totalNodes - nodesBeforeResearch;
+			
+			if (AIC.aspirationWindow){
+				alpha = result - 30;
+				beta = result + 30;
+			}
 			if (AIC.stopSearching) {
 				return;
 			}
-			AIC.depthsPV.add("PV at depth " + currentDepth + ": " + new PV(board));
+			AIC.depthsPV.add("PV at depth " + currentDepth + ": " + new PV(board) + " EBF: " + AIC.totalNodes*100/previousNodes/100.0);
 		}
 
 	}
@@ -105,7 +123,6 @@ public class AI {
 
 	// Basic Quiescence Search
 	int qSearch(int alpha, int beta) {
-		AIC.totalNodes++;
 		AIC.checkTimeLimit();
 		// Increment the static computations
 		AIC.staticComputations++;
@@ -149,6 +166,8 @@ public class AI {
 			moves.addAll(captureMoves);
 			//moves.addAll(checkMoves);
 		}
+		AIC.totalNodes++;
+		AIC.quiescentNodes++;
 		for (Move m : moves) {
 			moveNum++;
 			
@@ -270,7 +289,7 @@ public class AI {
 		if (AIC.killerHeuristic){
 			for (Move m: getKillerMoves(depth)){
 				if (!orderedMoves.contains(m) && allAvailible.contains(m)){
-					orderedMoves.add(new Move(m));
+					orderedMoves.add(new Move(allAvailible.get(allAvailible.indexOf(m))));
 				}
 			}
 		}
@@ -298,7 +317,9 @@ public class AI {
 				currentScore = -negaMax( -alpha-1, -alpha, depth + 1, maxDepth); //Do a null window search
 				
 				if (currentScore > alpha && currentScore < beta){ //if move has the possibility of increasing alpha 
+					int previousTotalNodes = AIC.totalNodes;
 					currentScore = -negaMax( -beta, -alpha, depth + 1, maxDepth); //do a full-window search
+					AIC.researches += AIC.totalNodes-previousTotalNodes;
 				}
 				
 			}

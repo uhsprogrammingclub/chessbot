@@ -5,6 +5,7 @@ import java.util.*;
 public class PV {
 	
 	List<HashEntry> hashList;
+	String PVString = "";
 	
 	public PV(Board b){
 		hashList = new ArrayList<HashEntry>();
@@ -27,6 +28,9 @@ public class PV {
 				System.out.println("PV in loop");
 				return;
 			}
+			PVString += entry.move.getSAN();
+			PVString += " ("+entry.eval/100.0+ " node:"+entry.nodeType+")";
+			PVString += "; ";
 			entry.move.execute();
 			findHashEntry(b);
 			entry.move.reverse();
@@ -36,13 +40,7 @@ public class PV {
 
 	@Override
 	public String toString() {
-		String s = "";
-		for (HashEntry h: hashList){
-			s += h.move;
-			s += " ("+h.eval/100.0+ " node:"+h.nodeType+")";
-			s += "; ";
-		}
-		return s;
+		return PVString;
 	}
 
 }
