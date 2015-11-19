@@ -403,6 +403,7 @@ public class Board {
 		return score;
 	}
 	
+	//evaluation for isolated pawns
 	public boolean IsolatedPawn(Piece pawn)
 	{
 		for(Piece p: pieceList)
@@ -412,7 +413,18 @@ public class Board {
 				return false;
 			}
 		}
+		
 		return true;
+	}
+	
+	public boolean DoubledPawns(Piece pawn)
+	{
+		for(Piece p: pieceList)
+			if(p.symbol.equals("p") && p.player == pawn.player && p.getX() == pawn.getX())
+			{
+				return true;
+			}
+		return false;
 	}
 	
 	public int[][] gridFromPerspective(int[][] grid, boolean player){
