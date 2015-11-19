@@ -420,4 +420,39 @@ public class Move implements Comparable<Move>{
 		
 		return 0;
     }
+	
+	public String getSAN() {
+		
+		String s = "";
+		if (piece.symbol != "p") {
+			s += piece.toString().toUpperCase();
+		}
+		
+		if (isCapture() || enPassantMove) {
+			if(piece.symbol == "p") s += String.valueOf((char)(piece.getX() + 97));
+			s += "x";
+		}
+		s += to.toString().toLowerCase();
+
+		if (promotionMove) {
+			s += promotionPiece.toString().toUpperCase();
+		}
+
+		if (castleMove) {
+			if (to.x == 6) {
+				s += "O-O";
+			} else if (to.x == 2) {
+				s += "O-O-O";
+			} else {
+				System.out.println("ERROR: Invalid castle move destination.");
+			}
+		}
+		if (enPassantMove) {
+			s += "e.p.";
+		}
+		if (isCheck()) {
+			s += "+";
+		}
+		return s;
+	}
 }

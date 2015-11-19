@@ -8,8 +8,10 @@ public class AIController {
 	
 	// Constants
 	final int DEPTH_LIMIT = 64;
-	final double TIME_LIMIT = 10000;
 	final int INFINITY = 1000000000;
+	
+	//Set the default time limit
+	static double timeLimit = 10000;
 	
 	//Search stats
 	int totalNodes = 0;
@@ -41,9 +43,13 @@ public class AIController {
 	}
 	
 	void checkTimeLimit(){
-		if (System.currentTimeMillis() - startTime > TIME_LIMIT){
+		if (System.currentTimeMillis() - startTime > timeLimit){
 			stopSearching = true;
 		}
+	}
+	
+	static void setComputationTime(double time){
+		timeLimit = time;
 	}
 	
 	@Override

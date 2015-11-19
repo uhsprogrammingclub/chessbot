@@ -98,9 +98,9 @@ public class AI {
 
 		AIC.depthsPV.add("PV at final depth " + AIC.evaluateToDepth + ": " + new PV(board));
 
-		for (String s : AIC.depthsPV) {
+		/*for (String s : AIC.depthsPV) {
 			System.out.println(s);
-		}
+		}*/
 	}
 
 	// Basic Quiescence Search
@@ -187,8 +187,9 @@ public class AI {
 		return maxValue;
 
 	}
-
+	
 	int negaMax(int alpha, int beta, int depth, int maxDepth){
+		
 		AIC.totalNodes++;
 		AIC.checkTimeLimit();
 		
@@ -267,10 +268,10 @@ public class AI {
 		
 		}
 		
-		if (AIC.killerHeuristic){
-			for (Move m: getKillerMoves(depth)){
-				if (!orderedMoves.contains(m) && allAvailible.contains(m)){
-					orderedMoves.add(new Move(m));
+		if (AIC.killerHeuristic) {
+			for (Move m : getKillerMoves(depth)) {
+				if (!orderedMoves.contains(m) && allAvailible.contains(m)) {
+					orderedMoves.add(new Move(allAvailible.get(allAvailible.indexOf(m))));
 				}
 			}
 		}

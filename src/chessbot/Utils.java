@@ -561,5 +561,47 @@ public class Utils {
 		
 		return FEN;
 	}
+	
+	static Map<String, String[]> edpGetInfo(String edp){
+		
+		//There might be a more elegant method here...
+		
+		String info = edp.split (" ", 5) [4];
+		
+		Map<String, String[]> infoMap = new HashMap<String, String[]>();
+
+		for(String part : info.split(";")){
+			
+			part = part.trim();
+			
+			if(part.equals("")){
+				continue;
+			}
+
+			String[] split = part.split("\\s+", 2);
+			String[] arguments = split[1].split(" ");
+			
+			//Confirmation
+			if(split.length != 2 || arguments.length < 1){
+				System.out.println("edpGetInfo functions has EDP input which is not compatible!");
+				System.exit(0);
+			}
+			
+			infoMap.put(split[0], arguments);
+		}
+		
+		/*for (Map.Entry<String, String[]> entry : infoMap.entrySet()) {
+		       String key = entry.getKey().toString();;
+		       String[] value = entry.getValue();
+		       System.out.println("key: " + key + " value: " + Arrays.toString(value) );
+		}*/
+		
+		return infoMap;
+		
+	}
+	
+	static String edpGetFEN(String edp){
+		return edp.replace(edp.split (" ", 5) [4], "") + "0" + " 0";
+	}
 
 }
