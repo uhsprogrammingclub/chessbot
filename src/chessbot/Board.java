@@ -361,11 +361,36 @@ public class Board {
 				score += p.getWorth() + getPieceSquare(p);
 		}
 		
-		//Sum all of the moves 
-		/*List<Move> moves = allMoves(player);
-		int totalMoves = moves.size();
-		score += totalMoves/3;*/
-
+		//Get hash of current board
+		long pHash = Zobrist.getPawnZobristHash(this);
+		int index = Zobrist.getIndex(pHash);
+				
+		//find entry with same index
+		StructureHashEntry oldEntry = StructureTable.pawns.get(index);
+		if(oldEntry != null){
+			score += oldEntry.eval;
+		}else{
+			
+			int pawnEvaluation = 0;
+			
+			/*** Implementation for pawn structure analysis goes here ***/
+			
+			//Implementation of Isolated Pawns
+			
+			//Implementation of Backwards Pawns
+			
+			//Implementation of Half Open Files
+			
+			//Implementation of Doubled Pawns
+			
+			//Implementation of Pawn Chain
+			
+			//Implementation of Holes
+			
+			//Add the entry to the hash table
+			StructureTable.addEntry(new StructureHashEntry(pHash, pawnEvaluation));
+			
+		}
 	
 		return score;
 	}
@@ -404,16 +429,6 @@ public class Board {
 		};
 		
 		int[][] knightPieceSquares = {
-				
-			/* Old Knight Table
-			{ -50,-40,-30,-30,-30,-30,-40,-50 },
-			{ -40,-20,  0,  0,  0,  0,-20,-40 },
-			{ -30,  0, 10, 15, 15, 10,  0,-30 },
-			{ -30,  5, 15, 20, 20, 15,  5,-30 },
-			{ -30,  0, 15, 20, 20, 15,  0,-30 },
-			{ -30,  5, 10, 15, 15, 10,  5,-30 },
-			{ -40,-20,  0,  5,  5,  0,-20,-40 },
-			{ -50,-40,-30,-30,-30,-30,-40,-50 }*/
 			
 			{ -50,-40,-20,-15,-15,-20,-40,-50 },
 			{ -30,-15, -5, -5, -5, -5,-15,-30 },

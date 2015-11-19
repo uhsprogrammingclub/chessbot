@@ -108,4 +108,22 @@ public class Zobrist {
 		}
 		return zKey;
 	}
+	
+	public static long getPawnZobristHash(Board b){
+			
+		long zKey = 0;
+		for(int i = 0; i < 64; i++){
+			//Computer Pawn
+			if(b.locations[i].symbol == "p" && b.locations[i].player == false){
+				zKey ^= zArray[0][0][i];
+			}
+			//Player Pawn
+			else if(b.locations[i].symbol == "p" && b.locations[i].player == true){
+				zKey ^= zArray[1][0][i];
+			}
+		}
+		
+		return zKey;
+	
+	}
 }
