@@ -137,22 +137,34 @@ public class OpeningBook implements Runnable{
 		OpeningHashEntry entry = book.get(index);
 		Move chosenMove = null;
 		if (entry != null && entry.zobrist == zobrist && entry.moves.size() != 0){
-			List<Move> noDuplicates = new ArrayList<Move>();
+			List<MoveAndScore> noDuplicates = new ArrayList<MoveAndScore>();
 			List<Move> entryCopy = new ArrayList<Move>();
 			entryCopy.addAll(entry.moves);
 			
 			Iterator<Move> iterator = entryCopy.iterator();
 	        while (iterator.hasNext())
 	        {
-	        	Move o = (Move) iterator.next();
-	            if(!noDuplicates.contains(o)) noDuplicates.add(o);
+	        	Move m = (Move) iterator.next();
+	        	boolean added = false;
+	            for (MoveAndScore ms: noDuplicates){
+	            	if (m.equals(ms.move)){
+	            		ms.score += 1;
+	            		added = true;
+	            	}
+	            }
+	            if (added == false){
+	            	noDuplicates.add(new MoveAndScore(m, 1));
+	            }
 	        }
+	        Collections.sort(noDuplicates);
+	        String noDuplicatesString = "";
+	        for (MoveAndScore ms: noDuplicates){
+	        	noDuplicatesString += ms.move + " " + (int)ms.score*100/entryCopy.size() +"%; ";
+            }
 
-			System.out.println("Possible opening moves: " + noDuplicates);
+			System.out.println("Possible opening moves: " + noDuplicatesString);
 			
 			chosenMove = entry.moves.get((int)(Math.random()*entry.moves.size()));
-			
-			System.out.println("Randomly chosen: " + chosenMove);
 		}
 		return chosenMove;
 	}

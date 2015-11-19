@@ -109,6 +109,7 @@ public class Game {
 		Move move = null;
 		List<Move> validMoves = b.allMoves();
 
+		OpeningBook.getOpeningMove(b);
 		
 		while (true) {
 			
