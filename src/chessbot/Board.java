@@ -10,7 +10,7 @@ public class Board {
 	 * 2nd rows are for the computer.
 	 **/
 
-	// Two-dimensional array to hold the locations of all of the pieces
+	// One-dimensional array to hold the locations of all of the pieces
 	Piece[] locations = new Piece[64];
 
 	// One-dimensional array to hold simple list of pieces
@@ -401,6 +401,18 @@ public class Board {
 		}
 	
 		return score;
+	}
+	
+	public boolean IsolatedPawn(Piece pawn)
+	{
+		for(Piece p: pieceList)
+		{
+			if(p.symbol.equals("p") && p.player == pawn.player && (p.getX() == pawn.getX()+1 || p.getX() == pawn.getX()-1))
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	public int[][] gridFromPerspective(int[][] grid, boolean player){
