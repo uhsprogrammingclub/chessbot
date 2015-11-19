@@ -10,11 +10,9 @@ import org.junit.Test;
 
 public class EngineTesting {
 
-	Game g;
 
 	@Before
 	public void init() {
-		g = new Game();
 	}
 	
 	boolean winAtChess = true;
@@ -53,11 +51,12 @@ public class EngineTesting {
 			for (String edp : tests) {
 				
 				Map<String, String[]> info = Utils.edpGetInfo(edp);
-				g.setBoard(Utils.edpGetFEN(edp));
+				Board b = Utils.boardFromFEN(Utils.edpGetFEN(edp));
 				AIController.setComputationTime(time);
 
-				String botMove = g.getBotMove(g.b).getSAN();
-				System.out.println(g.b);
+				AI ai = new AI(b);
+				String botMove = ai.AIC.bestRootMove.move.getSAN();
+				System.out.println(b);
 				
 				System.out.println("Test ID: " + Arrays.toString(info.get("id")) + " Actual Best Moves: "
 						+ Arrays.toString(info.get("bm")) + " Computer Move: [" + botMove + "]");
@@ -114,11 +113,12 @@ public class EngineTesting {
 			for (String edp : tests) {
 				
 				Map<String, String[]> info = Utils.edpGetInfo(edp);
-				g.setBoard(Utils.edpGetFEN(edp));
+				Board b = Utils.boardFromFEN(Utils.edpGetFEN(edp));
 				AIController.setComputationTime(time);
 
-				String botMove = g.getBotMove(g.b).getSAN();
-				System.out.println(g.b);
+				AI ai = new AI(b);
+				String botMove = ai.AIC.bestRootMove.move.getSAN();
+				System.out.println(b);
 				
 				System.out.println("Test ID: " + Arrays.toString(info.get("id")) + " Actual Best Moves: "
 						+ Arrays.toString(info.get("bm")) + " Computer Move: [" + botMove + "]");

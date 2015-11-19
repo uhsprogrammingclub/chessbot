@@ -13,12 +13,10 @@ import java.io.File;
 
 public class Perft {
 
-	Game g;
 	int leafNodes = 0;
 
 	@Before
 	public void init() {
-		g = new Game();
 	}
 
 	@Test

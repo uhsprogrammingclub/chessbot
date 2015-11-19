@@ -95,13 +95,6 @@ public class Game {
 		gui.updateBoard(b);
 	}
 	
-	public Move getBotMove(Board b){
-		
-		AI ai = new AI(b);
-		Move move = ai.AIC.bestRootMove.move;
-		return move;
-	}
-
 	static void takePlayerMove(Board b) {
 		
 		b.fullMoveCounter++;
@@ -182,21 +175,14 @@ public class Game {
 		
 		AI ai = new AI(b);
 		
-		//System.out.println(ai.AIC);
+		System.out.println(ai.AIC);
 		
-		Move move = ai.AIC.bestRootMove.move;
+		MoveAndScore move = ai.AIC.bestRootMove;
 		
-		//System.out.println("\nBot: " +move);
+		System.out.println("\nBot: " +move);
 
-		move.execute();
+		move.move.execute();
 		
-		//System.out.println("Pieces: ");
-		
-		for (Piece p : b.pieceList){
-			if (p.alive == true && p.worth != 0){ 
-				//System.out.print(p + ", ");
-			}
-		}
 		gui.updateBoard(b);
 		
 		if (!b.isGameOver()) {
