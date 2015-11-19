@@ -2,6 +2,9 @@ package chessbot;
 
 import java.util.*;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class Game {
 
 
@@ -39,8 +42,25 @@ public class Game {
 	
 	public static void main(String[] args){
 		
+		/*String f = "N1";
+		System.out.println(f.charAt(1));
+		System.out.println((int)f.charAt(1));
+		System.exit(0);
+		
+		List<String> allMatches = new ArrayList<String>();
+		 Matcher m = Pattern.compile("(?:[PNBRQK]?[a-h]?[1-8]?x?[a-h][1-8](?:\\=[PNBRQK])?|O(-?O)\\{1,2\\})[\\+#]?(\\s*[\\!\\?]+)?")
+		     .matcher("Qxe5Pxe4+");
+		 while (m.find()) {
+		   allMatches.add(m.group());
+		 }
+		 
+		 for(String s : allMatches){
+			 System.out.println(s);
+		 }
+		 System.exit(0);*/
+		
 		Game g = new Game();
-		//g.setFEN("1k1r4/pp1b1R2/3q2pp/4p3/2B5/4Q3/PPP2B2/2K5 b - - 0 0");
+		//g.setFEN("3rr1k1/1pp2pp1/p6p/2bP1R2/1nP1p3/2R1P3/1P1NK3/8 b - - 0 0"); - Reed Game
 		g.setFEN(setup);
 		g.init();
 		g.start();
@@ -75,13 +95,11 @@ public class Game {
 		gui.updateBoard(b);
 	}
 	
-	public int getBotMove(Board b){
+	public Move getBotMove(Board b){
 		
 		AI ai = new AI(b);
 		Move move = ai.AIC.bestRootMove.move;
-		move.execute();
-		
-		return b.evaluateBoard();
+		return move;
 	}
 
 	static void takePlayerMove(Board b) {
@@ -164,11 +182,11 @@ public class Game {
 		
 		AI ai = new AI(b);
 		
-		System.out.println(ai.AIC);
+		//System.out.println(ai.AIC);
 		
 		Move move = ai.AIC.bestRootMove.move;
 		
-		System.out.println("\nBot: " +move);
+		//System.out.println("\nBot: " +move);
 
 		move.execute();
 		

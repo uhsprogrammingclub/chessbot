@@ -123,9 +123,9 @@ public class AI {
 
 		AIC.depthsPV.add("PV at final depth " + AIC.evaluateToDepth + ": " + new PV(board));
 
-		for (String s : AIC.depthsPV) {
+		/*for (String s : AIC.depthsPV) {
 			System.out.println(s);
-		}
+		}*/
 	}
 
 	// Basic Quiescence Search
@@ -213,8 +213,9 @@ public class AI {
 		return maxValue;
 
 	}
-
+	
 	int negaMax(int alpha, int beta, int depth, int maxDepth){
+		
 		AIC.totalNodes++;
 		AIC.checkTimeLimit();
 		
