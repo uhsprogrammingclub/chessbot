@@ -80,14 +80,6 @@ public class Perft {
 			
 		}
 		
-		//String FEN = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1";
-		//Board b = Utils.boardFromFEN(FEN);
-		//leafNodes = 0;
-		//PerftTest(b, 4);
-		//assertEquals("Depth "+4+": "+FEN, leafNodes, 4085603);
-		//System.out.println("leaf nodes: "+leafNodes + ", expected: " + 4085603 + "at depth "+4+": "+FEN);
-		
-		
 	}
 	
 	

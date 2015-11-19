@@ -22,6 +22,13 @@ public class AI {
 		int currentDepth;
 		int alpha = -INFINITY;
 		int beta = INFINITY;
+		if (AIC.useOpeningBook){
+			Move opening = OpeningBook.getOpeningMove(board);
+			if (opening != null){
+				AIC.bestRootMove = new MoveAndScore(new Move(board, opening), 0);
+				return;
+			}
+		}
 		for (currentDepth = 1; currentDepth <= AIC.DEPTH_LIMIT; currentDepth++) {
 
 			int previousNodes = AIC.totalNodes;
@@ -199,7 +206,7 @@ public class AI {
 		}
 		
 		if (bestMove != null && maxValue < beta && newAlpha){
-			HashEntry newEntry = new HashEntry(zHash, 0, maxValue, HashEntry.PV_NODE, new Move(bestMove));
+			HashEntry newEntry = new HashEntry(zHash, 0, maxValue, HashEntry.PV_NODE, new Move(board, bestMove));
 			TranspositionTable.addEntry(newEntry); //add the move entry. only gets placed if eval is higher than previous entry
 		}
 
@@ -253,7 +260,7 @@ public class AI {
 		if(depth == 0){
 			if (AIC.iterativeDeepeningMoveReordering) {
 				if (AIC.bestRootMove != null && allAvailible.contains(AIC.bestRootMove.move)){
-					orderedMoves.add(new Move(AIC.bestRootMove.move));
+					orderedMoves.add(new Move(board, AIC.bestRootMove.move));
 				}
 			}
 		}
@@ -266,7 +273,7 @@ public class AI {
 					if (depth != 0){
 						return oldEntry.eval; //passes up the pre-computed evaluation
 					}else{
-						AIC.bestRootMove = new MoveAndScore(new Move(oldEntry.move), oldEntry.eval);
+						AIC.bestRootMove = new MoveAndScore(new Move(board, oldEntry.move), oldEntry.eval);
 						return oldEntry.eval;
 					}
 				}else if(depth != 0 && oldEntry.nodeType == HashEntry.CUT_NODE && oldEntry.eval >= beta){ //beta cutoff
@@ -275,12 +282,12 @@ public class AI {
 					return oldEntry.eval;
 				}else{
 					if (!orderedMoves.contains(oldEntry.move) && allAvailible.contains(oldEntry.move)){
-						orderedMoves.add(new Move(oldEntry.move)); // make the move be computed first
+						orderedMoves.add(new Move(board, oldEntry.move)); // make the move be computed first
 					}
 				}
 			}else if (AIC.TTMoveReordering){ // if the entry we have is not accurate enough
 				if (!orderedMoves.contains(oldEntry.move) && allAvailible.contains(oldEntry.move)){
-					orderedMoves.add(new Move(oldEntry.move)); // make the move be computed first
+					orderedMoves.add(new Move(board, oldEntry.move)); // make the move be computed first
 				}
 			}
 		
@@ -289,7 +296,7 @@ public class AI {
 		if (AIC.killerHeuristic){
 			for (Move m: getKillerMoves(depth)){
 				if (!orderedMoves.contains(m) && allAvailible.contains(m)){
-					orderedMoves.add(new Move(allAvailible.get(allAvailible.indexOf(m))));
+					orderedMoves.add(new Move(board, allAvailible.get(allAvailible.indexOf(m))));
 				}
 			}
 		}
@@ -335,9 +342,9 @@ public class AI {
 			if (currentScore > maxValue) {
 				bestMove = move;
 				if (depth == 0){
-					HashEntry newEntry = new HashEntry(zHash, maxDepth - depth, currentScore, HashEntry.PV_NODE, new Move(move));
+					HashEntry newEntry = new HashEntry(zHash, maxDepth - depth, currentScore, HashEntry.PV_NODE, new Move(board, move));
 					TranspositionTable.addEntry(newEntry);
-					AIC.bestRootMove = new MoveAndScore(new Move(bestMove), currentScore);
+					AIC.bestRootMove = new MoveAndScore(new Move(board, bestMove), currentScore);
 				}
 			}
 			
@@ -351,7 +358,7 @@ public class AI {
 					AIC.fhf++;
 				}
 				AIC.fh++;
-				addKillerMove(depth, new Move(move));
+				addKillerMove(depth, new Move(board, move));
 				break;
 			}
 			
@@ -362,12 +369,12 @@ public class AI {
 		//Push entry to the TranspositionTable
 		HashEntry newEntry = null;
 		if(maxValue >= beta){
-			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.CUT_NODE, new Move(bestMove));
+			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.CUT_NODE, new Move(board, bestMove));
 		}else if (!newAlpha){
-			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.ALL_NODE, new Move(bestMove));
+			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.ALL_NODE, new Move(board, bestMove));
 
 		}else{
-			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.PV_NODE, new Move(bestMove));
+			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.PV_NODE, new Move(board, bestMove));
 		}
 		TranspositionTable.addEntry(newEntry); //add the move entry. only gets placed if eval is higher than previous entry
 

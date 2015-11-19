@@ -1,5 +1,7 @@
 package chessbot;
 
+import java.util.List;
+
 public class Move implements Comparable<Move>{
 
 	Point from;
@@ -23,8 +25,8 @@ public class Move implements Comparable<Move>{
 	boolean castleMove = false;
 	Move castleRookMove = null;
 	
-	public Move(Move m){
-		board = m.board;
+	public Move(Board b, Move m){
+		board = b;
 		from = m.from;
 		to = m.to;
 		
@@ -65,28 +67,28 @@ public class Move implements Comparable<Move>{
 		piece = board.getPiece(from);
 		destinationPc = board.getPiece(to);
 	}
-
-	public Move(Board b, Point pt, Piece pc, String promotionPiece) {
-		
-		playerKSideCastleO = b.playerKSideCastle;
-	    playerQSideCastleO = b.playerQSideCastle;
-	    botKSideCastleO = b.botKSideCastle;
-		botQSideCastleO = b.botQSideCastle;
-		enPassantTargetO = b.enPassantTarget;
+	
+	private void makeMove(String promotionPiece){
+		destinationPc = board.getPiece(to);
+		playerKSideCastleO = board.playerKSideCastle;
+	    playerQSideCastleO = board.playerQSideCastle;
+	    botKSideCastleO = board.botKSideCastle;
+		botQSideCastleO = board.botQSideCastle;
+		enPassantTargetO = board.enPassantTarget;
 		
 		if(promotionPiece != null && !promotionPiece.equals("")){
 			promotionMove = true;
 			if(promotionPiece.equals("q")){
-				this.promotionPiece = new Queen(pt.x, pt.y, pc.player);
+				this.promotionPiece = new Queen(to.x, to.y, piece.player);
 			}
 			else if(promotionPiece.equals("n")){
-				this.promotionPiece = new Knight(pt.x, pt.y, pc.player);
+				this.promotionPiece = new Knight(to.x, to.y, piece.player);
 			}
 			else if(promotionPiece.equals("r")){
-				this.promotionPiece = new Rook(pt.x, pt.y, pc.player);
+				this.promotionPiece = new Rook(to.x, to.y, piece.player);
 			}
 			else if(promotionPiece.equals("b")){
-				this.promotionPiece = new Bishop(pt.x, pt.y, pc.player);
+				this.promotionPiece = new Bishop(to.x, to.y, piece.player);
 			}
 			else{
 				promotionMove = false;
@@ -97,70 +99,134 @@ public class Move implements Comparable<Move>{
 			this.promotionPiece.alive = false;
 		}
 		
+		if (piece.symbol == "k" && Math.abs(to.x - from.x) == 2){
+			castleMove = true;
+		}
+		
+		if (piece.symbol == "p" && to.x != from.x && board.isEmptySquare(to) ){
+			enPassantMove = true;
+			enPassantCapture = board.getPiece(new Point(to.x, from.y));
+		}
+	}
+
+	public Move(Board b, Point pt, Piece pc, String promotionPiece) {
 		
 		board = b;
 		piece = pc;
 		from = new Point(pc.position.x, pc.position.y);
 		to = pt;
-
-		if (piece.symbol == "k" && Math.abs(to.x - from.x) == 2){
-			castleMove = true;
-		}
-		destinationPc = b.getPiece(to);
 		
-		if (piece.symbol == "p" && to.x != from.x && b.isEmptySquare(to) ){
-			enPassantMove = true;
-			enPassantCapture = b.getPiece(new Point(to.x, from.y));
-		}
+		makeMove(promotionPiece);
 	}
 
 	public Move(Board b, Point from, Point to, String promotionPiece) {
 		
-		playerKSideCastleO = b.playerKSideCastle;
-	    playerQSideCastleO = b.playerQSideCastle;
-	    botKSideCastleO = b.botKSideCastle;
-		botQSideCastleO = b.botQSideCastle;
-		enPassantTargetO = b.enPassantTarget;
-		
-		if(promotionPiece != null && !promotionPiece.equals("")){
-			promotionMove = true;
-			if(promotionPiece.equals("q")){
-				this.promotionPiece = new Queen(to.x, to.y, b.getTeam(from));
-			}
-			else if(promotionPiece.equals("n")){
-				this.promotionPiece = new Knight(to.x, to.y, b.getTeam(from));
-			}
-			else if(promotionPiece.equals("r")){
-				this.promotionPiece = new Rook(to.x, to.y, b.getTeam(from));
-			}
-			else if(promotionPiece.equals("b")){
-				this.promotionPiece = new Bishop(to.x, to.y, b.getTeam(from));
-			}
-			else{
-				promotionMove = false;
-				System.out.println("ERROR: invlaid promotion piece");
-			}			
-		}
-		
-		if (promotionMove){
-			this.promotionPiece.alive = false;
-		}
-		
 		board = b;
 		this.from = from;
 		this.to = to;
-
 		piece = b.getPiece(from);
-		destinationPc = b.getPiece(to);
 		
-		if (piece.symbol == "k" && Math.abs(to.x - from.x) == 2){
-			castleMove = true;
+		makeMove(promotionPiece);
+	}
+	
+	public Move(Board b, String SAN){
+		board = b;
+		
+		String originalSAN = SAN;
+		String promotionPiece = "";
+		String toString = "";
+		char fromRank = 0;
+		char fromFile = 0;
+		String pieceString = "";
+		
+		if (SAN.contains("O-O-O")){
+			piece = board.getKing(board.playerMove);
+			to = new Point(piece.getX() - 2, piece.getY());
+			from = new Point(piece.position.x, piece.position.y);
+			makeMove(promotionPiece);
+			return;
+		}else if (SAN.contains("O-O")){
+			piece = board.getKing(board.playerMove);
+			to = new Point(piece.getX() + 2, piece.getY());
+			from = new Point(piece.position.x, piece.position.y);
+			makeMove(promotionPiece);
+			return;
 		}
 		
-		if (piece.symbol == "p" && to.x != from.x && b.isEmptySquare(to) ){
-			enPassantMove = true;
-			enPassantCapture = b.getPiece(new Point(to.x, from.y));
+		while (true){
+			char lastChar = SAN.charAt(SAN.length()-1);
+			if (!Character.isDigit(lastChar)){
+				SAN = SAN.substring(0, SAN.length()-1);
+			}else{
+				break;
+			}
 		}
+		
+		toString = SAN.substring(SAN.length()-2, SAN.length());
+		to = new Point(toString);
+		SAN = SAN.substring(0, SAN.length()-2);
+		
+		if (SAN.length() != 0 && SAN.charAt(SAN.length()-1) == 'x'){
+			SAN = SAN.substring(0, SAN.length()-1);
+		}
+		
+		//pawn forwards
+		if (SAN.length() == 0){
+			int dir = board.playerMove ? 1 : -1;
+			Piece p = board.getPiece(new Point(to.x, to.y-dir));
+			if (p.symbol.equals("p")){
+				piece = p;
+				from = new Point(piece.position.x, piece.position.y);
+				makeMove(promotionPiece);
+				return;
+			}
+			p = board.getPiece(new Point(to.x, to.y-2*dir));
+			if (p.symbol.equals("p")){
+				piece = p;
+				from = new Point(piece.position.x, piece.position.y);
+				makeMove(promotionPiece);
+				return;
+			}
+			System.out.println("SAN conversion failed pawn move");
+		}
+		
+		if (SAN.length() == 1 && Character.isLowerCase(SAN.charAt(0))){
+			int dir = board.playerMove ? 1 : -1;
+			Piece p = board.getPiece(new Point(SAN+(to.y-dir+1)));
+			if (p.symbol.equals("p") && p.player == b.playerMove){
+				piece = p;
+				from = new Point(piece.position.x, piece.position.y);
+				makeMove(promotionPiece);
+				return;
+			}
+			System.out.println("SAN conversion failed: pawn capture");
+		}
+		
+		pieceString = SAN.substring(0, 1).toLowerCase();
+		if (SAN.length() == 2){
+			if (Character.isDigit(SAN.charAt(1))){
+				fromRank = SAN.charAt(1);
+			}else{
+				fromFile = SAN.charAt(1);
+			}
+			
+		}
+		
+		for(Piece p : board.pieceList){
+			if (p.alive && p.player == board.playerMove && p.symbol.equals(pieceString) && (fromFile == 0 || ((int)fromFile - 97) == p.getX())  && (fromRank == 0 || ((int)fromRank - 49) == p.getY())){
+				List<Move> potentialMoves = p.findMoves(b);
+				for(Move m : potentialMoves){
+					if (m.to.equals(to) && b.isLegal(m)){
+						piece = p;
+						from = new Point(piece.position.x, piece.position.y);
+						makeMove(promotionPiece);
+						return;
+					}
+				}
+			}
+		}
+		System.out.println("SAN conversion failed final");
+		
 	}
 
 	void execute() {
@@ -335,6 +401,7 @@ public class Move implements Comparable<Move>{
 			s += piece.toString().toUpperCase();
 		}
 		if (isCapture() || enPassantMove){
+			if(piece.symbol == "p") s += String.valueOf((char)(piece.getX() + 97));
 			s += "x";
 		}
 		s += to.toString().toLowerCase();

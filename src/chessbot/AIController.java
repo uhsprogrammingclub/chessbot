@@ -14,7 +14,7 @@ public class AIController {
 	//Search stats
 	int totalNodes = 1;
 	int quiescentNodes = 0;
-	int fh = 0;
+	int fh = 1;
 	int fhf = 0;
 	int researches = 0;
 	double startTime = 0;
@@ -32,6 +32,7 @@ public class AIController {
 	boolean quiescenceSearch = true; // Complete basic quiescence search after finishing main search to counter horizon effect
 	boolean sortMoves = true;
 	boolean aspirationWindow = false;
+	boolean useOpeningBook = true;
 	
 	//Hashtable to store number of computations at each depth (serves no functional purpose)
 	Hashtable<Integer, Integer> computationsAtDepth = new Hashtable<Integer, Integer>(100);

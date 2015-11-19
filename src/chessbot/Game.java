@@ -56,6 +56,9 @@ public class Game {
 	}
 	
 	public void start(){
+		OpeningBook book = new OpeningBook(Utils.boardFromFEN(setup));
+		Thread bookThread =new Thread(book);  
+		bookThread.start();  
 		if (botVBot){
 			botMakeMove(b);
 		}else{

@@ -242,16 +242,24 @@ public class Board {
 		List<Move> rawMoves = rawMoves();
 		// Remove moves that are illegal because of rules regarding check
 		for (Iterator<Move> iterator = rawMoves.iterator(); iterator.hasNext();) {
-			Move m = iterator.next();
-			m.execute();
-			if (this.isCheck(!playerMove)) {
-				m.reverse();
+			if (!isLegal(iterator.next())) {
 				iterator.remove();
-			} else {
-				m.reverse();
 			}
 		}
 		return rawMoves;
+
+	}
+	
+	// Find all possible moves
+	public boolean isLegal(Move m) {
+		m.execute();
+		if (this.isCheck(!playerMove)) {
+			m.reverse();
+			return false;
+		} else {
+			m.reverse();
+			return true;
+		}
 
 	}
 
