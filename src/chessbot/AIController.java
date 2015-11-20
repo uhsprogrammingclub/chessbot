@@ -61,14 +61,14 @@ public class AIController {
 		
 		List<String> info = this.searchInfo();
 		
-		System.out.format("%-18s | %-14s | %-11s | %-15s | %-3s | %-2s | %-3s | %s",
+		System.out.format("%-18s | %-14s | %-11s | %-15s | %-7s | %-7s | %-7s | %s",
 				"\nRoot Move And Eval", "Time Expended", "Final Depth", "Nodes Evaluated", "NPS", "FH", "FHF", "Efficiency\n" 
 		);
-		System.out.format("%-18s | %-14s | %-11s | %-15s | %-3s | %-2s | %-3s | %s",
+		System.out.format("%-18s | %-14s | %-11s | %-15s | %-7s | %-7s | %-7s | %s",
 				info.get(0), info.get(1), info.get(2), info.get(3), info.get(4), info.get(5), info.get(6), info.get(7) + "\n"
 		
 		);
-		System.out.println("─────────────────────────────────────────────────────────────────────────────────────────────────────");
+		System.out.println("─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────");
 		System.out.format("%-22s | %-11s | %-18s | %-7s | %s",
 				"Quiescent Node Percent", "Re-searches", "Total Computations", "TT Size", "Computations at Depths\n"
 		);
