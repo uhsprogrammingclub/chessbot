@@ -16,8 +16,8 @@ public class EngineTesting {
 		Zobrist.zobristFillArray();
 	}
 	
-	boolean winAtChess = false;
-	boolean BratkoKopec = true;
+	boolean winAtChess = true;
+	boolean BratkoKopec = false;
 	
 	@Test
 	public void WinAtChessSuite() throws IOException {
