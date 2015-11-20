@@ -13,6 +13,7 @@ public class EngineTesting {
 
 	@Before
 	public void init() {
+		Zobrist.zobristFillArray();
 	}
 	
 	boolean winAtChess = false;
@@ -55,6 +56,7 @@ public class EngineTesting {
 				AIController.setComputationTime(time);
 
 				AI ai = new AI(b);
+				ai.search();
 				String botMove = ai.AIC.bestRootMove.move.getSAN();
 				System.out.println(b);
 				
@@ -117,6 +119,7 @@ public class EngineTesting {
 				AIController.setComputationTime(time);
 
 				AI ai = new AI(b);
+				ai.search();
 				String botMove = ai.AIC.bestRootMove.move.getSAN();
 				System.out.println(b);
 				
