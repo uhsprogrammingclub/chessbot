@@ -43,6 +43,7 @@ public class Game {
 	
 	public static void main(String[] args){
 		
+		
 		/*String f = "N1";
 		System.out.println(f.charAt(1));
 		System.out.println((int)f.charAt(1));

@@ -1,6 +1,7 @@
 package chessbot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -56,24 +57,55 @@ public class AIController {
 		timeLimit = time;
 	}
 	
-	@Override
-	public String toString() {
-		String s = "";
-		s+="Root Move: " + bestRootMove + "\n";
-		s+="Time expended: " + (System.currentTimeMillis() - startTime)/1000.0 +"s" + "\n";
-		s+="Final Depth: " + evaluateToDepth + "\n";
-		s+="Nodes Evaluated: " + totalNodes + "\n";
-		s+="Nodes Per Second: " + (int)(totalNodes/((System.currentTimeMillis() - startTime)/1000)) + "\n";
-		s+="Fail High Nodes: " + fh + "\n";
-		s+="Fail High First Nodes: " + fhf + "\n";
-		s+="Quiescent Node Ratio: " + quiescentNodes*1000/totalNodes/10.0 + "%\n";
-		s+="Efficiency: " + fhf*100/fh + "%\n";
-		s+="Re-searches: " + researches + "\n";
-		s+="Static computations at each depth: " + computationsAtDepth + "\n";
-		s+="Total static computations: " + staticComputations + "\n";
-		s+="Transposition Table Size: " + TranspositionTable.trans.size() + "\n";
-		return s;
+	public void printInfo(){
+		
+		List<String> info = this.searchInfo();
+		
+		System.out.format("%-18s | %-14s | %-11s | %-15s | %-7s | %-7s | %-7s | %s",
+				"\nRoot Move And Eval", "Time Expended", "Final Depth", "Nodes Evaluated", "NPS", "FH", "FHF", "Efficiency\n" 
+		);
+		System.out.format("%-18s | %-14s | %-11s | %-15s | %-7s | %-7s | %-7s | %s",
+				info.get(0), info.get(1), info.get(2), info.get(3), info.get(4), info.get(5), info.get(6), info.get(7) + "\n"
+		
+		);
+		System.out.println("─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────");
+		System.out.format("%-22s | %-11s | %-18s | %-7s | %s",
+				"Quiescent Node Percent", "Re-searches", "Total Computations", "TT Size", "Computations at Depths\n"
+		);
+		System.out.format("%-22s | %-11s | %-18s | %-7s | %s",
+				info.get(8), info.get(9), info.get(10), info.get(11), info.get(12)+ "\n"
+		);
+		
 	}
 	
-
+	@Override
+	public String toString() {
+		
+		printInfo();
+		return "";
+		
+	}
+	
+	public List<String> searchInfo(){
+		List<String> info = new ArrayList<>();
+	
+		String[] infoList = new String[] {
+				bestRootMove.toString(),
+				(System.currentTimeMillis() - startTime)/1000.0 +"s",
+				Integer.toString(evaluateToDepth),
+				Integer.toString(totalNodes),
+				Integer.toString((int)(totalNodes/((System.currentTimeMillis() - startTime)/1000))),
+				Integer.toString(fh),
+				Integer.toString(fhf),
+				(fhf*100/fh) + "%",
+				quiescentNodes*1000/totalNodes/10.0 + "%",
+				Integer.toString(researches),
+				Integer.toString(staticComputations),
+				TranspositionTable.trans.size() + "",
+				computationsAtDepth.toString()
+		};
+	
+		info.addAll(Arrays.asList(infoList));
+		return info;
+	}
 }
