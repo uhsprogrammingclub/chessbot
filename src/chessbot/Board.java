@@ -347,11 +347,15 @@ public class Board {
 	// are good for the player, low values good for the computer
 	public int evaluateBoard() {
 		int score = scoreBoard(false) - scoreBoard(true);
-		
-		if(isGameOver() && isCheck(playerMove)){
-			score += 1000000 * (playerMove ? 1 : -1);
-		}
 		score += evaluatePawnStructure();
+		
+		if( isGameOver() ){
+			if (isCheck(playerMove)){
+				score += 1000000 * (playerMove ? 1 : -1);
+			}else{
+				score = 0;
+			}
+		}
 		
 		return score;
 	}
@@ -409,7 +413,7 @@ public class Board {
 					/*** Implementation for pawn structure analysis goes here ***/
 					
 					//Implementation of Backwards Pawns
-					
+
 					//Implementation of Holes
 					
 					

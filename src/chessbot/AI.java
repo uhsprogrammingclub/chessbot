@@ -54,7 +54,7 @@ public class AI {
 			}
 			AIC.depthsPV.add("PV at depth " + currentDepth + ": " + new PV(board) + " EBF: " + AIC.totalNodes*100/previousNodes/100.0);
 		}
-
+		AIC.depthsPV.add("PV at final depth " + AIC.evaluateToDepth + ": " + new PV(board));
 	}
 
 	//Function that takes an input of the depth and the move to add to the killerMoves list
@@ -119,13 +119,6 @@ public class AI {
 	//Constructor for the class
 	public AI(Board board) {
 		this.board = board;
-		search();
-
-		AIC.depthsPV.add("PV at final depth " + AIC.evaluateToDepth + ": " + new PV(board));
-
-		/*for (String s : AIC.depthsPV) {
-			System.out.println(s);
-		}*/
 	}
 
 	// Basic Quiescence Search

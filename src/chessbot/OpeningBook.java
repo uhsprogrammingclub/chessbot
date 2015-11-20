@@ -116,7 +116,7 @@ public class OpeningBook implements Runnable{
 	}
 	
 	private static void convertAndExecuteMoves(List<String> moves, int ply){
-		if (moves.size() == 1 || ply == 20){
+		if (moves.size() == 1 || ply == 30){
 			return;
 		}
 		Move m = new Move(board, moves.get(0));

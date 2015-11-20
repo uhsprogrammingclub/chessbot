@@ -80,7 +80,7 @@ public class Game {
 	
 	public void start(){
 		OpeningBook book = new OpeningBook(Utils.boardFromFEN(defaultSetup));
-		Thread bookThread =new Thread(book);  
+		Thread bookThread = new Thread(book, "Opening Book Thread");  
 		bookThread.start();  
 		if (botVBot){
 			botMakeMove(b);
@@ -179,6 +179,7 @@ public class Game {
 		System.out.println("Processing move...");
 		
 		AI ai = new AI(b);
+		ai.search();
 		
 		System.out.println(ai.AIC);
 		

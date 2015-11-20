@@ -153,6 +153,11 @@ public class Move implements Comparable<Move>{
 			return;
 		}
 		
+		if (SAN.contains("=")){
+			int promotionIndex = SAN.indexOf('=') + 1;
+			promotionPiece = SAN.substring(promotionIndex, promotionIndex+1).toLowerCase();
+		}
+		
 		while (true){
 			char lastChar = SAN.charAt(SAN.length()-1);
 			if (!Character.isDigit(lastChar)){
@@ -187,7 +192,7 @@ public class Move implements Comparable<Move>{
 				makeMove(promotionPiece);
 				return;
 			}
-			System.out.println("SAN conversion failed pawn move: " + originalSAN);
+			System.out.println("SAN conversion failed pawn move: " + originalSAN + b);
 		}
 		
 		if (SAN.length() == 1 && Character.isLowerCase(SAN.charAt(0))){
@@ -199,7 +204,7 @@ public class Move implements Comparable<Move>{
 				makeMove(promotionPiece);
 				return;
 			}
-			System.out.println("SAN conversion failed: pawn capture: " + originalSAN);
+			System.out.println("SAN conversion failed: pawn capture: " + originalSAN + b);
 		}
 		
 		pieceString = SAN.substring(0, 1).toLowerCase();
@@ -225,7 +230,7 @@ public class Move implements Comparable<Move>{
 				}
 			}
 		}
-		System.out.println("SAN conversion failed final: " + originalSAN);
+		System.out.println("SAN conversion failed final: " + originalSAN + b);
 		
 	}
 
