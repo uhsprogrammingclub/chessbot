@@ -15,8 +15,8 @@ public class EngineTesting {
 	public void init() {
 	}
 	
-	boolean winAtChess = false;
-	boolean BratkoKopec = true;
+	boolean winAtChess = true;
+	boolean BratkoKopec = false;
 	
 	@Test
 	public void WinAtChessSuite() throws IOException {
@@ -55,6 +55,7 @@ public class EngineTesting {
 				AIController.setComputationTime(time);
 
 				AI ai = new AI(b);
+				ai.search();
 				String botMove = ai.AIC.bestRootMove.move.getSAN();
 				System.out.println(b);
 				
@@ -117,6 +118,7 @@ public class EngineTesting {
 				AIController.setComputationTime(time);
 
 				AI ai = new AI(b);
+				ai.search();
 				String botMove = ai.AIC.bestRootMove.move.getSAN();
 				System.out.println(b);
 				

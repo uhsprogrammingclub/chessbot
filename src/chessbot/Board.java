@@ -444,18 +444,16 @@ public class Board {
 				}
 				
 				//Create negative impacts for holes in front of castled king - may potentially become outdated if king moves around a lot
-				if(this.playerKSideCastle && j > 4 && i == 2) playerHoles++;	
-				else if(this.playerQSideCastle && j < 3 && i == 2) playerHoles++;
-				else if(this.botKSideCastle && j > 4 && i == 5) computerHoles++;
-				else if(this.botQSideCastle && j < 3 && i == 5) computerHoles++;
+				if(this.getKing(true).getX() > 4 && this.getKing(true).getY() < 2 && j > 4 && i == 2) playerHoles++;	
+				else if(this.getKing(true).getX() < 3 && this.getKing(true).getY() < 2 && j < 3 && i == 2) playerHoles++;
+				else if(this.getKing(false).getX() > 4 && this.getKing(false).getY() > 5 && j > 4 && i == 5) computerHoles++;
+				else if(this.getKing(false).getX() > 4 && this.getKing(false).getY() > 5 && j < 3 && i == 5) computerHoles++;
 				
 			}
 		}
 		
 		//Adjust the evaluation accordingly
 		pawnEvaluation += (playerHoles - computerHoles) * 5;
-		
-		
 		
 		//Add the entry to the hash table
 		StructureTable.addEntry(new StructureHashEntry(pHash, pawnEvaluation));
