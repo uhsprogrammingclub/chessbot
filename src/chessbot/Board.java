@@ -351,7 +351,7 @@ public class Board {
 		if(isGameOver() && isCheck(playerMove)){
 			score += 1000000 * (playerMove ? 1 : -1);
 		}
-	
+		score += evaluatePawnStructure();
 		
 		return score;
 	}
@@ -368,43 +368,54 @@ public class Board {
 			if (p.player == player && p.alive)
 				score += p.getWorth() + getPieceSquare(p);
 		}
-		
+	
+		return score;
+	}
+	
+	// Function that retrieves numeric value assigned to pawn structure. High values
+	// are good for the player, low values good for the computer
+	public int evaluatePawnStructure() {
+		int pawnEvaluation = 0;
+	
 		//Get hash of current board
 		long pHash = Zobrist.getPawnZobristHash(this);
 		int index = Zobrist.getIndex(pHash);
 				
 		//find entry with same index
 		StructureHashEntry oldEntry = StructureTable.pawns.get(index);
-		if(oldEntry != null){
-			score += oldEntry.eval;
+		if(oldEntry != null && pHash == oldEntry.pawnZobrist){
+			pawnEvaluation = oldEntry.eval;
 		}else{
 			
-			int pawnEvaluation = 0;
-			
-			/*** Implementation for pawn structure analysis goes here ***/
-			
-			//Implementation of Isolated Pawns
-			
-			//Implementation of Backwards Pawns
-			
-			//Implementation of Half Open Files
-			
-			//Implementation of Doubled Pawns
-			
-			//Implementation of Pawn Chain
-			
-			//Implementation of Holes
-			
+			for (Piece p : pieceList) {
+				if (p.alive && p.symbol.equals("p")){
+					int pawnScore = 0;
+					if (isIsolatedPawn(p)) pawnScore -= 50;
+					if (isDoubledPawn(p)) pawnScore -= 30;
+					if (isHalfOpenFile(p)) pawnScore -= 20;
+					
+					/*** Implementation for pawn structure analysis goes here ***/
+					
+					//Implementation of Backwards Pawns
+					
+					//Implementation of Pawn Chain
+					
+					//Implementation of Holes
+					
+					pawnScore = pawnScore*(p.player ? -1 : 1);
+					pawnEvaluation += pawnScore;
+				}
+			}
 			//Add the entry to the hash table
 			StructureTable.addEntry(new StructureHashEntry(pHash, pawnEvaluation));
 			
 		}
-	
-		return score;
+		
+		return pawnEvaluation;
 	}
 	
 	//evaluation for isolated pawns
-	public boolean IsolatedPawn(Piece pawn)
+	public boolean isIsolatedPawn(Piece pawn)
 	{
 		for(Piece p: pieceList)
 		{
@@ -417,7 +428,7 @@ public class Board {
 		return true;
 	}
 	
-	public boolean DoubledPawns(Piece pawn)
+	public boolean isDoubledPawn(Piece pawn)
 	{
 		for(Piece p: pieceList)
 			if(p.symbol.equals("p") && p.player == pawn.player && p.getX() == pawn.getX())
@@ -425,6 +436,16 @@ public class Board {
 				return true;
 			}
 		return false;
+	}
+	
+	public boolean isHalfOpenFile(Piece pawn)
+	{
+		for(Piece p: pieceList)
+			if(p.symbol.equals("p") && p.player != pawn.player && p.getX() == pawn.getX())
+			{
+				return false;
+			}
+		return true;
 	}
 	
 	public int[][] gridFromPerspective(int[][] grid, boolean player){

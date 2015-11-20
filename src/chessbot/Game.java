@@ -9,8 +9,9 @@ public class Game {
 
 
 	//Default the FEN set up to the standard position
-	static String setup = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-		
+	static String defaultSetup = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+	static String setup = defaultSetup; 
+	
 	//Scanner to take Human input
 	static Scanner s = new Scanner(System.in);
 	
@@ -61,6 +62,7 @@ public class Game {
 		
 		Game g = new Game();
 		//g.setFEN("3rr1k1/1pp2pp1/p6p/2bP1R2/1nP1p3/2R1P3/1P1NK3/8 b - - 0 0"); - Reed Game
+		//g.setFEN("1k1r4/pp1b1R2/3q2pp/4p3/2B5/4Q3/PPP2B2/2K5 b - - 0 0");
 		g.setFEN(setup);
 		g.init();
 		g.start();
@@ -76,7 +78,7 @@ public class Game {
 	}
 	
 	public void start(){
-		OpeningBook book = new OpeningBook(Utils.boardFromFEN(setup));
+		OpeningBook book = new OpeningBook(Utils.boardFromFEN(defaultSetup));
 		Thread bookThread =new Thread(book);  
 		bookThread.start();  
 		if (botVBot){
@@ -153,6 +155,7 @@ public class Game {
 		
 		System.out.println("Move: " + move);
 		move.execute();
+		System.out.println("Pawn Structure Score: " + b.evaluatePawnStructure());
 		
 		gui.updateBoard(b);
 		
@@ -183,6 +186,7 @@ public class Game {
 		System.out.println("\nBot: " +move);
 
 		move.move.execute();
+		System.out.println("Pawn Structure Score: " + b.evaluatePawnStructure());
 		
 		gui.updateBoard(b);
 		

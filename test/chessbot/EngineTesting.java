@@ -15,8 +15,8 @@ public class EngineTesting {
 	public void init() {
 	}
 	
-	boolean winAtChess = true;
-	boolean BratkoKopec = false;
+	boolean winAtChess = false;
+	boolean BratkoKopec = true;
 	
 	@Test
 	public void WinAtChessSuite() throws IOException {
