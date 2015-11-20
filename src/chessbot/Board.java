@@ -375,43 +375,88 @@ public class Board {
 	// Function that retrieves numeric value assigned to pawn structure. High values
 	// are good for the player, low values good for the computer
 	public int evaluatePawnStructure() {
+		
 		int pawnEvaluation = 0;
 	
 		//Get hash of current board
 		long pHash = Zobrist.getPawnZobristHash(this);
 		int index = Zobrist.getIndex(pHash);
+		
+		int[][] filledSquares = new int[8][8];
 				
 		//find entry with same index
 		StructureHashEntry oldEntry = StructureTable.pawns.get(index);
 		if(oldEntry != null && pHash == oldEntry.pawnZobrist){
 			pawnEvaluation = oldEntry.eval;
 		}else{
-			
+
 			for (Piece p : pieceList) {
 				if (p.alive && p.symbol.equals("p")){
+					
+					//Add the current position of the pawn to the filled array
+					filledSquares[p.getX()][p.getY()] = 1;
+
+					//Add the squares the pawn can attack to the filled array
+					if(p.getX() > 0 && p.getY() < 7 && p.getY() > 0) filledSquares[p.getX()-1][p.getY()+1] = 1;
+					if(p.getX() < 7 && p.getY() < 7 && p.getY() > 0) filledSquares[p.getX()+1][p.getY()+1] = 1;
+						
 					int pawnScore = 0;
-					if (isIsolatedPawn(p)) pawnScore -= 50;
-					if (isDoubledPawn(p)) pawnScore -= 30;
-					if (isHalfOpenFile(p)) pawnScore -= 20;
-					if (isInPawnChain(p)) pawnScore += 10;
+					if (isIsolatedPawn(p)) pawnScore -= 20;
+					if (isDoubledPawn(p)) pawnScore -= 15;
+					if (isHalfOpenFile(p)) pawnScore -= 10;
+					if (isInPawnChain(p)) pawnScore += 7;
 					
 					/*** Implementation for pawn structure analysis goes here ***/
 					
 					//Implementation of Backwards Pawns
 					
-					//Implementation of Pawn Chain
-					
 					//Implementation of Holes
+					
 					
 					pawnScore = pawnScore*(p.player ? -1 : 1);
 					pawnEvaluation += pawnScore;
 				}
 			}
-			//Add the entry to the hash table
-			StructureTable.addEntry(new StructureHashEntry(pHash, pawnEvaluation));
-			
 		}
 		
+		//Account for holes
+		int playerHoles = 0;
+		int computerHoles = 0;
+
+		for(int i = 0; i < 8; i++){
+			for(int j = 0; j < 8; j++){
+				
+				//If the square is filled...
+				if(filledSquares[i][j] == 1) continue;
+				
+				//If it is a square of interest in the middle
+				if(i > 1 && i < 6 && j > 1 && j < 6){
+					//If it is on the player's side
+					if(i < 4){
+						playerHoles++;
+					}else{
+						computerHoles++;
+					}
+				}
+				
+				//Create negative impacts for holes in front of castled king - may potentially become outdated if king moves around a lot
+				if(this.playerKSideCastle && j > 4 && i == 2) playerHoles++;	
+				else if(this.playerQSideCastle && j < 3 && i == 2) playerHoles++;
+				else if(this.botKSideCastle && j > 4 && i == 5) computerHoles++;
+				else if(this.botQSideCastle && j < 3 && i == 5) computerHoles++;
+				
+			}
+		}
+		
+		//Adjust the evaluation accordingly
+		pawnEvaluation += (playerHoles - computerHoles) * 5;
+		
+		
+		
+		//Add the entry to the hash table
+		StructureTable.addEntry(new StructureHashEntry(pHash, pawnEvaluation));
+			
+
 		return pawnEvaluation;
 	}
 	
