@@ -393,6 +393,7 @@ public class Board {
 					if (isIsolatedPawn(p)) pawnScore -= 50;
 					if (isDoubledPawn(p)) pawnScore -= 30;
 					if (isHalfOpenFile(p)) pawnScore -= 20;
+					if (isInPawnChain(p)) pawnScore += 10;
 					
 					/*** Implementation for pawn structure analysis goes here ***/
 					
@@ -431,21 +432,42 @@ public class Board {
 	public boolean isDoubledPawn(Piece pawn)
 	{
 		for(Piece p: pieceList)
+		{
 			if(p.symbol.equals("p") && p.player == pawn.player && p.getX() == pawn.getX())
 			{
 				return true;
 			}
+		}
 		return false;
 	}
 	
 	public boolean isHalfOpenFile(Piece pawn)
 	{
 		for(Piece p: pieceList)
+		{
 			if(p.symbol.equals("p") && p.player != pawn.player && p.getX() == pawn.getX())
 			{
 				return false;
 			}
+		}
 		return true;
+	}
+	
+	public boolean isInPawnChain(Piece pawn)
+	{
+		for(Piece p: pieceList)
+		{
+			int dir = p.player ? 1 : -1; //make sure it doesn't include base of pawn chain.
+			if(p.symbol.equals("p") && p.player == pawn.player && 
+			(
+					(p.getX()-1 == pawn.getX() && p.getY()+dir == pawn.getY()) ||
+					(p.getX()+1 == pawn.getX() && p.getY()+dir == pawn.getY())
+				))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public int[][] gridFromPerspective(int[][] grid, boolean player){
