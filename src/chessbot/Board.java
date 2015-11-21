@@ -9,6 +9,8 @@ public class Board {
 	 * Note about board: the 7th and 8th rows are for the Player, the 1st and
 	 * 2nd rows are for the computer.
 	 **/
+	
+	public enum CastleState { CASTLED, CASTLE_RUINED, CAN_CASTLE };
 
 	// One-dimensional array to hold the locations of all of the pieces
 	Piece[] locations = new Piece[64];
@@ -24,6 +26,9 @@ public class Board {
 	boolean playerQSideCastle;
 	boolean botKSideCastle;
 	boolean botQSideCastle;
+	
+	CastleState playerCastle = CastleState.CAN_CASTLE; 
+	CastleState computerCastle = CastleState.CAN_CASTLE;
 	
 	Point enPassantTarget = null;
 	
@@ -348,6 +353,7 @@ public class Board {
 	public int evaluateBoard() {
 		int score = scoreBoard(false) - scoreBoard(true);
 		score += evaluatePawnStructure();
+		score += evaluateCastling();
 		
 		if( isGameOver() ){
 			if (isCheck(playerMove)){
@@ -357,6 +363,15 @@ public class Board {
 			}
 		}
 		
+		return score;
+	}
+	
+	public int evaluateCastling(){
+		int score = 0;
+		if(this.playerCastle == CastleState.CASTLED) score -= 45;
+		if(this.playerCastle == CastleState.CASTLE_RUINED) score += 15;
+		if(this.computerCastle == CastleState.CASTLED) score += 45;
+		if(this.computerCastle == CastleState.CASTLE_RUINED) score -= 15;
 		return score;
 	}
 

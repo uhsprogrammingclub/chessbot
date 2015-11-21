@@ -64,7 +64,8 @@ public class Game {
 		Game g = new Game();
 		//g.setFEN("3rr1k1/1pp2pp1/p6p/2bP1R2/1nP1p3/2R1P3/1P1NK3/8 b - - 0 0"); - Reed Game
 		//g.setFEN("1k1r4/pp1b1R2/3q2pp/4p3/2B5/4Q3/PPP2B2/2K5 b - - 0 0");
-		g.setFEN("r1bq1b1r/ppp1kpp1/5n1p/nB1Pp1N1/8/6P1/PPPP1P1P/RNBQ1RK1 w - - 0 9");
+		g.setFEN("r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 4");
+		g.setFEN("r1bq1b1r/pp4pp/2p5/3NP3/3B4/P2Q4/1k3PPP/n2K3R b - - 0 18");
 		g.setFEN(setup);
 		g.init();
 		g.start();
