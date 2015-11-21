@@ -31,6 +31,12 @@ public class Board {
 	
 	int halfmoveClock = 0;
 	int fullMoveCounter = 0;
+	
+	int isolatedPawnValue = 20;
+	int doubledPawnValue = 15;
+	int halfOpenFileValue = 10;
+	int pawnChainValue = 7;
+	int holeValue = 0;
 
 	// Override java.lang.Object.toString method to create easier to read output
 	// in the form of a table
@@ -405,10 +411,10 @@ public class Board {
 					if(p.getX() < 7 && p.getY() < 7 && p.getY() > 0) filledSquares[p.getX()+1][p.getY()+1] = 1;
 						
 					int pawnScore = 0;
-					if (isIsolatedPawn(p)) pawnScore -= 20;
-					if (isDoubledPawn(p)) pawnScore -= 15;
-					if (isHalfOpenFile(p)) pawnScore -= 10;
-					if (isInPawnChain(p)) pawnScore += 7;
+					if (isIsolatedPawn(p)) pawnScore -= isolatedPawnValue;
+					if (isDoubledPawn(p)) pawnScore -= doubledPawnValue;
+					if (isHalfOpenFile(p)) pawnScore -= halfOpenFileValue;
+					if (isInPawnChain(p)) pawnScore += pawnChainValue;
 					
 					/*** Implementation for pawn structure analysis goes here ***/
 					
@@ -453,7 +459,7 @@ public class Board {
 		}
 		
 		//Adjust the evaluation accordingly
-		pawnEvaluation += (playerHoles - computerHoles) * 5;
+		pawnEvaluation += (playerHoles - computerHoles) * holeValue;
 		
 		//Add the entry to the hash table
 		StructureTable.addEntry(new StructureHashEntry(pHash, pawnEvaluation));
