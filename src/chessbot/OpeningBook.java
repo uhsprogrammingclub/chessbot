@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.*;
+import org.hamcrest.Matcher;
 
 
 public class OpeningBook implements Runnable{
@@ -13,6 +15,8 @@ public class OpeningBook implements Runnable{
 	final static int hashSize = 100000;
 	
 	public static Hashtable<Integer, OpeningHashEntry> book = new Hashtable<Integer, OpeningHashEntry>(hashSize);
+	
+	static Map<String, String> ECO = new HashMap<String, String>();
 	
 	static Board board = null;
 	
@@ -168,9 +172,64 @@ public class OpeningBook implements Runnable{
 		}
 		return chosenMove;
 	}
+	
+	public static void loadECO(){
+		
+		System.out.println("Loading ECO...");
+		String filePath = new File("").getAbsolutePath() + "/ECO";
+		try{
+			FileReader fr = new FileReader(filePath);
+			BufferedReader textReader = new BufferedReader(fr);
+			
+			Pattern k = Pattern.compile("([A-Z][0-9]{2})");
+			Pattern e = Pattern.compile("[A-Z][0-9]{2}(.*)");
+			
+			
+			while(true){
+				String line = textReader.readLine();
+				if (line == null){
+					break;
+				}
+				
+				String key = "";
+				String info = "";
+				
+				java.util.regex.Matcher m = k.matcher(line);
+
+				if (m.find()) {
+					key = m.group(1).trim();
+				}else{
+					System.out.println("Error parsing ECO - Match not found");
+					System.exit(0);
+				}
+				
+				m = e.matcher(line);
+
+				if (m.find()) {
+					info = m.group(1).trim();
+				}else{
+					System.out.println("Error parsing ECO - Match not found");
+					System.exit(0);
+				}
+				
+				ECO.put(key, info);
+				
+			}
+			textReader.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	
+	}
+	
+	public String getECOInfo(String input){
+		return ECO.get(input);
+	}
 
 	@Override
 	public void run() {
+		loadECO();
 		compileOpenings();
 	}
 }
