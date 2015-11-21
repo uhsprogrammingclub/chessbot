@@ -440,35 +440,35 @@ public class Board {
 					pawnEvaluation += pawnScore;
 				}
 			}
-		}
-		
-		//Account for holes
-		int playerHoles = 0;
-		int computerHoles = 0;
+			
+			//Account for holes
+			int playerHoles = 0;
+			int computerHoles = 0;
 
-		for(int i = 0; i < 8; i++){
-			for(int j = 0; j < 8; j++){
-				
-				//If the square is filled...
-				if(filledSquares[i][j] == 1) continue;
-				
-				//If it is a square of interest in the middle
-				if(i > 1 && i < 6 && j > 1 && j < 6){
-					//If it is on the player's side
-					if(i < 4) playerHoles++; else computerHoles++;
+			for(int i = 0; i < 8; i++){
+				for(int j = 0; j < 8; j++){
 					
-				}
+					//If the square is filled...
+					if(filledSquares[i][j] == 1) continue;
+					
+					//If it is a square of interest in the middle
+					if(i > 1 && i < 6 && j > 1 && j < 6){
+						//If it is on the player's side
+						if(i < 4) playerHoles++; else computerHoles++;
+						
+					}
 
-				//Create negative impacts for holes in front of castled king - may potentially become out-dated if king moves around a lot
-				if(this.getKing(true).getX() > 4 && this.getKing(true).getY() < 2 && j > 4 && (i == 2 || i == 1)) playerHoles++;	
-				else if(this.getKing(true).getX() < 3 && this.getKing(true).getY() < 2 && j < 3 && (i == 2 || i == 1)) playerHoles++;
-				else if(this.getKing(false).getX() > 4 && this.getKing(false).getY() > 5 && j > 4 && (i == 5 || i == 6)) computerHoles++;
-				else if(this.getKing(false).getX() < 3 && this.getKing(false).getY() > 5 && j < 3 && (i == 5 || i == 6)) computerHoles++;
+					//Create negative impacts for holes in front of castled king - may potentially become out-dated if king moves around a lot
+					if(this.getKing(true).getX() > 4 && this.getKing(true).getY() < 2 && j > 4 && (i == 2 || i == 1)) playerHoles++;	
+					else if(this.getKing(true).getX() < 3 && this.getKing(true).getY() < 2 && j < 3 && (i == 2 || i == 1)) playerHoles++;
+					else if(this.getKing(false).getX() > 4 && this.getKing(false).getY() > 5 && j > 4 && (i == 5 || i == 6)) computerHoles++;
+					else if(this.getKing(false).getX() < 3 && this.getKing(false).getY() > 5 && j < 3 && (i == 5 || i == 6)) computerHoles++;
+				}
 			}
+			System.out.println("player holes: " + playerHoles + "computer holes: " + computerHoles);
+			//Adjust the evaluation accordingly
+			pawnEvaluation += (playerHoles - computerHoles) * 5;
 		}
-		
-		//Adjust the evaluation accordingly
-		pawnEvaluation += (playerHoles - computerHoles) * 5;
 		
 		//Add the entry to the hash table
 		StructureTable.addEntry(new StructureHashEntry(pHash, pawnEvaluation));
