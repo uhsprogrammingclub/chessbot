@@ -2,6 +2,8 @@ package chessbot;
 
 import java.util.List;
 
+import chessbot.Board.CastleState;
+
 public class Move implements Comparable<Move>{
 
 	Point from;
@@ -12,6 +14,8 @@ public class Move implements Comparable<Move>{
 	Board board;
 	Piece promotionPiece = null;
 	boolean promotionMove = false;
+	CastleState playerCastleO = null;
+	CastleState computerCastleO = null;
 	
 	boolean enPassantMove = false;
 	Piece enPassantCapture = null;
@@ -34,6 +38,9 @@ public class Move implements Comparable<Move>{
 			System.out.println("ERROR: Copying an executed move.");
 			System.exit(0);
 		}
+		
+		playerCastleO = b.playerCastle;
+		computerCastleO = b.computerCastle;
 		
 		playerKSideCastleO = board.playerKSideCastle;
 	    playerQSideCastleO = board.playerQSideCastle;
@@ -277,6 +284,11 @@ public class Move implements Comparable<Move>{
 		
 			//Change the castling variables depending on the piece being moved
 			if(piece.symbol.equals("k")){
+				
+				if(!castleMove){
+					if(piece.player) board.playerCastle = CastleState.CASTLE_RUINED; else board.computerCastle = CastleState.CASTLE_RUINED; 
+				}
+				
 				if(piece.player){
 					board.playerKSideCastle = board.playerQSideCastle = false;
 				}else{
@@ -288,14 +300,26 @@ public class Move implements Comparable<Move>{
 			if(piece.symbol.equals("r")){
 				if (from.x == 0){
 					if(piece.player){
+						if(!board.playerKSideCastle){
+							board.playerCastle = CastleState.CASTLE_RUINED;
+						}
 						board.playerQSideCastle = false;
 					}else{
+						if(!board.botKSideCastle){
+							board.computerCastle = CastleState.CASTLE_RUINED;
+						}
 						board.botQSideCastle = false;
 					}
 				}else if (from.x == 7){
 					if(piece.player){
+						if(!board.playerQSideCastle){
+							board.playerCastle = CastleState.CASTLE_RUINED;
+						}
 						board.playerKSideCastle = false;
 					}else{
+						if(!board.botQSideCastle){
+							board.computerCastle = CastleState.CASTLE_RUINED;
+						}
 						board.botKSideCastle = false;
 					}
 				}
@@ -356,6 +380,9 @@ public class Move implements Comparable<Move>{
 			board.botKSideCastle = botKSideCastleO;
 			board.botQSideCastle = botQSideCastleO;	
 			board.enPassantTarget = enPassantTargetO;
+			
+			board.computerCastle = computerCastleO;
+			board.playerCastle = playerCastleO;
 			
 			board.setSquare(to,  destinationPc);
 			board.setSquare(from, piece);

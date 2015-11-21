@@ -9,6 +9,8 @@ public class Board {
 	 * Note about board: the 7th and 8th rows are for the Player, the 1st and
 	 * 2nd rows are for the computer.
 	 **/
+	
+	public enum CastleState { CASTLED, CASTLE_RUINED, CAN_CASTLE };
 
 	// One-dimensional array to hold the locations of all of the pieces
 	Piece[] locations = new Piece[64];
@@ -25,6 +27,9 @@ public class Board {
 	boolean botKSideCastle;
 	boolean botQSideCastle;
 	
+	CastleState playerCastle = CastleState.CAN_CASTLE; 
+	CastleState computerCastle = CastleState.CAN_CASTLE;
+	
 	Point enPassantTarget = null;
 	
 	List<String> moveHistory = new ArrayList<String>();
@@ -35,8 +40,8 @@ public class Board {
 	int isolatedPawnValue = 20;
 	int doubledPawnValue = 15;
 	int halfOpenFileValue = 10;
-	int pawnChainValue = 7;
-	int holeValue = 0;
+	int pawnChainValue = 5;
+	int holeValue = 5;
 
 	// Override java.lang.Object.toString method to create easier to read output
 	// in the form of a table
@@ -354,6 +359,7 @@ public class Board {
 	public int evaluateBoard() {
 		int score = scoreBoard(false) - scoreBoard(true);
 		score += evaluatePawnStructure();
+		score += evaluateCastling();
 		
 		if( isGameOver() ){
 			if (isCheck(playerMove)){
@@ -363,6 +369,15 @@ public class Board {
 			}
 		}
 		
+		return score;
+	}
+	
+	public int evaluateCastling(){
+		int score = 0;
+		if(this.playerCastle == CastleState.CASTLED) score -= 45;
+		if(this.playerCastle == CastleState.CASTLE_RUINED) score += 15;
+		if(this.computerCastle == CastleState.CASTLED) score += 45;
+		if(this.computerCastle == CastleState.CASTLE_RUINED) score -= 15;
 		return score;
 	}
 
@@ -404,67 +419,67 @@ public class Board {
 				if (p.alive && p.symbol.equals("p")){
 					
 					//Add the current position of the pawn to the filled array
-					filledSquares[p.getX()][p.getY()] = 1;
-
+					if((p.player && p.getY() < 4) || (!p.player && p.getY() > 3)) filledSquares[p.getY()][p.getX()] = 1;
+				
 					//Add the squares the pawn can attack to the filled array
-					if(p.getX() > 0 && p.getY() < 7 && p.getY() > 0) filledSquares[p.getX()-1][p.getY()+1] = 1;
-					if(p.getX() < 7 && p.getY() < 7 && p.getY() > 0) filledSquares[p.getX()+1][p.getY()+1] = 1;
+					if( (p.player && p.getY() < 3) || (!p.player && p.getY() > 4) ){
 						
+						int direction = p.player ? 1 : -1;
+						if(p.getX() > 0 && p.getY() < 7 && p.getY() > 0) filledSquares[p.getY() + direction][p.getX()-1] = 1;
+						if(p.getX() < 7 && p.getY() < 7 && p.getY() > 0) filledSquares[p.getY() + direction][p.getX()+1] = 1;
+					
+					}		
+					
 					int pawnScore = 0;
+					
 					if (isIsolatedPawn(p)) pawnScore -= isolatedPawnValue;
 					if (isDoubledPawn(p)) pawnScore -= doubledPawnValue;
 					if (isHalfOpenFile(p)) pawnScore -= halfOpenFileValue;
 					if (isInPawnChain(p)) pawnScore += pawnChainValue;
-					
+
 					/*** Implementation for pawn structure analysis goes here ***/
 					
 					//Implementation of Backwards Pawns
 
 					//Implementation of Holes
-					
-					
+							
 					pawnScore = pawnScore*(p.player ? -1 : 1);
 					pawnEvaluation += pawnScore;
 				}
 			}
-		}
-		
-		//Account for holes
-		int playerHoles = 0;
-		int computerHoles = 0;
+			
+			//Account for holes
+			int playerHoles = 0;
+			int computerHoles = 0;
 
-		for(int i = 0; i < 8; i++){
-			for(int j = 0; j < 8; j++){
-				
-				//If the square is filled...
-				if(filledSquares[i][j] == 1) continue;
-				
-				//If it is a square of interest in the middle
-				if(i > 1 && i < 6 && j > 1 && j < 6){
-					//If it is on the player's side
-					if(i < 4){
-						playerHoles++;
-					}else{
-						computerHoles++;
+			for(int i = 0; i < 8; i++){
+				for(int j = 0; j < 8; j++){
+					
+					//If the square is filled...
+					if(filledSquares[i][j] == 1) continue;
+					
+					//If it is a square of interest in the middle
+					if(i > 1 && i < 6 && j > 1 && j < 6){
+						//If it is on the player's side
+						if(i < 4) playerHoles++; else computerHoles++;
+						
 					}
+
+					//Create negative impacts for holes in front of castled king - may potentially become out-dated if king moves around a lot
+					if(this.getKing(true).getX() > 4 && this.getKing(true).getY() < 2 && j > 4 && (i == 2 || i == 1)) playerHoles++;	
+					else if(this.getKing(true).getX() < 3 && this.getKing(true).getY() < 2 && j < 3 && (i == 2 || i == 1)) playerHoles++;
+					else if(this.getKing(false).getX() > 4 && this.getKing(false).getY() > 5 && j > 4 && (i == 5 || i == 6)) computerHoles++;
+					else if(this.getKing(false).getX() < 3 && this.getKing(false).getY() > 5 && j < 3 && (i == 5 || i == 6)) computerHoles++;
 				}
-				
-				//Create negative impacts for holes in front of castled king - may potentially become outdated if king moves around a lot
-				if(this.getKing(true).getX() > 4 && this.getKing(true).getY() < 2 && j > 4 && i == 2) playerHoles++;	
-				else if(this.getKing(true).getX() < 3 && this.getKing(true).getY() < 2 && j < 3 && i == 2) playerHoles++;
-				else if(this.getKing(false).getX() > 4 && this.getKing(false).getY() > 5 && j > 4 && i == 5) computerHoles++;
-				else if(this.getKing(false).getX() > 4 && this.getKing(false).getY() > 5 && j < 3 && i == 5) computerHoles++;
-				
 			}
+			//System.out.println("player holes: " + playerHoles + "computer holes: " + computerHoles);
+			//Adjust the evaluation accordingly
+			pawnEvaluation += (playerHoles - computerHoles) * holeValue;
 		}
-		
-		//Adjust the evaluation accordingly
-		pawnEvaluation += (playerHoles - computerHoles) * holeValue;
-		
+	
 		//Add the entry to the hash table
 		StructureTable.addEntry(new StructureHashEntry(pHash, pawnEvaluation));
 			
-
 		return pawnEvaluation;
 	}
 	
