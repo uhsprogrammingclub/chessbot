@@ -37,11 +37,11 @@ public class Board {
 	int halfmoveClock = 0;
 	int fullMoveCounter = 0;
 	
-	int isolatedPawnValue = 20;
-	int doubledPawnValue = 15;
-	int halfOpenFileValue = 10;
-	int pawnChainValue = 5;
-	int holeValue = 5;
+	int isolatedPawnValue = 29;
+	int doubledPawnValue = 50;
+	int halfOpenFileValue = 25;
+	int pawnChainValue = 25;
+	int holeValue = 25;
 
 	// Override java.lang.Object.toString method to create easier to read output
 	// in the form of a table

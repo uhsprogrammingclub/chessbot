@@ -203,7 +203,7 @@ public class EngineTesting {
 		}
 
 		//Fill this array with the different times you want tested...
-		int[] computationTimes = {500, 1000, 2000, 10000};
+		int[] computationTimes = {100, 500, 1000, 2000, 10000};
 
 		String filePath = new File("").getAbsolutePath() + "/Bratko-Kopec_Test";
 
@@ -235,12 +235,6 @@ public class EngineTesting {
 			
 			for (int interval = 25; interval > 0; interval /=1.5){
 				
-				int newbestIsolatedPawnValue = bestIsolatedPawnValue;
-				int newbestDoubledPawnValue = bestDoubledPawnValue;
-				int newbestHalfOpenFileValue = bestHalfOpenFileValue;
-				int newbestPawnChainValue = bestPawnChainValue;
-				int newbestHoleValue = bestHoleValue;
-				
 				for (int pawnTest = 1; pawnTest <=5; pawnTest++){
 					
 					int newbestCorrect = 0;
@@ -269,20 +263,20 @@ public class EngineTesting {
 							holeValue += modificationFactor*interval;
 						}
 						
-						System.out.println("isolatedPawnValue: "+ isolatedPawnValue 
-								+  " doubledPawnValue: "+ doubledPawnValue 
-								+ " halfOpenFileValue: "+ halfOpenFileValue 
-								+ " pawnChainValue: "+ pawnChainValue
-								+ " holeValue: "+ holeValue);
+						//System.out.println("isolatedPawnValue: "+ isolatedPawnValue 
+							//	+  " doubledPawnValue: "+ doubledPawnValue 
+							//	+ " halfOpenFileValue: "+ halfOpenFileValue 
+							//	+ " pawnChainValue: "+ pawnChainValue
+							//	+ " holeValue: "+ holeValue);
 						
-						TranspositionTable.trans.clear();
-						StructureTable.pawns.clear();
-	
 	
 						int correct = 0;
 
 						int testNum = 0;
 						for (String edp : tests) {
+							TranspositionTable.trans.clear();
+							StructureTable.pawns.clear();
+							
 							testNum++;
 							Map<String, String[]> info = Utils.edpGetInfo(edp);
 							Board b = Utils.boardFromFEN(Utils.edpGetFEN(edp));
@@ -319,30 +313,19 @@ public class EngineTesting {
 							bestCorrect = correct;
 						}
 						if (correct > newbestCorrect){
-							if (pawnTest == 1){
-								newbestIsolatedPawnValue = isolatedPawnValue;
-							}else if (pawnTest == 2){
-								newbestDoubledPawnValue = doubledPawnValue;
-							}else if (pawnTest == 3){
-								newbestHalfOpenFileValue = halfOpenFileValue;
-							}else if (pawnTest == 4){
-								newbestPawnChainValue = pawnChainValue;
-							}else if (pawnTest == 5){
-								newbestHoleValue = holeValue;
-							}
+							bestIsolatedPawnValue = isolatedPawnValue;
+							bestDoubledPawnValue = doubledPawnValue;
+							bestHalfOpenFileValue = halfOpenFileValue;
+							bestPawnChainValue = pawnChainValue;
+							bestHoleValue = holeValue;
 							if (valueChange != 0){
+								valueChange -= 1;
 								System.out.println("\nfound better pawn value: Time Allowed: " + time + " Number Correct: " + correct + "/" + lines + " Pawn values:" + isolatedPawnValue + ", "+ doubledPawnValue + ", "+ halfOpenFileValue + ", "+ pawnChainValue + ", "+ holeValue );
 							}
 							newbestCorrect = correct;
-						}
-						
+						}		
 					}
 				}
-				bestIsolatedPawnValue = newbestIsolatedPawnValue;
-				bestDoubledPawnValue = newbestDoubledPawnValue;
-				bestHalfOpenFileValue = newbestHalfOpenFileValue;
-				bestPawnChainValue = newbestPawnChainValue;
-				bestHoleValue = newbestHoleValue;
 				
 				System.out.println("\n Finished interval:");
 				System.out.println("bestIsolatedPawnValue: "+ bestIsolatedPawnValue 
@@ -354,15 +337,15 @@ public class EngineTesting {
 		
 			
 			for(String s : results){
-				System.out.println("All results:");
-				System.out.println(s);
+				//System.out.println("All results:");
+				//System.out.println(s);
 			}
+			System.out.println("Best results:");
 			for(String s : best){
-				System.out.println("Best results:");
 				System.out.println(s);
 			}
-			for(int i = 0; i<lines; i++){
-				System.out.println("Total correct for each test:");
+			System.out.println("Total correct for each test:");
+			for(int i = 0; i<lines; i++){	
 				System.out.println((i+1) + ": " + correctResults[i]);
 			}
 			
