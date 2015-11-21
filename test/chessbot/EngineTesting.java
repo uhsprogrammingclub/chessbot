@@ -16,8 +16,9 @@ public class EngineTesting {
 		Zobrist.zobristFillArray();
 	}
 	
-	boolean winAtChess = true;
+	boolean winAtChess = false;
 	boolean BratkoKopec = false;
+	boolean silentButDeadly = true;
 	
 	@Test
 	public void WinAtChessSuite() throws IOException {
@@ -75,23 +76,24 @@ public class EngineTesting {
 			results.add("Time Allowed: " + time + " Number Correct: " + correct + "/" + lines);
 		}
 		
+		System.out.println("Silent But Deadly Results:");
 		for(String s : results){
 			System.out.println(s);
 		}
-		for(String s : fails){
+		/*for(String s : fails){
 			System.out.println(s);
-		}
+		}*/
 	}
 
 	@Test
-	public void test() throws IOException {
+	public void BratkoKopecSuite() throws IOException {
 		
 		if(!BratkoKopec){
 			return;
 		}
 
 		//Fill this array with the different times you want tested...
-		int[] computationTimes = {10000};
+		int[] computationTimes = {60000};
 
 		String filePath = new File("").getAbsolutePath() + "/Bratko-Kopec_Test";
 
@@ -134,6 +136,66 @@ public class EngineTesting {
 			results.add("Time Allowed: " + time + " Number Correct: " + correct + "/24");
 		}
 		
+		System.out.println("Bratco Kopec Results:");
+		
+		for(String s : results){
+			System.out.println(s);
+		}
+	}
+	
+	@Test
+	public void SilentButDeadlySuite() throws IOException {
+		
+		if(!silentButDeadly){
+			System.out.println("Fail");
+			return;
+		}
+
+		//Fill this array with the different times you want tested...
+		int[] computationTimes = {10000};
+
+		String filePath = new File("").getAbsolutePath() + "/SilentButDeadly";
+
+		FileReader fr = new FileReader(filePath);
+		BufferedReader textReader = new BufferedReader(fr);
+
+		int lines = 134;
+		String[] tests = new String[lines];
+
+		for (int i = 0; i < lines; i++) {
+			tests[i] = textReader.readLine();
+		}
+		textReader.close();
+
+		List<String> results = new ArrayList<String>();
+
+		for (int time : computationTimes) {
+
+			int correct = 0;
+
+			for (String edp : tests) {
+				
+				Map<String, String[]> info = Utils.edpGetInfo(edp);
+				Board b = Utils.boardFromFEN(Utils.edpGetFEN(edp));
+				AIController.setComputationTime(time);
+
+				AI ai = new AI(b);
+				ai.search();
+				String botMove = ai.AIC.bestRootMove.move.getSAN();
+				System.out.println(b);
+				
+				System.out.println("Test ID: " + Arrays.toString(info.get("id")) + " Actual Best Moves: "
+						+ Arrays.toString(info.get("bm")) + " Computer Move: [" + botMove + "]");
+
+				for (String s : info.get("bm")) {
+					if (s.equals(botMove))
+						correct++;
+				}
+			}
+			results.add("Time Allowed: " + time + " Number Correct: " + correct + "/24");
+		}
+		
+		System.out.println("Silent But Deadly Results:");
 		for(String s : results){
 			System.out.println(s);
 		}

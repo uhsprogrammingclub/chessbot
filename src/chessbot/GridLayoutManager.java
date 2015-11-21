@@ -17,11 +17,11 @@ public class GridLayoutManager extends JFrame{
 	private Container contents;
 	
 	//Components
-	private JButton[][] squares = new JButton[8][8];
+	private static JButton[][] squares = new JButton[8][8];
 
 	//Colors
 	private Color colorBlack = Color.DARK_GRAY;
-	private Color highlightColor = Color.ORANGE;
+	private static Color highlightColor = Color.ORANGE;
 	
 	//Variable that says whether the board is active for the player
 	private static boolean active = true;
@@ -76,6 +76,11 @@ public class GridLayoutManager extends JFrame{
 		setResizable(false);
 		setLocationRelativeTo(null); //Centers window
 		setVisible(true);
+	}
+	
+	public static void highlightSquare(Point p){
+		squares[7 - p.y][p.x].setOpaque(true);
+		squares[7 - p.y][p.x].setBackground(highlightColor);
 	}
 	
 	public void updateBoard(Board b){
