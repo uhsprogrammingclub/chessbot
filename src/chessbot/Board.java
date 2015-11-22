@@ -65,7 +65,7 @@ public class Board {
 		// String variable to eventually return		
 		String aString = "FEN: " + Utils.boardToFEN(this) + " Board Zobrist Hash: " + Zobrist.getZobristHash(this) + "\n";
 		//aString += "Piece List: "+pieceList +"\n";
-		//aString += "Move History: "+moveHistory +"\n";
+		aString += "Move History: "+moveHistory +"\n";
 		
 		aString += " |-----------------|\n";
 		// Nested loops getting values
@@ -216,6 +216,9 @@ public class Board {
 	
 	public void setSquare(Point pos, Piece piece) {
 		if (pos.squareExists()){
+			for (int i = 0; i < bitboard.pieceBitBoards.length; i++){
+				bitboard.pieceBitBoards[i] = BitBoard.clearBit(bitboard.pieceBitBoards[i], pos.getIndex());
+			}
 			locations[pos.getIndex()] = piece;
 			piece.position = pos;
 			if (useBitBoards){

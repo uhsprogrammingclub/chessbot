@@ -71,16 +71,10 @@ public class BitBoard {
 	
 	void setBitFromPiece(Piece p){
 		if (p.worth != 0){
-			int index = getBitBoard(p.symbol, p.player);
-			pieceBitBoards[index] = setBit(pieceBitBoards[index], p.position.getIndex());
 			if (p.player){
 				pieceBitBoards[BitBoards.White.i] = setBit(pieceBitBoards[BitBoards.White.i], p.position.getIndex());
 			}else{
 				pieceBitBoards[BitBoards.Black.i] = setBit(pieceBitBoards[BitBoards.Black.i], p.position.getIndex());
-			}
-		}else{
-			for (int i = 0; i < pieceBitBoards.length; i++){
-				pieceBitBoards[i] = clearBit(pieceBitBoards[i], p.position.getIndex());
 			}
 		}
 		
@@ -133,25 +127,25 @@ public class BitBoard {
 	long pawnsAbleToDoublePush(long pawns, boolean player){
 		long rank4;
 		if (player){
-			pawns <<= 16;
 			rank4 = RANK_1 << 24;
 		}else{
-			pawns >>= 16;
 			rank4 = RANK_1 << 32;
 		}
-		return (pawns & ~combine() & rank4);
+		return (pawnsAbleToPush(pawnsAbleToPush(pawns, player), player) & ~combine() & rank4);
 	}
 	
 	long pawnsAbleToAttack(long pawns, boolean player, long enPassant){
 		long rightAttack = 0;
 		long leftAttack = 0;
 		if (player){
-			rightAttack = (pawns << 9 & ~FILE_A) ^ RANK_1;
-			leftAttack = (pawns << 7 & ~(FILE_A << 8)) ^ RANK_1;
+			rightAttack = (pawns << 9 & ~FILE_A) & ~RANK_1;
+			leftAttack = (pawns << 7 & ~(FILE_A << 7)) & ~RANK_1;
 		}else{
-			rightAttack = pawns >> 9 & ~FILE_A ^ (RANK_1 >>> 8);
-			leftAttack = pawns >> 7 & ~(FILE_A << 8) ^ (RANK_1 >>> 8);
+			rightAttack = (pawns >> 7 & ~FILE_A) & ~(RANK_1 << 56);
+			leftAttack = (pawns >> 9 & ~(FILE_A << 7)) & ~(RANK_1 << 56);
 		}
+		///System.out.println("Right Attack "+player+":\n" + toString(rightAttack));
+		//System.out.println("Left Attack "+player+":\n" + toString(leftAttack));
 		long enemy;
 		if (player){
 			enemy = pieceBitBoards[BitBoards.Black.i];
@@ -159,7 +153,12 @@ public class BitBoard {
 			enemy = pieceBitBoards[BitBoards.White.i];
 		}
 		enemy |= enPassant;
-		return ((rightAttack | leftAttack) & enemy);
+		long attack = (rightAttack | leftAttack) & enemy;
+		//System.out.println("Attack "+player+":\n" + toString(attack));
+		//System.out.println("Enemy of "+player+":\n" + toString(enemy));
+		//System.out.println("White Pieces:\n" + toString(pieceBitBoards[BitBoards.White.i]));
+		//System.out.println("Black Pieces:\n" + toString(pieceBitBoards[BitBoards.Black.i]));
+		return attack;
 	}
 
 	
