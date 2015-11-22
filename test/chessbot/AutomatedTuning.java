@@ -53,7 +53,7 @@ public class AutomatedTuning {
 				Map<Board.Value, Integer> tunedMap = new HashMap<Board.Value, Integer>();
 				tunedMap.putAll(initialValues);
 		
-				System.out.println("\n###Running "+suiteName+"###\n");
+				System.out.println("\n### Running "+suiteName+ " at " + time/1000.0 + "s ###\n");
 				
 				List<String> bestResults = new ArrayList<String>();
 				for (int interval = 25; interval > 0; interval /=2){
@@ -106,7 +106,7 @@ public class AutomatedTuning {
 			}else if (mod == 2){
 				experimentalValue = value-interval;
 			}
-			experimentalMap.put(param, value);
+			experimentalMap.put(param, experimentalValue);
 			String[] resultString = {""};
 			int result = runTestSuite(tests, experimentalMap, time, resultString);
 			
