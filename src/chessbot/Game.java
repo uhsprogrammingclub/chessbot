@@ -29,6 +29,9 @@ public class Game {
 	//The current board of the game
 	Board b;
 	
+	//Current Opening
+	static String currentECO = "";
+	
 	public Game(){
 		Zobrist.zobristFillArray();
 	}
@@ -63,7 +66,7 @@ public class Game {
 		
 		Game g = new Game();
 		//g.setFEN("3rr1k1/1pp2pp1/p6p/2bP1R2/1nP1p3/2R1P3/1P1NK3/8 b - - 0 0"); - Reed Game
-		g.setFEN("rn1qkb1r/pp2pppp/2pp4/3nP3/3P2b1/5N2/PPP1BPPP/RNBQ1RK1 w kq - 0 7");
+		//g.setFEN("rn1qkb1r/pp2pppp/2pp4/3nP3/3P2b1/5N2/PPP1BPPP/RNBQ1RK1 w kq - 0 7");
 		//g.setFEN("r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 4"); //Fried Liver Attack
 		g.setFEN(setup);
 		g.init();
@@ -117,7 +120,7 @@ public class Game {
 		Move move = null;
 		List<Move> validMoves = b.allMoves();
 
-		OpeningBook.getOpeningMove(b);
+		OpeningBook.getOpeningMove(b, currentECO);
 		
 		while (true) {
 			
@@ -183,7 +186,10 @@ public class Game {
 		System.out.println("Processing move...");
 		
 		AI ai = new AI(b);
+		ai.AIC.currentECO = currentECO;
 		ai.search();
+		currentECO = ai.AIC.currentECO;
+		System.out.println("Using Opening: " +currentECO);
 		
 		System.out.println(ai.AIC);
 		

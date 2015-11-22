@@ -25,6 +25,7 @@ public class AIController {
 	MoveAndScore bestRootMove = null;
 	int staticComputations = 0;
 	int evaluateToDepth = 0;
+	String currentECO = "";
 	
 	// Speed up techniques
 	boolean PVSearch = true; // Using null window search

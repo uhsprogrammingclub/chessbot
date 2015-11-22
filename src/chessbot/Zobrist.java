@@ -34,8 +34,8 @@ public class Zobrist {
 		zPlayerMove = random64();
 	}
 	
-	public static int getIndex(long zHash){
-		return (int)(zHash % TranspositionTable.hashSize);
+	public static int getIndex(long zHash, int hashSize){
+		return (int)(zHash % hashSize);
 	}
 	
 	public static long getZobristHash(Board b){

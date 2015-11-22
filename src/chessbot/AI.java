@@ -23,9 +23,10 @@ public class AI {
 		int alpha = -INFINITY;
 		int beta = INFINITY;
 		if (AIC.useOpeningBook){
-			Move opening = OpeningBook.getOpeningMove(board);
+			OpeningMove opening = OpeningBook.getOpeningMove(board, AIC.currentECO);
 			if (opening != null){
-				AIC.bestRootMove = new MoveAndScore(new Move(board, opening), 0);
+				AIC.bestRootMove = new MoveAndScore(new Move(board, opening.move), 0);
+				AIC.currentECO = opening.ECO;
 				return;
 			}
 		}
@@ -214,7 +215,7 @@ public class AI {
 		
 		//Get hash of current board
 		long zHash = Zobrist.getZobristHash(board);
-		int index = Zobrist.getIndex(zHash);
+		int index = Zobrist.getIndex(zHash, TranspositionTable.hashSize);
 		
 		//find entry with same index
 		HashEntry oldEntry = TranspositionTable.trans.get(index);

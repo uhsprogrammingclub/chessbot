@@ -405,7 +405,7 @@ public class Board {
 	
 		//Get hash of current board
 		long pHash = Zobrist.getPawnZobristHash(this);
-		int index = Zobrist.getIndex(pHash);
+		int index = Zobrist.getIndex(pHash, TranspositionTable.hashSize);
 		
 		int[][] filledSquares = new int[8][8];
 				

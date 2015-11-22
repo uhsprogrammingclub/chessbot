@@ -4,14 +4,14 @@ import java.util.Hashtable;
 
 public class TranspositionTable {
 	
-	final static int hashSize = 100000;
+	final static int hashSize = 1000000;
 	
 	public static Hashtable<Integer, HashEntry> trans = new Hashtable<Integer, HashEntry>(hashSize);
 	
 	public static void addEntry(HashEntry entry){
 		if (entry == null) return;
 		long zobrist = entry.zobrist;
-		int index = Zobrist.getIndex(zobrist);
+		int index = Zobrist.getIndex(zobrist, hashSize);
 		HashEntry oldEntry = TranspositionTable.trans.get(index);
 
 		if(oldEntry == null 
