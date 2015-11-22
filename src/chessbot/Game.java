@@ -189,7 +189,7 @@ public class Game {
 		ai.AIC.currentECO = currentECO;
 		ai.search();
 		currentECO = ai.AIC.currentECO;
-		System.out.println("Using Opening: " +currentECO);
+		System.out.println("Using Opening: " + OpeningBook.getECOName(currentECO) + "(" + currentECO + ")");
 		
 		System.out.println(ai.AIC);
 		

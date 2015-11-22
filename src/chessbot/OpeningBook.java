@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.*;
+import org.hamcrest.Matcher;
 
 
 public class OpeningBook implements Runnable{
@@ -14,10 +16,12 @@ public class OpeningBook implements Runnable{
 	
 	public static Hashtable<Integer, OpeningHashEntry> book = new Hashtable<Integer, OpeningHashEntry>(hashSize);
 	
+	static Map<String, String> ECO = new HashMap<String, String>();
+	
 	static Board board = null;
 	
-	static final int MAX_PLY = 30;
-	static final int MIN_TIMES_USED = 3;
+	static final int MAX_PLY = 20;
+	static final int MIN_TIMES_USED = 10;
 	
 	static int clashes = 0;
 	
@@ -159,10 +163,12 @@ public class OpeningBook implements Runnable{
 		
 		Move m = new Move(board, moves.get(0));
 		boolean win = false;
-		if (info.get("Result").equals("1-0") && board.playerMove){
+		if ((info.get("Result").equals("1-0") && board.playerMove) || (info.get("Result").equals("0-1") && !board.playerMove)){
 			win = true;
-		}else if(info.get("Result").equals("0-1") && !board.playerMove){
-			win = true;
+		}else if ((info.get("Result").equals("1-0") && !board.playerMove) || info.get("Result").equals("0-1") && board.playerMove){
+			//loss
+		}else{
+			//tie
 		}
 		
 		OpeningMove om = new OpeningMove(m, info.get("ECO"), win);
@@ -189,10 +195,10 @@ public class OpeningBook implements Runnable{
 	        String openingMovesString = "";
 	        for (OpeningMove om: movesCopy){
 	        	openingMovesString += om + "(" + om.timesUsed +" used;" + om.wins*100/om.timesUsed +"% win); ";
-	        	if (om.ECO.equals(prefferedECO)){
-	        		chosenMove = om;
-	        	}
 	        	if (om.timesUsed >= MIN_TIMES_USED){
+	        		if (om.ECO.equals(prefferedECO)){
+		        		chosenMove = om;
+		        	}
 	        		totalMovesAvailbile+=om.timesUsed;
 	        	}
 	        }
@@ -202,11 +208,9 @@ public class OpeningBook implements Runnable{
 				System.out.println("Picking Different Opening");
 				int randomMoveIndex = (int)(Math.random()*totalMovesAvailbile);
 				int i = 0;
-				System.out.println("Total opening #"+totalMovesAvailbile);
-				System.out.println("Getting opening #"+randomMoveIndex);
 				for (OpeningMove om: movesCopy){
-					chosenMove = om;
 					if (om.timesUsed >= MIN_TIMES_USED){
+						chosenMove = om;
 						i += om.timesUsed;
 					}
 					if (i >= randomMoveIndex){
@@ -217,9 +221,65 @@ public class OpeningBook implements Runnable{
 		}
 		return chosenMove;
 	}
+	
+	public static void loadECO(){
+		
+		System.out.println("Loading ECO...");
+		String filePath = new File("").getAbsolutePath() + "/ECO";
+		try{
+			FileReader fr = new FileReader(filePath);
+			BufferedReader textReader = new BufferedReader(fr);
+			
+			Pattern k = Pattern.compile("([A-Z][0-9]{2})");
+			Pattern e = Pattern.compile("[A-Z][0-9]{2}(.*)");
+			
+			
+			while(true){
+				String line = textReader.readLine();
+				if (line == null){
+					break;
+				}
+				
+				String key = "";
+				String info = "";
+				
+				java.util.regex.Matcher m = k.matcher(line);
+
+				if (m.find()) {
+					key = m.group(1).trim();
+				}else{
+					System.out.println("Error parsing ECO - Match not found");
+					System.exit(0);
+				}
+				
+				m = e.matcher(line);
+
+				if (m.find()) {
+					info = m.group(1).trim();
+				}else{
+					System.out.println("Error parsing ECO - Match not found");
+					System.exit(0);
+				}
+				
+				ECO.put(key, info);
+				
+			}
+			textReader.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	
+	}
+	
+	public static String getECOName(String input){
+		input = input.substring(0, 3);
+		return ECO.get(input);
+	}
 
 	@Override
 	public void run() {
+		loadECO();
 		compileOpenings();
 	}
 }
