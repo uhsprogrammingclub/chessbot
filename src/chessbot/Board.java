@@ -93,12 +93,12 @@ public class Board {
 		//aString += BitBoard.toString(bitboard.pawnsAbleToDoublePush(false));
 		//aString += "\n";
 		
-		long enPassantBit = 0;
-		if (enPassantTarget != null){
-			enPassantBit = (long)1 << enPassantTarget.getIndex();
-		}
-		aString += BitBoard.toString(bitboard.pawnsAbleToAttack(bitboard.pieceBitBoards[BitBoards.BPawn.i], false, enPassantBit));
-		aString += "\n";
+		//long enPassantBit = 0;
+		//if (enPassantTarget != null){
+			//enPassantBit = (long)1 << enPassantTarget.getIndex();
+		//}
+		//aString += BitBoard.toString(bitboard.pawnsAbleToAttack(bitboard.pieceBitBoards[BitBoards.BPawn.i], false, enPassantBit));
+		//aString += "\n";
 		
 
 		return aString;
