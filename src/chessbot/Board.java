@@ -11,6 +11,13 @@ public class Board {
 	 **/
 	
 	public enum CastleState { CASTLED, CASTLE_RUINED, CAN_CASTLE };
+	public enum Value { 
+		ISOLATED_PAWN, 
+		DOUBLED_PAWN,
+		HALF_OPEN_FILE,
+		PAWN_CHAIN,
+		HOLE
+	}
 
 	// One-dimensional array to hold the locations of all of the pieces
 	Piece[] locations = new Piece[64];
@@ -536,6 +543,24 @@ public class Board {
 			}
 		}
 		return false;
+	}
+	
+	public void setValues(Map<Value, Integer> valuesMap){
+		
+		for (Map.Entry<Value, Integer> entry : valuesMap.entrySet())
+		{
+			if (entry.getKey() == Value.DOUBLED_PAWN){
+				doubledPawnValue = entry.getValue();
+			}else if (entry.getKey() == Value.HALF_OPEN_FILE){
+				halfOpenFileValue = entry.getValue();
+			}else if (entry.getKey() == Value.ISOLATED_PAWN){
+				isolatedPawnValue = entry.getValue();
+			}else if (entry.getKey() == Value.PAWN_CHAIN){
+				pawnChainValue = entry.getValue();
+			}else if (entry.getKey() == Value.HOLE){
+				holeValue = entry.getValue();
+			}
+		}
 	}
 	
 	public int[][] gridFromPerspective(int[][] grid, boolean player){

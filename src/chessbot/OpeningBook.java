@@ -21,7 +21,7 @@ public class OpeningBook implements Runnable{
 	static Board board = null;
 	
 	static final int MAX_PLY = 20;
-	static final int MIN_TIMES_USED = 10;
+	static final int MIN_TIMES_USED = 3;
 	
 	static int clashes = 0;
 	
@@ -73,7 +73,7 @@ public class OpeningBook implements Runnable{
 				oldEntry.moves.addAll(entry.moves);
 			}
 		}else{
-			//System.out.println("Openig book index clash!\n" + oldEntry + " vs. "+ entry);
+			//System.out.println("Opening book index clash!\n" + oldEntry + " vs. "+ entry);
 			clashes++;
 		}
 	}
@@ -203,21 +203,22 @@ public class OpeningBook implements Runnable{
 	        	}
 	        }
 
-			System.out.println("Possible opening moves: " + openingMovesString);
-			if (chosenMove == null){
-				System.out.println("Picking Different Opening");
-				int randomMoveIndex = (int)(Math.random()*totalMovesAvailbile);
-				int i = 0;
-				for (OpeningMove om: movesCopy){
-					if (om.timesUsed >= MIN_TIMES_USED){
-						chosenMove = om;
-						i += om.timesUsed;
+	        if (totalMovesAvailbile > 0){
+	        	System.out.println("Possible opening moves: " + openingMovesString);
+	        	if (chosenMove == null){
+					int randomMoveIndex = (int)(Math.random()*totalMovesAvailbile);
+					int i = 0;
+					for (OpeningMove om: movesCopy){
+						if (om.timesUsed >= MIN_TIMES_USED){
+							chosenMove = om;
+							i += om.timesUsed;
+						}
+						if (i >= randomMoveIndex){
+							break;
+						}
 					}
-					if (i >= randomMoveIndex){
-						break;
-					}
-				}
-			}
+	        	}
+	        }
 		}
 		return chosenMove;
 	}
