@@ -45,15 +45,16 @@ public class AutomatedTuning {
 	@Test
 	public void individualSuites() throws IOException{
 		List<String> finalValues = new ArrayList<String>();
-		for (Map.Entry<String, Integer> suite : testSuites.entrySet()){
-			String suiteName = suite.getKey();
-			String[] tests = getTests(suiteName, suite.getValue());
-			Map<Board.Value, Integer> tunedMap = new HashMap<Board.Value, Integer>();
-			tunedMap.putAll(initialValues);
 
-			System.out.println("\n###Running "+suiteName+"###\n");
-			
-			for (int time: computationTimes){
+		for (int time: computationTimes){
+			for (Map.Entry<String, Integer> suite : testSuites.entrySet()){
+				String suiteName = suite.getKey();
+				String[] tests = getTests(suiteName, suite.getValue());
+				Map<Board.Value, Integer> tunedMap = new HashMap<Board.Value, Integer>();
+				tunedMap.putAll(initialValues);
+		
+				System.out.println("\n###Running "+suiteName+"###\n");
+				
 				List<String> bestResults = new ArrayList<String>();
 				for (int interval = 25; interval > 0; interval /=2){
 					for (Map.Entry<Value, Integer> entry : tunedMap.entrySet())

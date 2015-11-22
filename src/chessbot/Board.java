@@ -18,6 +18,8 @@ public class Board {
 		PAWN_CHAIN,
 		HOLE
 	}
+	
+	final static int CHECKMATE = 1000000;
 
 	// One-dimensional array to hold the locations of all of the pieces
 	Piece[] locations = new Piece[64];
@@ -370,7 +372,7 @@ public class Board {
 		
 		if( isGameOver() ){
 			if (isCheck(playerMove)){
-				score += 1000000 * (playerMove ? 1 : -1);
+				score = CHECKMATE * (playerMove ? 1 : -1);
 			}else{
 				score = 0;
 			}

@@ -50,10 +50,14 @@ public class AI {
 				alpha = result - 30;
 				beta = result + 30;
 			}
+			if (result == Board.CHECKMATE || result == -Board.CHECKMATE){
+				AIC.stopSearching = true;
+			}
 			if (AIC.stopSearching) {
-				return;
+				break;
 			}
 			AIC.depthsPV.add("PV at depth " + currentDepth + ": " + new PV(board) + " EBF: " + AIC.totalNodes*100/previousNodes/100.0);
+		
 		}
 		AIC.depthsPV.add("PV at final depth " + AIC.evaluateToDepth + ": " + new PV(board));
 	}
@@ -373,6 +377,9 @@ public class AI {
 		}
 		TranspositionTable.addEntry(newEntry); //add the move entry. only gets placed if eval is higher than previous entry
 
+		if (orderedMoves.size() == 1 && depth == 0){
+			AIC.stopSearching = true;
+		}
 		return maxValue;
 		
 	}
