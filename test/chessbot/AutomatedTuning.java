@@ -22,7 +22,7 @@ public class AutomatedTuning {
 	boolean BratkoKopec = true;
 	boolean silentButDeadly = false;
 	boolean all = false;
-	int[] computationTimes = {100, 1000};
+	int[] computationTimes = {1000};
 	
 	Map<String, Integer> testSuites = new HashMap<String, Integer>();
 	
