@@ -10,6 +10,11 @@ public class Point {
 		this.y = y;
 	}
 
+	public Point(int index) {
+		this.x = index & 7;
+		this.y = index >> 3;
+	}
+	
 	public Point(String loc) {
 		if (loc.length() != 2)
 			return;

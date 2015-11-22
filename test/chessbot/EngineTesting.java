@@ -19,12 +19,14 @@ import chessbot.Board.Value;
 
 public class EngineTesting {
 	
-	boolean winAtChess = false;
+	boolean winAtChess = true;
 	boolean BratkoKopec = true;
-	boolean silentButDeadly = false;
+	boolean silentButDeadly = true;
 
 	
-	int[] computationTimes = {1000};
+	int[] computationTimes = {10000};
+	
+	List<String> allResults = new ArrayList<String>();
 	
 	@Before
 	public void init() {
@@ -50,6 +52,7 @@ public class EngineTesting {
 		for (String s : finalResults){
 			System.out.println(s);
 		}
+		allResults.addAll(finalResults);
 	}
 	
 	@Test
@@ -71,6 +74,7 @@ public class EngineTesting {
 		for (String s : finalResults){
 			System.out.println(s);
 		}
+		allResults.addAll(finalResults);
 	}
 	
 	@Test
@@ -91,6 +95,16 @@ public class EngineTesting {
 		}
 		for (String s : finalResults){
 			System.out.println(s);
+		}
+		allResults.addAll(finalResults);
+		
+		System.out.println();
+		System.out.println("ALL RESULTS:");
+		for (String s : allResults){
+			System.out.println(s);
+		}
+		while(true){
+			
 		}
 	}
 	
@@ -146,5 +160,8 @@ public class EngineTesting {
 		resultString = "Number Correct: " + correct + "/" + numOfTests + " at " + time/1000.0 + "s:" + "; Correct Tests: " + resultString;
 		return resultString;
 	}
+	
+	
+	
 
 }

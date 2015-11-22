@@ -2,6 +2,8 @@ package chessbot;
 
 import java.util.*;
 
+import chessbot.BitBoard.BitBoards;
+
 //Class to hold board variables and methods
 public class Board {
 
@@ -26,6 +28,9 @@ public class Board {
 
 	// One-dimensional array to hold simple list of pieces
 	List<Piece> pieceList = new ArrayList<Piece>();
+	
+	BitBoard bitboard;
+	boolean useBitBoards = true;
 	
 	//Boolean that stores whether it is the player's move
 	boolean playerMove;
@@ -79,6 +84,22 @@ public class Board {
 			// Create a new line
 			aString += "\n";
 		}
+		aString += BitBoard.toString(bitboard.combine());
+		aString += "\n";
+		
+		//aString += BitBoard.toString(bitboard.pawnsAbleToDoublePush(true));
+		//aString += "\n";
+		
+		//aString += BitBoard.toString(bitboard.pawnsAbleToDoublePush(false));
+		//aString += "\n";
+		
+		long enPassantBit = 0;
+		if (enPassantTarget != null){
+			enPassantBit = (long)1 << enPassantTarget.getIndex();
+		}
+		aString += BitBoard.toString(bitboard.pawnsAbleToAttack(bitboard.pieceBitBoards[BitBoards.BPawn.i], false, enPassantBit));
+		aString += "\n";
+		
 
 		return aString;
 
@@ -197,6 +218,9 @@ public class Board {
 		if (pos.squareExists()){
 			locations[pos.getIndex()] = piece;
 			piece.position = pos;
+			if (useBitBoards){
+				bitboard.setBitFromPiece(piece);
+			}
 		}else{
 			System.out.println("ERROR: setSquare(Point pos, Piece piece) called invalid square");
 
@@ -221,6 +245,8 @@ public class Board {
 		}
 		
 		playerMove = playerGoesFirst;
+		
+		bitboard = new BitBoard(this);
 	}
 	
 	//Find all possible capture moves
@@ -371,7 +397,7 @@ public class Board {
 		score += evaluateCastling();
 		
 		if( isGameOver() ){
-			if (isCheck(playerMove)){
+			if (isCheck(playerMove) && allMoves().size() == 0){
 				score = CHECKMATE * (playerMove ? 1 : -1);
 			}else{
 				score = 0;

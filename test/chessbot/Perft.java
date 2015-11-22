@@ -40,7 +40,7 @@ public class Perft {
 
 			// Map array to correct variables
 			String FEN = strSplit[0];
-			// String FEN = "2kr4/7r/8/8/8/8/8/4K2R w K - 0 1";
+			//FEN = "rnbqkbnr/pp1ppppp/2p5/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq - 0 2";
 
 			int[] depths = new int[strSplit.length - 1];
 
@@ -51,7 +51,7 @@ public class Perft {
 			Board b = Utils.boardFromFEN(FEN);
 
 			for (int i = 1; i <= depths.length; i++) {
-				// i = 1;
+				//i = 3;
 				System.out.println(b);
 				System.out.println("Starting Test To Depth: " + i);
 				leafNodes = 0;
