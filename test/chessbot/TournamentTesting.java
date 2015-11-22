@@ -20,7 +20,99 @@ public class TournamentTesting {
 		Zobrist.zobristFillArray();
 	}
 	
-	boolean BratkoKopec = true;
+	@Test
+	public void TestAgainstSelf(){
+		
+		
+		AIController.timeLimit = 500;
+		AIController.useOpeningBook = false;
+		int numGames = 10;
+		
+		int playerOneWins = 0;
+		int playerTwoWins = 0;
+		
+		for(int i = 0; i < numGames; i++){
+			
+			TranspositionTable.trans.clear();
+			
+			Board b = Utils.boardFromFEN(Game.defaultSetup);
+			
+			// playerTwo has experimental features, playerOne does not
+			while(true){
+				
+				System.out.println(b);
+				System.out.println("Evaluation: " + b.evaluateBoard());
+				
+				AI playerOne = new AI(b);
+				
+				//Set the AIController to the accepted settings
+				
+				//Check if the game is over...
+				if(b.isGameOver()){
+					System.out.println(b);
+					if(b.evaluateBoard() != 0){
+						System.out.println("The player with the baseline settings lost a game!");
+						playerTwoWins++;
+					}else{
+						System.out.println("Stalemate.");
+					}
+					
+					break;
+				}
+				
+				AIController.usePawnEvals = false;
+				playerOne.search();
+				if (playerOne.AIC.bestRootMove != null) {
+					
+					playerOne.AIC.bestRootMove.move.execute();
+					System.out.println(playerOne.AIC.bestRootMove);
+				}
+				
+				AI playerTwo = new AI(b);
+				
+				//Check if the game is over...
+				if(b.isGameOver()){
+					System.out.println(b.evaluateBoard());
+					System.out.println(b);
+
+					if(b.evaluateBoard() != 0){
+						System.out.println("The player with the experimental settings lost a game!");
+						playerOneWins++;
+						break;
+					}else{
+						System.out.println("Stalemate.");
+					}
+					
+				}
+
+				//For the experimental...
+				AIController.usePawnEvals = true;
+				playerTwo.search();
+				if (playerTwo.AIC.bestRootMove != null) {
+					playerTwo.AIC.bestRootMove.move.execute();
+					System.out.println(playerTwo.AIC.bestRootMove);
+				}
+		
+			}
+			
+			System.exit(0);
+			
+		}
+		
+		System.out.println("Player Two Wins: " + playerTwoWins + " Player One Wins: " + playerOneWins);
+		
+		
+		
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	boolean BratkoKopec = false;
 
 	@Test
 	public void BratkoKopecSuite() throws IOException {

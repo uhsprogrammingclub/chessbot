@@ -243,7 +243,16 @@ public class Move implements Comparable<Move>{
 
 	void execute() {
 		if (!executed) {
+			
 			board.moveHistory.add(this.toString());
+			
+			if(board.zobristHistory.get(new Long(Zobrist.getZobristHash(board))) != null){
+				board.zobristHistory.put(Zobrist.getZobristHash(board), board.zobristHistory.get(new Long(Zobrist.getZobristHash(board))) + 1);
+			}else{
+				board.zobristHistory.put(Zobrist.getZobristHash(board), 1);
+				
+			}
+
 			if (castleMove){
 				if (castleRookMove == null){
 				
@@ -396,6 +405,12 @@ public class Move implements Comparable<Move>{
 			}
 			
 			board.playerMove = !board.playerMove;
+			
+			if(board.zobristHistory.get(new Long(Zobrist.getZobristHash(board))) == 1){
+				board.zobristHistory.remove(new Long(Zobrist.getZobristHash(board)));
+			}else{
+				board.zobristHistory.put(Zobrist.getZobristHash(board), board.zobristHistory.get(new Long(Zobrist.getZobristHash(board))) - 1);
+			}
 			
 		}else{
 			System.out.println("ERROR: Trying to reverse a move that was never called.");

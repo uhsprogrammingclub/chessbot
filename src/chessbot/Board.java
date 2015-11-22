@@ -27,12 +27,15 @@ public class Board {
 	boolean botKSideCastle;
 	boolean botQSideCastle;
 	
+	boolean threeRepetitions = false;
+	
 	CastleState playerCastle = CastleState.CAN_CASTLE; 
 	CastleState computerCastle = CastleState.CAN_CASTLE;
 	
 	Point enPassantTarget = null;
 	
 	List<String> moveHistory = new ArrayList<String>();
+	Map<Long, Integer> zobristHistory = new HashMap<Long, Integer>();
 	
 	int halfmoveClock = 0;
 	int fullMoveCounter = 0;
@@ -350,6 +353,25 @@ public class Board {
 		if (allMoves().size() == 0) {
 			return true;
 		}
+		
+		Collection<Integer> c = zobristHistory.values();
+	    Iterator<Integer> itr = c.iterator();
+	    while (itr.hasNext()) {
+	    	if(itr.next() > 2){
+	    		System.out.println(itr.next());
+	    		for (Map.Entry<Long, Integer> entry : zobristHistory.entrySet()) {
+    		        String key = entry.getKey().toString();;
+    		        Integer value = entry.getValue();
+    		        System.out.println("Zobrist: " + key + " Value: " + value );
+    		    }
+	    		System.exit(0);
+	    		threeRepetitions = true;
+	    		return true;
+	    	}
+	    }
+	    
+	    threeRepetitions = false;
+	    
 		// Base case
 		return false;
 	}
@@ -365,7 +387,7 @@ public class Board {
 			if (isCheck(playerMove)){
 				score += 1000000 * (playerMove ? 1 : -1);
 			}else{
-				score = 0;
+				score = -10000;
 			}
 		}
 		
@@ -472,9 +494,9 @@ public class Board {
 					else if(this.getKing(false).getX() < 3 && this.getKing(false).getY() > 5 && j < 3 && (i == 5 || i == 6)) computerHoles++;
 				}
 			}
-			//System.out.println("player holes: " + playerHoles + "computer holes: " + computerHoles);
+			
 			//Adjust the evaluation accordingly
-			pawnEvaluation += (playerHoles - computerHoles) * holeValue;
+			if(AIController.usePawnEvals) pawnEvaluation += (playerHoles - computerHoles) * holeValue;
 		}
 	
 		//Add the entry to the hash table

@@ -220,7 +220,7 @@ public class AI {
 		HashEntry oldEntry = TranspositionTable.trans.get(index);
 	
 		//Test if it is the final depth or the game is over
-		if (depth == maxDepth || board.isGameOver() == true) {
+		if (depth >= maxDepth || board.isGameOver() == true) {
 			
 			if (AIC.computationsAtDepth.get(depth) == null){
 				AIC.computationsAtDepth.put(depth, 0);
@@ -310,18 +310,34 @@ public class AI {
 		
 		for (Move move: orderedMoves) {
 			moveNum++;	
+			
+			boolean wasCheck = board.isCheck(board.playerMove);
+			
 			move.execute();
 			int currentScore;
 			if (!newAlpha || !AIC.PVSearch){
 				currentScore = -negaMax( -beta, -alpha, depth + 1, maxDepth);
 			}else{
-				currentScore = -negaMax( -alpha-1, -alpha, depth + 1, maxDepth); //Do a null window search
 				
-				if (currentScore > alpha && currentScore < beta){ //if move has the possibility of increasing alpha 
-					int previousTotalNodes = AIC.totalNodes;
-					currentScore = -negaMax( -beta, -alpha, depth + 1, maxDepth); //do a full-window search
-					AIC.researches += AIC.totalNodes-previousTotalNodes;
+				if(AIC.lateMoveReductions && moveNum > 3 && depth > 2 && !move.isLoud()){
+					currentScore = -negaMax( -alpha-1, -alpha, depth + 1, maxDepth - 1); //Do a reduced null window search
+				}else{
+					currentScore = alpha + 1;
 				}
+				
+				if(currentScore > alpha){ //If there is a possibility of increasing alpha continue with PV search
+					
+					currentScore = -negaMax( -alpha-1, -alpha, depth + 1, maxDepth); //Do a null window search
+					
+					if (currentScore > alpha && currentScore < beta){ //if move has the possibility of increasing alpha 
+						int previousTotalNodes = AIC.totalNodes;
+						currentScore = -negaMax( -beta, -alpha, depth + 1, maxDepth); //do a full-window search
+						AIC.researches += AIC.totalNodes-previousTotalNodes;
+					}
+					
+				}
+				
+				
 				
 			}
 			
