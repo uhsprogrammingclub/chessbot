@@ -1,5 +1,8 @@
 package chessbot;
 
+import java.util.Arrays;
+import java.util.Random;
+
 public class MagicBitboards {
 	
 	public static final long occupancyMaskRook[] = {
@@ -32,11 +35,117 @@ public class MagicBitboards {
 	    59,59,59,59,59,59,59,59,58,59,59,59,59,59,59,58
 	};
 	
-	public static long magicMovesRook[][];
-	public static long magicMovesBishop[][];
+	public static long magicMovesRook[][] = new long[64][32768];
+	public static long magicMovesBishop[][] = new long[64][32768];
+	public static long occupancyVariation[][] = new long[64][32768];
+	public static long occupancyAttackSet[][] = new long[64][32768];
+	
+	// Generate occupancy variations
+	public static void generateOccupancyVariations(boolean isRook)
+    {
+        int i, j, bitRef;
+        long mask;
+        int variationCount;
+        int[] setBitsInMask, setBitsInIndex;
+        int bitCount[] = new int[64];
+ 
+        for (bitRef=0; bitRef<=63; bitRef++)
+        {
+            mask = isRook ? occupancyMaskRook[bitRef] : occupancyMaskBishop[bitRef];
+            setBitsInMask = BitBoard.getSetBits(mask);
+            bitCount[bitRef] = BitBoard.countSetBits(mask);
+            variationCount = (int)(1L << bitCount[bitRef]);
+            for (i=0; i<variationCount; i++)
+            {
+                occupancyVariation[bitRef][i] = 0; 
+ 
+                // find bits set in index "i" and map them to bits in the 64 bit "occupancyVariation"
+ 
+                setBitsInIndex = BitBoard.getSetBits(i); // an array of integers showing which bits are set
+              
+                for (j=0; j < setBitsInIndex.length; j++)
+                {
+                    occupancyVariation[bitRef][i] |= (1L << setBitsInMask[setBitsInIndex[j]]);
+                }
+ 
+                if (isRook)
+                {
+                    for (j=bitRef+8; j<=55 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j+=8);
+                    if (j>=0 && j<=63) occupancyAttackSet[bitRef][i] |= (1L << j);
+                    for (j=bitRef-8; j>=8 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j-=8);
+                    if (j>=0 && j<=63) occupancyAttackSet[bitRef][i] |= (1L << j);
+                    for (j=bitRef+1; j%8!=7 && j%8!=0 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j++);
+                    if (j>=0 && j<=63) occupancyAttackSet[bitRef][i] |= (1L << j);
+                    for (j=bitRef-1; j%8!=7 && j%8!=0 && j>=0 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j--);
+                    if (j>=0 && j<=63) occupancyAttackSet[bitRef][i] |= (1L << j);
+                }
+                else
+                {
+                    for (j=bitRef+9; j%8!=7 && j%8!=0 && j<=55 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j+=9);
+                    if (j>=0 && j<=63) occupancyAttackSet[bitRef][i] |= (1L << j);
+                    for (j=bitRef-9; j%8!=7 && j%8!=0 && j>=8 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j-=9);
+                    if (j>=0 && j<=63) occupancyAttackSet[bitRef][i] |= (1L << j);
+                    for (j=bitRef+7; j%8!=7 && j%8!=0 && j<=55 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j+=7);
+                    if (j>=0 && j<=63) occupancyAttackSet[bitRef][i] |= (1L << j);
+                    for (j=bitRef-7; j%8!=7 && j%8!=0 && j>=8 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j-=7);
+                    if (j>=0 && j<=63) occupancyAttackSet[bitRef][i] |= (1L << j);
+                }
+            }
+        }
+    }
+	
+	// Generate magic numbers
+	public static void generateMagicNumbers(boolean isRook)
+    {
+        int i, j, bitRef, variationCount;
+ 
+        Random r = new Random();
+        long magicNumber = 0;
+        int index;
+        long attackSet = 0;
+ 
+        for (bitRef=0; bitRef<=63; bitRef++)
+        {
+            int bitCount = BitBoard.countSetBits(isRook ? occupancyMaskRook[bitRef] : occupancyMaskBishop[bitRef]);
+            variationCount = (int)(1L << bitCount);
+            boolean fail;
+            long usedBy[] = new long[(int)(1L << bitCount)];
+ 
+            int attempts = 0;
+ 
+            do
+            {
+                magicNumber = r.nextLong() & r.nextLong() & r.nextLong(); // generate a random number with not many bits set
+                for (j=0; j<variationCount; j++) usedBy[j] = 0;
+                attempts ++;
+ 
+                for (i=0, fail=false; i<variationCount && !fail; i++)
+                {
+                    index = (int)((occupancyVariation[bitRef][i] * magicNumber) >>> (64-bitCount));
+ 
+                    // fail if this index is used by an attack set that is incorrect for this occupancy variation
+                    fail = usedBy[index] != 0 && usedBy[index] != occupancyAttackSet[bitRef][i];
+ 
+                    usedBy[index] = attackSet;
+                }
+            } 
+            while (fail);
+ 
+            if (isRook)
+            {
+                magicNumberRook[bitRef] = magicNumber;
+                magicNumberShiftsRook[bitRef] = (64-bitCount);
+            }
+            else
+            {
+                magicNumberBishop[bitRef] = magicNumber;
+                magicNumberShiftsBishop[bitRef] = (64-bitCount);
+            }
+        }
+    }
 	
 	//Generate magic moves
-	/*public void generateMoveDatabase(boolean isRook)
+	public static void generateMoveDatabase(boolean isRook)
     {
         long validMoves;
         int variations, bitCount;
@@ -44,7 +153,7 @@ public class MagicBitboards {
  
         for (bitRef=0; bitRef<=63; bitRef++)
         {
-            bitCount = isRook ? Bitboards.countSetBits(occupancyMaskRook[bitRef]) : Bitboards.countSetBits(occupancyMaskBishop[bitRef]);
+            bitCount = isRook ? BitBoard.countSetBits(occupancyMaskRook[bitRef]) : BitBoard.countSetBits(occupancyMaskBishop[bitRef]);
             variations = (int)(1L << bitCount);
  
             for (i=0; i<variations; i++)
@@ -82,7 +191,7 @@ public class MagicBitboards {
                 }
             }
         }
-    }*/
+    }
 	
     
 	

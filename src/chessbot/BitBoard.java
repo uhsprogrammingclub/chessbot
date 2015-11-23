@@ -172,4 +172,28 @@ public class BitBoard {
 		
 	}
 	
+	static int countSetBits(long bb) {
+		int set = 0;
+		while (bb != 0) {
+			bb &= (bb - 1);
+			set++;
+		}
+		return set;
+	}
+	
+	static int[] getSetBits(long bb){
+		
+		int[] setBits = new int[countSetBits(bb)];
+		
+		int i = 0;
+		while (bb != 0){
+			int index = BitBoard.bitScanForward(bb);
+			setBits[i] = index;
+			bb = BitBoard.clearBit(bb, index);
+			i++;
+		}
+		
+		return setBits;
+	}
+	
 }

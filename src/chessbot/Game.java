@@ -65,7 +65,7 @@ public class Game {
 		 System.exit(0);*/
 		
 		Game g = new Game();
-		//g.setFEN("3rr1k1/1pp2pp1/p6p/2bP1R2/1nP1p3/2R1P3/1P1NK3/8 b - - 0 0"); - Reed Game
+		g.setFEN("3rr1k1/1pp2pp1/p6p/2bP1R2/1nP1p3/2R1P3/1P1NK3/8 b - - 0 0"); //- Reed Game
 		//g.setFEN("rn1qkb1r/pp2pppp/2pp4/3nP3/3P2b1/5N2/PPP1BPPP/RNBQ1RK1 w kq - 0 7");
 		//g.setFEN("r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 4"); //Fried Liver Attack
 		//g.setFEN("1k2r3/1pp2pp1/p6p/P2K3P/4r3/8/7q/8 b - - 0 36");
@@ -77,20 +77,26 @@ public class Game {
 	
 	public void init(){
 		
+		
 		setBoard(setup);
-		
 		initGUI();
-		System.out.println(b.evaluatePawnStructure());
-		System.out.println(b);
-		
+		loadMagicBitboards();
 		
 		playerMovesFirst = b.playerMove;
 	}
 	
+	public void loadMagicBitboards(){
+		MagicBitboards.generateOccupancyVariations(true);
+		MagicBitboards.generateOccupancyVariations(false);
+		MagicBitboards.generateMoveDatabase(true);
+		MagicBitboards.generateMoveDatabase(false);
+		
+	}
+	
 	public void start(){
-		//OpeningBook book = new OpeningBook(Utils.boardFromFEN(defaultSetup));
-		//Thread bookThread = new Thread(book, "Opening Book Thread");  
-		//bookThread.start();  
+		OpeningBook book = new OpeningBook(Utils.boardFromFEN(defaultSetup));
+		Thread bookThread = new Thread(book, "Opening Book Thread");  
+		bookThread.start();  
 		if (botVBot){
 			botMakeMove(b);
 		}else{
