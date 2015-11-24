@@ -46,7 +46,6 @@ public class Game {
 	
 	public static void main(String[] args){
 		
-		
 		/*String f = "N1";
 		System.out.println(f.charAt(1));
 		System.out.println((int)f.charAt(1));
@@ -78,20 +77,21 @@ public class Game {
 	
 	public void init(){
 		
-		
+		loadBitboards();
 		setBoard(setup);
 		initGUI();
-		loadBitboards();
 		
 		playerMovesFirst = b.playerMove;
 	}
 	
 	static void loadBitboards(){
-		BitBoard.initMasks();
-		MagicBitboards.generateOccupancyVariations(true);
-		MagicBitboards.generateMoveDatabase(true);
-		MagicBitboards.generateOccupancyVariations(false);
-		MagicBitboards.generateMoveDatabase(false);
+		if (Board.useBitBoards){
+			BitBoard.initMasks();
+			MagicBitboards.generateOccupancyVariations(true);
+			MagicBitboards.generateMoveDatabase(true);
+			MagicBitboards.generateOccupancyVariations(false);
+			MagicBitboards.generateMoveDatabase(false);
+		}
 		
 	}
 	

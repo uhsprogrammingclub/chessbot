@@ -21,9 +21,9 @@ public class Bishop extends Piece {
 			}
 			long bbAllPieces = b.bitboard.combine(); 
 			long bbBlockers = bbAllPieces & MagicBitboards.occupancyMaskBishop[position.getIndex()];
-			int databaseIndex = (int)(bbBlockers * MagicBitboards.magicNumberBishop[position.getIndex()] >>> MagicBitboards.magicNumberBishop[position.getIndex()]);
-			long possibleMoves = MagicBitboards.magicMovesBishop[position.getIndex()][databaseIndex] & ~friendlyBB;
-
+			int databaseIndex = (int)(bbBlockers * MagicBitboards.magicNumberBishop[position.getIndex()] >>> MagicBitboards.magicNumberShiftsBishop[position.getIndex()]);
+			long possibleMoves = MagicBitboards.magicMovesBishop[position.getIndex()][databaseIndex];
+			possibleMoves &= ~friendlyBB;
 			while (possibleMoves != 0){
 				int index = BitBoard.bitScanForward(possibleMoves);
 				Point target = new Point(index);

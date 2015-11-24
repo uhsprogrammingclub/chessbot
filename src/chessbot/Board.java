@@ -30,7 +30,7 @@ public class Board {
 	List<Piece> pieceList = new ArrayList<Piece>();
 	
 	BitBoard bitboard;
-	boolean useBitBoards = true;
+	static final boolean useBitBoards = true;
 	
 	//Boolean that stores whether it is the player's move
 	boolean playerMove;

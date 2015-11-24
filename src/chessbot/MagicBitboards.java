@@ -273,6 +273,7 @@ public class MagicBitboards {
                         if ((occupancyVariation[bitRef][i] & (1L << j)) != 0) 
                             break; 
                     }
+                  
  
                     magicMovesBishop[bitRef][magicIndex] = validMoves;
                 }

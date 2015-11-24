@@ -31,7 +31,10 @@ public class BitBoard {
 	}
 	
 	public BitBoard(Board board){
-		for (int i = 0; i < board.locations.length; i++){
+		if (setMask[0] == 0){
+			initMasks();
+		}
+ 		for (int i = 0; i < board.locations.length; i++){
 			Piece p = board.locations[i];
 			if (p.worth != 0){
 				setBitFromPiece(p);
