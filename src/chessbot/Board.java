@@ -113,6 +113,10 @@ public class Board {
 				return false;
 			}
 			
+			if(isCheck(king.player)){
+				return false;
+			}
+			
 			Move testMove = new Move(this, new Point(king.getX() +1, king.getY()), king, null);
 			testMove.execute();
 			if(isCheck(king.player)){
@@ -142,6 +146,10 @@ public class Board {
 				
 			//Check to make sure there is not a piece there...
 			if(king.getX() != 4 || !isEmptySquare(new Point(king.getX() - 1, king.getY())) || !isEmptySquare(new Point(king.getX() - 2, king.getY())) || !isEmptySquare(new Point(king.getX() - 3, king.getY()))){
+				return false;
+			}
+			
+			if(isCheck(king.player)){
 				return false;
 			}
 			
@@ -340,11 +348,11 @@ public class Board {
 				}
 			}
 		}*/
-		for (Piece p: pieceList){
+		/*for (Piece p: pieceList){
 			if (p.alive && p.player == playerMove){
 				rawMoves.addAll(p.findMoves(this));
 			}
-		}
+		}*/
 		long friendlyBB;
 		if (playerMove){
 			friendlyBB = bitboard.pieceBitBoards[BitBoard.BitBoards.White.i];
@@ -356,6 +364,7 @@ public class Board {
 		rawMoves.addAll(Bishop.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.BitBoards.Bishop.i], playerMove));
 		rawMoves.addAll(Queen.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.BitBoards.Queen.i], playerMove));
 		rawMoves.addAll(King.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.BitBoards.King.i], playerMove));
+		rawMoves.addAll(Knight.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.BitBoards.Knight.i], playerMove));
 
 
 		return rawMoves;
@@ -364,16 +373,29 @@ public class Board {
 	// Function that identifies whether the king is directly threatened
 	public boolean isCheck(boolean player) {
 
-		// Load the King's position
-		Piece king = getKing(player);
-
-		// Base case: there is no check
-		if (king != null){
-			return Utils.isChecked(this, king);
+		if (!AIController.useBitBoards){
+			// Load the King's position
+			Piece king = getKing(player);
+	
+			// Base case: there is no check
+			if (king != null){
+				return Utils.isChecked(this, king);
+			}else{
+				System.out.println("ERROR: King was eaten!!!");
+				System.out.println(this);
+				System.exit(0);
+			}
 		}else{
-			System.out.println("ERROR: King was eaten!!!");
-			System.out.println(this);
-			System.exit(0);
+			long friendlyBB;
+			if(player){
+				friendlyBB = bitboard.pieceBitBoards[0];
+			}else{
+				friendlyBB =  bitboard.pieceBitBoards[1];
+			}
+			int kingIndex = BitBoard.bitScanForward(bitboard.pieceBitBoards[BitBoard.BitBoards.King.i] & friendlyBB);
+			if (bitboard.attacksTo(kingIndex, player) != 0){
+				return true;
+			}
 		}
 		return false;
 	}

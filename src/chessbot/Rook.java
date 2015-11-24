@@ -31,19 +31,8 @@ public class Rook extends Piece {
 		List<Move> moves = new ArrayList<Move>();
 		while (rooks != 0){
 			int from = BitBoard.bitScanForward(rooks);
+			long possibleMoves = b.bitboard.rookAttack(from, player);
 			
-			long friendlyBB;
-			if(player){
-				friendlyBB = b.bitboard.pieceBitBoards[0];
-			}else{
-				friendlyBB = b.bitboard.pieceBitBoards[1];
-			}
-			long bbAllPieces = b.bitboard.combine(); 
-			long bbBlockers = bbAllPieces & MagicBitboards.occupancyMaskRook[from];
-			int databaseIndex = (int)(bbBlockers * MagicBitboards.magicNumberRook[from] >>> MagicBitboards.magicNumberShiftsRook[from]);
-			long possibleMoves = MagicBitboards.magicMovesRook[from][databaseIndex];
-			possibleMoves &= ~friendlyBB;
-
 			while (possibleMoves != 0){
 				int to = BitBoard.bitScanForward(possibleMoves);
 				moves.add(new Move(b, new Point(from), new Point(to), null));

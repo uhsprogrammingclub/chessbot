@@ -5,6 +5,7 @@ public class BitBoard {
 	static long[] setMask = new long[64];
 	static long[] clearMask = new long[64];
 	static long[] kingAttacks = new long[64];
+	static long[] knightAttacks = new long[64];
 	
 	static final long RANK_1 = 0x00000000000000FFL;
 	static final long FILE_A = 0x0101010101010101L;
@@ -45,6 +46,16 @@ public class BitBoard {
 			long kingAttack = setMask[i] | right(setMask[i]) | left(setMask[i]);
 			kingAttack |= up(kingAttack) | down(kingAttack);
 			kingAttacks[i] = kingAttack & clearMask[i];
+			
+			long l1 = left(setMask[i]);
+			long l2 = left(left(setMask[i]));
+			long r1 = right(setMask[i]);
+			long r2 = right(right(setMask[i]));
+			
+			long h1 = l2 | r2;
+			long h2 = l1 | r1;
+			
+			knightAttacks[i] = up(h1) | down(h1) | up(up(h2)) | down(down(h2));
 		}
 	}
 	
@@ -116,7 +127,7 @@ public class BitBoard {
 		return combinedBitboard;
 	}
 	
-	long pawnPushTo(long pawns, boolean player){
+	long pawnPush(long pawns, boolean player){
 		long rank4;
 		long pushBB = 0;
 		if (player){
@@ -139,7 +150,7 @@ public class BitBoard {
 	
 
 	
-	long pawnsAttackTo(long pawns, boolean player, long enPassant){
+	long pawnsAttack(long pawns, boolean player, long enPassant){
 		long rightAttack = 0;
 		long leftAttack = 0;
 		if (player){
@@ -158,6 +169,56 @@ public class BitBoard {
 		enemy |= enPassant;
 		long attack = (rightAttack | leftAttack) & enemy;
 		return attack;
+	}
+	
+	long rookAttack(int from, boolean player){
+		long friendlyBB;
+		if(player){
+			friendlyBB = pieceBitBoards[0];
+		}else{
+			friendlyBB = pieceBitBoards[1];
+		}
+		long bbAllPieces = combine(); 
+		long bbBlockers = bbAllPieces & MagicBitboards.occupancyMaskRook[from];
+		int databaseIndex = (int)(bbBlockers * MagicBitboards.magicNumberRook[from] >>> MagicBitboards.magicNumberShiftsRook[from]);
+		long possibleMoves = MagicBitboards.magicMovesRook[from][databaseIndex];
+		possibleMoves &= ~friendlyBB;
+		
+		return possibleMoves;
+	}
+	
+	long bishopAttack(int from, boolean player){
+		long friendlyBB;
+		if(player){
+			friendlyBB = pieceBitBoards[0];
+		}else{
+			friendlyBB =  pieceBitBoards[1];
+		}
+		long bbAllPieces = combine(); 
+		long bbBlockers = bbAllPieces & MagicBitboards.occupancyMaskBishop[from];
+		int databaseIndex = (int)(bbBlockers * MagicBitboards.magicNumberBishop[from] >>> MagicBitboards.magicNumberShiftsBishop[from]);
+		long possibleMoves = MagicBitboards.magicMovesBishop[from][databaseIndex];
+		possibleMoves &= ~friendlyBB;
+		
+		return possibleMoves;
+	}
+	
+	long attacksTo(int to, boolean player){
+		long knights, kings, bishopsQueens, rooksQueens, pawns;
+		long enemyBB;
+		if(player){
+			enemyBB = pieceBitBoards[1];
+		}else{
+			enemyBB =  pieceBitBoards[0];
+		}
+		knights = knightAttacks[to] & pieceBitBoards[BitBoards.Knight.i];
+		kings = kingAttacks[to] & pieceBitBoards[BitBoards.King.i];
+		bishopsQueens = bishopAttack(to, player) & (pieceBitBoards[BitBoards.Bishop.i] | pieceBitBoards[BitBoards.Queen.i]);
+		rooksQueens = rookAttack(to, player) & (pieceBitBoards[BitBoards.Rook.i] | pieceBitBoards[BitBoards.Queen.i]);
+		pawns = pawnsAttack(1L << to, player, 0) & pieceBitBoards[BitBoards.Pawn.i];
+		
+		long allPieces = knights | kings | bishopsQueens | rooksQueens | pawns;
+		return enemyBB & allPieces;
 	}
 
 	

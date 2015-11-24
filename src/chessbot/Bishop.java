@@ -26,18 +26,7 @@ public class Bishop extends Piece {
 		List<Move> moves = new ArrayList<Move>();
 		while (bishops != 0){
 			int from = BitBoard.bitScanForward(bishops);
-			
-			long friendlyBB;
-			if(player){
-				friendlyBB = b.bitboard.pieceBitBoards[0];
-			}else{
-				friendlyBB = b.bitboard.pieceBitBoards[1];
-			}
-			long bbAllPieces = b.bitboard.combine(); 
-			long bbBlockers = bbAllPieces & MagicBitboards.occupancyMaskBishop[from];
-			int databaseIndex = (int)(bbBlockers * MagicBitboards.magicNumberBishop[from] >>> MagicBitboards.magicNumberShiftsBishop[from]);
-			long possibleMoves = MagicBitboards.magicMovesBishop[from][databaseIndex];
-			possibleMoves &= ~friendlyBB;
+			long possibleMoves = b.bitboard.bishopAttack(from, player);
 			
 			while (possibleMoves != 0){
 				int to = BitBoard.bitScanForward(possibleMoves);

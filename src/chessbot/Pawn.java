@@ -37,8 +37,8 @@ public class Pawn extends Piece {
 			if (b.enPassantTarget != null){
 				enPassantBit = (long)1 << b.enPassantTarget.getIndex();
 			}
-			possibleMoves |= b.bitboard.pawnsAttackTo(pawn, player, enPassantBit);
-			possibleMoves |= b.bitboard.pawnPushTo(pawn, player);
+			possibleMoves |= b.bitboard.pawnsAttack(pawn, player, enPassantBit);
+			possibleMoves |= b.bitboard.pawnPush(pawn, player);
 			
 			while (possibleMoves != 0){
 				int to = BitBoard.bitScanForward(possibleMoves);

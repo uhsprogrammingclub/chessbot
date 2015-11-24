@@ -33,23 +33,8 @@ public class Queen extends Piece {
 		while (queens != 0){
 			int from = BitBoard.bitScanForward(queens);
 			
-			long friendlyBB;
-			if(player){
-				friendlyBB = b.bitboard.pieceBitBoards[0];
-			}else{
-				friendlyBB = b.bitboard.pieceBitBoards[1];
-			}
-			long bbAllPieces = b.bitboard.combine(); 
-			
-			long bbStraightBlockers = bbAllPieces & MagicBitboards.occupancyMaskRook[from];
-			int rookDatabaseIndex = (int)(bbStraightBlockers * MagicBitboards.magicNumberRook[from] >>> MagicBitboards.magicNumberShiftsRook[from]);
-			long possibleMoves = MagicBitboards.magicMovesRook[from][rookDatabaseIndex];
-			
-			long bbDiagonalBlockers = bbAllPieces & MagicBitboards.occupancyMaskBishop[from];
-			int bishopDatabaseIndex = (int)(bbDiagonalBlockers * MagicBitboards.magicNumberBishop[from] >>> MagicBitboards.magicNumberShiftsBishop[from]);
-			possibleMoves |= MagicBitboards.magicMovesBishop[from][bishopDatabaseIndex];
-
-			possibleMoves &= ~friendlyBB;
+			long possibleMoves = b.bitboard.bishopAttack(from, player);
+			possibleMoves |= b.bitboard.rookAttack(from, player);
 			
 			while (possibleMoves != 0){
 				int to = BitBoard.bitScanForward(possibleMoves);
