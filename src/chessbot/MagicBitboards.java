@@ -35,10 +35,10 @@ public class MagicBitboards {
 	    59,59,59,59,59,59,59,59,58,59,59,59,59,59,59,58
 	};
 	
-	public static long magicMovesRook[][] = new long[64][32768];
-	public static long magicMovesBishop[][] = new long[64][32768];
-	public static long occupancyVariation[][] = new long[64][32768];
-	public static long occupancyAttackSet[][] = new long[64][32768];
+	public static long magicMovesRook[][] = new long[64][4096];
+	public static long magicMovesBishop[][] = new long[64][4096];
+	public static long occupancyVariation[][] = new long[64][4096];
+	public static long occupancyAttackSet[][] = new long[64][4096];
 	
 	// Generate occupancy variations
 	public static void generateOccupancyVariations(boolean isRook)
@@ -47,14 +47,13 @@ public class MagicBitboards {
         long mask;
         int variationCount;
         int[] setBitsInMask, setBitsInIndex;
-        int bitCount[] = new int[64];
  
-        for (bitRef=0; bitRef<=63; bitRef++)
+        for (bitRef = 0; bitRef < 64; bitRef++)
         {
             mask = isRook ? occupancyMaskRook[bitRef] : occupancyMaskBishop[bitRef];
             setBitsInMask = BitBoard.getSetBits(mask);
-            bitCount[bitRef] = BitBoard.countSetBits(mask);
-            variationCount = (int)(1L << bitCount[bitRef]);
+            int bitCount = BitBoard.countSetBits(mask);
+            variationCount = (int)(1L << bitCount);
             for (i=0; i<variationCount; i++)
             {
                 occupancyVariation[bitRef][i] = 0; 
@@ -65,30 +64,75 @@ public class MagicBitboards {
               
                 for (j=0; j < setBitsInIndex.length; j++)
                 {
-                    occupancyVariation[bitRef][i] |= (1L << setBitsInMask[setBitsInIndex[j]]);
+                    occupancyVariation[bitRef][i] |= 
+                    		(1L << 
+                    				setBitsInMask[
+                    				              setBitsInIndex[j]
+                    				            		  ]
+                    				            				  );
                 }
  
                 if (isRook)
                 {
-                    for (j=bitRef+8; j<=55 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j+=8);
-                    if (j>=0 && j<=63) occupancyAttackSet[bitRef][i] |= (1L << j);
-                    for (j=bitRef-8; j>=8 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j-=8);
-                    if (j>=0 && j<=63) occupancyAttackSet[bitRef][i] |= (1L << j);
-                    for (j=bitRef+1; j%8!=7 && j%8!=0 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j++);
-                    if (j>=0 && j<=63) occupancyAttackSet[bitRef][i] |= (1L << j);
-                    for (j=bitRef-1; j%8!=7 && j%8!=0 && j>=0 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j--);
-                    if (j>=0 && j<=63) occupancyAttackSet[bitRef][i] |= (1L << j);
+                	//add up moves to attack set
+                    for (j=bitRef+8; j<=55 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j+=8){
+                    	if (j>=0 && j<=63){
+                    		occupancyAttackSet[bitRef][i] |= (1L << j);
+                    	}
+                    }
+                    
+                    //add down moves to attack set
+                    for (j=bitRef-8; j>=8 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j-=8){
+                    	if (j>=0 && j<=63) {
+                    		occupancyAttackSet[bitRef][i] |= (1L << j);
+                    	}
+                    }
+                   
+                    //add right moves to attack set
+                    for (j=bitRef+1; j%8!=7 && j%8!=0 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j++){
+                    	if (j>=0 && j<=63){
+                    		occupancyAttackSet[bitRef][i] |= (1L << j);
+                    	}
+                    }
+                    
+                    //add left moves to attack set
+                    for (j=bitRef-1; j%8!=7 && j%8!=0 && j>=0 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j--){
+                    	if (j>=0 && j<=63){
+                        	occupancyAttackSet[bitRef][i] |= (1L << j);
+                    	}
+                    }
+                
+                    
                 }
                 else
                 {
-                    for (j=bitRef+9; j%8!=7 && j%8!=0 && j<=55 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j+=9);
-                    if (j>=0 && j<=63) occupancyAttackSet[bitRef][i] |= (1L << j);
-                    for (j=bitRef-9; j%8!=7 && j%8!=0 && j>=8 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j-=9);
-                    if (j>=0 && j<=63) occupancyAttackSet[bitRef][i] |= (1L << j);
-                    for (j=bitRef+7; j%8!=7 && j%8!=0 && j<=55 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j+=7);
-                    if (j>=0 && j<=63) occupancyAttackSet[bitRef][i] |= (1L << j);
-                    for (j=bitRef-7; j%8!=7 && j%8!=0 && j>=8 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j-=7);
-                    if (j>=0 && j<=63) occupancyAttackSet[bitRef][i] |= (1L << j);
+                	//add moves up right
+                    for (j=bitRef+9; j%8!=7 && j%8!=0 && j<=55 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j+=9){
+                    	if (j>=0 && j<=63){
+                    		occupancyAttackSet[bitRef][i] |= (1L << j);
+                    	}
+                    }
+                    
+                    //add moves down left
+                    for (j=bitRef-9; j%8!=7 && j%8!=0 && j>=8 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j-=9){
+                    	 if (j>=0 && j<=63){
+                    		 occupancyAttackSet[bitRef][i] |= (1L << j);
+                    	 }
+                    }
+                   
+                    //add moves up left
+                    for (j=bitRef+7; j%8!=7 && j%8!=0 && j<=55 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j+=7){
+                    	if (j>=0 && j<=63){
+                    		occupancyAttackSet[bitRef][i] |= (1L << j);
+                    	}
+                    }
+                    
+                    //add moves down right
+                    for (j=bitRef-7; j%8!=7 && j%8!=0 && j>=8 && (occupancyVariation[bitRef][i] & (1L << j)) == 0; j-=7){
+                    	if (j>=0 && j<=63){
+                    		occupancyAttackSet[bitRef][i] |= (1L << j);
+                    	}
+                    }
                 }
             }
         }
@@ -104,7 +148,7 @@ public class MagicBitboards {
         int index;
         long attackSet = 0;
  
-        for (bitRef=0; bitRef<=63; bitRef++)
+        for (bitRef = 0; bitRef < 64; bitRef++)
         {
             int bitCount = BitBoard.countSetBits(isRook ? occupancyMaskRook[bitRef] : occupancyMaskBishop[bitRef]);
             variationCount = (int)(1L << bitCount);
@@ -151,22 +195,48 @@ public class MagicBitboards {
         int variations, bitCount;
         int bitRef, i, j, magicIndex;
  
-        for (bitRef=0; bitRef<=63; bitRef++)
+        for (bitRef = 0; bitRef < 64; bitRef++)
         {
             bitCount = isRook ? BitBoard.countSetBits(occupancyMaskRook[bitRef]) : BitBoard.countSetBits(occupancyMaskBishop[bitRef]);
             variations = (int)(1L << bitCount);
  
-            for (i=0; i<variations; i++)
+            for (i = 0; i < variations; i++)
             {
                 validMoves = 0;
                 if (isRook)
                 {
                     magicIndex = (int)((occupancyVariation[bitRef][i] * magicNumberRook[bitRef]) >>> magicNumberShiftsRook[bitRef]);
  
-                    for (j=bitRef+8; j<=63; j+=8) { validMoves |= (1L << j); if ((occupancyVariation[bitRef][i] & (1L << j)) != 0) break; }
-                    for (j=bitRef-8; j>=0; j-=8) { validMoves |= (1L << j); if ((occupancyVariation[bitRef][i] & (1L << j)) != 0) break; }
-                    for (j=bitRef+1; j%8!=0; j++) { validMoves |= (1L << j); if ((occupancyVariation[bitRef][i] & (1L << j)) != 0) break; }
-                    for (j=bitRef-1; j%8!=7 && j>=0; j--) { validMoves |= (1L << j); if ((occupancyVariation[bitRef][i] & (1L << j)) != 0) break; }
+                    //add Moves up
+                    for (j=bitRef+8; j<=63; j+=8) {
+                    	validMoves |= (1L << j);
+                    	if ((occupancyVariation[bitRef][i] & (1L << j)) != 0){
+                    		break; 
+                    	}
+                    }
+                    //add Moves down
+                    for (j=bitRef-8; j>=0; j-=8){
+                    	validMoves |= (1L << j);
+                    	if ((occupancyVariation[bitRef][i] & (1L << j)) != 0){
+                    		break;
+                    	}
+                    }
+                    
+                    //add Moves right
+                    for (j=bitRef+1; j%8!=0; j++) {
+                    	validMoves |= (1L << j);
+                    	if ((occupancyVariation[bitRef][i] & (1L << j)) != 0){
+                    		break;
+                    	}
+                    }
+                    
+                    //add moves left
+                    for (j=bitRef-1; j%8!=7 && j>=0; j--) {
+                    	validMoves |= (1L << j); 
+                    	if ((occupancyVariation[bitRef][i] & (1L << j)) != 0){
+                    		break;
+                    	}
+                    }
  
                     magicMovesRook[bitRef][magicIndex] = validMoves;
                 }
@@ -174,13 +244,30 @@ public class MagicBitboards {
                 {
                     magicIndex = (int)((occupancyVariation[bitRef][i] * magicNumberBishop[bitRef]) >>> magicNumberShiftsBishop[bitRef]);
  
-                    for (j=bitRef+9; j%8!=0 && j<=63; j+=9) { validMoves |= (1L << j); if ((occupancyVariation[bitRef][i] & (1L << j)) != 0) break; }
-                    for (j=bitRef-9; j%8!=7 && j>=0; j-=9) { validMoves |= (1L << j); if ((occupancyVariation[bitRef][i] & (1L << j)) != 0) break; }
+                    //add moves up right
+                    for (j=bitRef+9; j%8!=0 && j<=63; j+=9) {
+                    	validMoves |= (1L << j);
+                    	if ((occupancyVariation[bitRef][i] & (1L << j)) != 0){
+                    		break;
+                    	}
+                    }
+                    
+                    //add moves down left
+                    for (j=bitRef-9; j%8!=7 && j>=0; j-=9) {
+                    	validMoves |= (1L << j);
+                    	if ((occupancyVariation[bitRef][i] & (1L << j)) != 0){
+                    		break;
+                    	}
+                    }
+                    
+                    //add moves up left
                     for (j=bitRef+7; j%8!=7 && j<=63; j+=7) { 
                         validMoves |= (1L << j); 
                         if ((occupancyVariation[bitRef][i] & (1L << j)) != 0) 
                             break; 
                     }
+                    
+                    //add moves down right
                     for (j=bitRef-7; j%8!=0 && j>=0; j-=7) { 
                         validMoves |= (1L << j); 
                         if ((occupancyVariation[bitRef][i] & (1L << j)) != 0) 

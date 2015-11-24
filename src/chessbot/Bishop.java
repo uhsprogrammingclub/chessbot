@@ -12,8 +12,29 @@ public class Bishop extends Piece {
 
 		List<Move> moves = new ArrayList<Move>();
 
-		// Get Diagonal moves
-		moves.addAll(Utils.getDiagonalMoves(b, this));
+		if(b.useBitBoards){
+			long friendlyBB;
+			if(this.player){
+				friendlyBB = b.bitboard.pieceBitBoards[0];
+			}else{
+				friendlyBB = b.bitboard.pieceBitBoards[1];
+			}
+			long bbAllPieces = b.bitboard.combine(); 
+			long bbBlockers = bbAllPieces & MagicBitboards.occupancyMaskBishop[position.getIndex()];
+			int databaseIndex = (int)(bbBlockers * MagicBitboards.magicNumberBishop[position.getIndex()] >>> MagicBitboards.magicNumberBishop[position.getIndex()]);
+			long possibleMoves = MagicBitboards.magicMovesBishop[position.getIndex()][databaseIndex] & ~friendlyBB;
+
+			while (possibleMoves != 0){
+				int index = BitBoard.bitScanForward(possibleMoves);
+				Point target = new Point(index);
+				moves.add(new Move(b, target, this, null));
+				possibleMoves = BitBoard.clearBit(possibleMoves, index);
+			}
+
+		}else{
+			// Get Diagonal moves
+			moves.addAll(Utils.getDiagonalMoves(b, this));
+		}
 
 		return moves;
 	}

@@ -17,11 +17,12 @@ public class Perft {
 
 	@Before
 	public void init() {
+		Game.loadBitboards();
 	}
 
 	@Test
 	public void test() throws IOException {
-
+		long startTime = System.currentTimeMillis();
 		String filePath = new File("").getAbsolutePath() + "/PerftTests";
 
 		FileReader fr = new FileReader(filePath);
@@ -40,7 +41,7 @@ public class Perft {
 
 			// Map array to correct variables
 			String FEN = strSplit[0];
-			//FEN = "r1bqkbnr/pppppppp/n7/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2";
+			//FEN = "rnbqkbnr/ppppppp1/7p/8/8/2N5/PPPPPPPP/R1BQKBNR w KQkq - 0 2";
 
 			int[] depths = new int[strSplit.length - 1];
 
@@ -51,7 +52,7 @@ public class Perft {
 			Board b = Utils.boardFromFEN(FEN);
 
 			for (int i = 1; i <= depths.length; i++) {
-				//i = 2;
+				//i = 1;
 				System.out.println(b);
 				System.out.println("Starting Test To Depth: " + i);
 				leafNodes = 0;
@@ -77,6 +78,7 @@ public class Perft {
 				assertEquals("Depth " + i + ": " + FEN, depths[i - 1], leafNodes);
 			}
 		}
+		System.out.println("Perft test finished successfully in "+(System.currentTimeMillis()-startTime)/60000.0 + " mins");
 	}
 
 	void PerftTest(Board b, int depth) {

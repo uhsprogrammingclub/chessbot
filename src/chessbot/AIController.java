@@ -36,7 +36,7 @@ public class AIController {
 	boolean quiescenceSearch = true; // Complete basic quiescence search after finishing main search to counter horizon effect
 	boolean sortMoves = true;
 	boolean aspirationWindow = false;
-	boolean useOpeningBook = true;
+	static boolean useOpeningBook = false;
 	
 	//Hashtable to store number of computations at each depth (serves no functional purpose)
 	Hashtable<Integer, Integer> computationsAtDepth = new Hashtable<Integer, Integer>(100);

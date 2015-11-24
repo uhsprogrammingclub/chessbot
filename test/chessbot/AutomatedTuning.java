@@ -22,7 +22,7 @@ public class AutomatedTuning {
 	boolean BratkoKopec = true;
 	boolean silentButDeadly = false;
 	boolean all = false;
-	int[] computationTimes = {1000};
+	int[] computationTimes = {10000};
 	
 	Map<String, Integer> testSuites = new HashMap<String, Integer>();
 	
@@ -74,8 +74,12 @@ public class AutomatedTuning {
 				finalValues.add(result);
 			}
 		}
+		System.out.println("FINISHED!\n");
 		for (String s : finalValues){
 			System.out.println(s);
+		}
+		while(true){
+			
 		}
 	}
 	

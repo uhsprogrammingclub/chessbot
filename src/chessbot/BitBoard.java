@@ -5,8 +5,8 @@ public class BitBoard {
 	static long[] setMask = new long[64];
 	static long[] clearMask = new long[64];
 	
-	static final long RANK_1 = Long.decode("0x00000000000000FF");
-	static final long FILE_A = Long.decode("0x0101010101010101");
+	static final long RANK_1 = 0x00000000000000FFL;
+	static final long FILE_A = 0x0101010101010101L;
 	
 	enum BitBoards {
 		White(0),
@@ -31,7 +31,6 @@ public class BitBoard {
 	}
 	
 	public BitBoard(Board board){
-		initMasks();
 		for (int i = 0; i < board.locations.length; i++){
 			Piece p = board.locations[i];
 			if (p.worth != 0){
@@ -168,7 +167,9 @@ public class BitBoard {
 		double LS1B = (double)(bb & -bb);
 		
 		int exp = (int) (Double.doubleToLongBits(LS1B) >>> 52);
-        return (exp & 2047) - 1023;
+		
+		int index = (exp & 2047) - 1023;
+        return index;
 		
 	}
 	
@@ -190,6 +191,10 @@ public class BitBoard {
 			int index = BitBoard.bitScanForward(bb);
 			setBits[i] = index;
 			bb = BitBoard.clearBit(bb, index);
+			
+			if (bb == 0 && i != setBits.length-1){
+				System.out.println("ERROR: getSetBits did not get index of all bits.");
+			}
 			i++;
 		}
 		

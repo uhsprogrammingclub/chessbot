@@ -65,10 +65,11 @@ public class Game {
 		 System.exit(0);*/
 		
 		Game g = new Game();
-		g.setFEN("3rr1k1/1pp2pp1/p6p/2bP1R2/1nP1p3/2R1P3/1P1NK3/8 b - - 0 0"); //- Reed Game
+		//g.setFEN("3rr1k1/1pp2pp1/p6p/2bP1R2/1nP1p3/2R1P3/1P1NK3/8 b - - 0 0"); //- Reed Game
 		//g.setFEN("rn1qkb1r/pp2pppp/2pp4/3nP3/3P2b1/5N2/PPP1BPPP/RNBQ1RK1 w kq - 0 7");
 		//g.setFEN("r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 4"); //Fried Liver Attack
 		//g.setFEN("1k2r3/1pp2pp1/p6p/P2K3P/4r3/8/7q/8 b - - 0 36");
+		//g.setFEN("rnbqkbnr/ppppppp1/7p/8/8/2N5/PPPPPPPP/R1BQKBNR w KQkq - 0 2");
 		g.setFEN(setup);
 		g.init();
 		g.start();
@@ -80,23 +81,26 @@ public class Game {
 		
 		setBoard(setup);
 		initGUI();
-		loadMagicBitboards();
+		loadBitboards();
 		
 		playerMovesFirst = b.playerMove;
 	}
 	
-	public void loadMagicBitboards(){
+	static void loadBitboards(){
+		BitBoard.initMasks();
 		MagicBitboards.generateOccupancyVariations(true);
-		MagicBitboards.generateOccupancyVariations(false);
 		MagicBitboards.generateMoveDatabase(true);
+		MagicBitboards.generateOccupancyVariations(false);
 		MagicBitboards.generateMoveDatabase(false);
 		
 	}
 	
 	public void start(){
-		OpeningBook book = new OpeningBook(Utils.boardFromFEN(defaultSetup));
-		Thread bookThread = new Thread(book, "Opening Book Thread");  
-		bookThread.start();  
+		if (AIController.useOpeningBook){
+			OpeningBook book = new OpeningBook(Utils.boardFromFEN(defaultSetup));
+			Thread bookThread = new Thread(book, "Opening Book Thread");  
+			bookThread.start();  
+		}
 		if (botVBot){
 			botMakeMove(b);
 		}else{
