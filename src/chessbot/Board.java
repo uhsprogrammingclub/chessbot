@@ -355,6 +355,7 @@ public class Board {
 		rawMoves.addAll(Rook.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.BitBoards.Rook.i], playerMove));
 		rawMoves.addAll(Bishop.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.BitBoards.Bishop.i], playerMove));
 		rawMoves.addAll(Queen.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.BitBoards.Queen.i], playerMove));
+		rawMoves.addAll(King.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.BitBoards.King.i], playerMove));
 
 
 		return rawMoves;

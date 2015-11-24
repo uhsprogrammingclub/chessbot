@@ -42,6 +42,9 @@ public class BitBoard {
 		for (int i = 0; i < 64; i++){
 			setMask[i] = (long)1 << i;
 			clearMask[i] = ~setMask[i];
+			long kingAttack = setMask[i] | right(setMask[i]) | left(setMask[i]);
+			kingAttack |= up(kingAttack) | down(kingAttack);
+			kingAttacks[i] = kingAttack & clearMask[i];
 		}
 	}
 	
