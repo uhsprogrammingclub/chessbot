@@ -12,7 +12,7 @@ public class Pawn extends Piece {
 
 		List<Move> moves = new ArrayList<Move>();
 		
-		if (!b.useBitBoards){
+		if (!AIController.useBitBoards){
 
 			// Checks the square directly in front of it
 			moves.addAll(Utils.getVerticalMoves(b, this));
@@ -20,8 +20,16 @@ public class Pawn extends Piece {
 			// Check diagonal
 			moves.addAll(Utils.getDiagonalMoves(b, this));
 		
-		}else{
-			long pawn = (long)1 << position.getIndex();
+		}
+		// Return moves
+		return moves;
+	}
+	
+	static List<Move> getMovesFromBitboard(Board b, long pawns, boolean player){
+		List<Move> moves = new ArrayList<Move>();
+		while (pawns != 0){
+			int from = BitBoard.bitScanForward(pawns);
+			long pawn = (long)1 << from;
 			
 			long possibleMoves = 0;
 			
@@ -29,27 +37,28 @@ public class Pawn extends Piece {
 			if (b.enPassantTarget != null){
 				enPassantBit = (long)1 << b.enPassantTarget.getIndex();
 			}
-			possibleMoves |= b.bitboard.pawnsAbleToAttack(pawn, player, enPassantBit);
-			possibleMoves |= b.bitboard.pawnsAbleToDoublePush(pawn, player);
-			possibleMoves |= b.bitboard.pawnsAbleToPush(pawn, player);
+			possibleMoves |= b.bitboard.pawnsAttackTo(pawn, player, enPassantBit);
+			possibleMoves |= b.bitboard.pawnPushTo(pawn, player);
 			
 			while (possibleMoves != 0){
-				int index = BitBoard.bitScanForward(possibleMoves);
-				Point target = new Point(index);
+				int to = BitBoard.bitScanForward(possibleMoves);
+				Point target = new Point(to);
 				if(target.y == 0 || target.y == 7){
-					moves.add(new Move(b, target, this, "q"));
-					moves.add(new Move(b, target, this, "n"));
-					moves.add(new Move(b, target, this, "r"));
-					moves.add(new Move(b, target, this, "b"));
+					moves.add(new Move(b, new Point(from), target, "q"));
+					moves.add(new Move(b, new Point(from), target, "n"));
+					moves.add(new Move(b, new Point(from), target, "r"));
+					moves.add(new Move(b, new Point(from), target, "b"));
 				}else{
-					moves.add(new Move(b, target, this, null));
+					moves.add(new Move(b, new Point(from), target, null));
 				}
-				possibleMoves = BitBoard.clearBit(possibleMoves, index);
+				possibleMoves = BitBoard.clearBit(possibleMoves, to);
 			}
+			pawns = BitBoard.clearBit(pawns, from);
 		}
-		// Return moves
 		return moves;
 	}
+	
+	
 
 	// Constructor
 	public Pawn(int x, int y, boolean p) {

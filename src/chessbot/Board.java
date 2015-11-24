@@ -30,7 +30,6 @@ public class Board {
 	List<Piece> pieceList = new ArrayList<Piece>();
 	
 	BitBoard bitboard;
-	static final boolean useBitBoards = true;
 	
 	//Boolean that stores whether it is the player's move
 	boolean playerMove;
@@ -221,7 +220,7 @@ public class Board {
 			}
 			locations[pos.getIndex()] = piece;
 			piece.position = pos;
-			if (useBitBoards){
+			if (AIController.useBitBoards){
 				bitboard.setBitFromPiece(piece);
 			}
 		}else{
@@ -346,6 +345,18 @@ public class Board {
 				rawMoves.addAll(p.findMoves(this));
 			}
 		}
+		long friendlyBB;
+		if (playerMove){
+			friendlyBB = bitboard.pieceBitBoards[BitBoard.BitBoards.White.i];
+		}else{
+			friendlyBB = bitboard.pieceBitBoards[BitBoard.BitBoards.Black.i];
+		}
+		rawMoves.addAll(Pawn.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.BitBoards.Pawn.i], playerMove));
+		rawMoves.addAll(Rook.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.BitBoards.Rook.i], playerMove));
+		rawMoves.addAll(Bishop.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.BitBoards.Bishop.i], playerMove));
+		rawMoves.addAll(Queen.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.BitBoards.Queen.i], playerMove));
+
+
 		return rawMoves;
 	}
 

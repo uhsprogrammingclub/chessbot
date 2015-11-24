@@ -85,8 +85,8 @@ public class Game {
 	}
 	
 	static void loadBitboards(){
-		if (Board.useBitBoards){
-			BitBoard.initMasks();
+		if (AIController.useBitBoards){
+			BitBoard.initPresets();
 			MagicBitboards.generateOccupancyVariations(true);
 			MagicBitboards.generateMoveDatabase(true);
 			MagicBitboards.generateOccupancyVariations(false);

@@ -603,5 +603,8 @@ public class Utils {
 	static String edpGetFEN(String edp){
 		return edp.replace(edp.split (" ", 5) [4], "") + "0" + " 0";
 	}
+	
+	
+	
 
 }

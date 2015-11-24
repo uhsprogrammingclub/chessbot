@@ -14,30 +14,7 @@ public class Queen extends Piece {
 
 		List<Move> moves = new ArrayList<Move>();
 
-		if(Board.useBitBoards){
-			long friendlyBB;
-			if(this.player){
-				friendlyBB = b.bitboard.pieceBitBoards[0];
-			}else{
-				friendlyBB = b.bitboard.pieceBitBoards[1];
-			}
-			long bbAllPieces = b.bitboard.combine(); 
-			long bbStraightBlockers = bbAllPieces & MagicBitboards.occupancyMaskRook[position.getIndex()];
-			int rookDatabaseIndex = (int)(bbStraightBlockers * MagicBitboards.magicNumberRook[position.getIndex()] >>> MagicBitboards.magicNumberShiftsRook[position.getIndex()]);
-			long possibleMoves = MagicBitboards.magicMovesRook[position.getIndex()][rookDatabaseIndex];
-			
-			long bbDiagonalBlockers = bbAllPieces & MagicBitboards.occupancyMaskBishop[position.getIndex()];
-			int bishopDatabaseIndex = (int)(bbDiagonalBlockers * MagicBitboards.magicNumberBishop[position.getIndex()] >>> MagicBitboards.magicNumberShiftsBishop[position.getIndex()]);
-			possibleMoves |= MagicBitboards.magicMovesBishop[position.getIndex()][bishopDatabaseIndex];
-
-			possibleMoves &= ~friendlyBB;
-			
-			while (possibleMoves != 0){
-				int index = BitBoard.bitScanForward(possibleMoves);
-				Point target = new Point(index);
-				moves.add(new Move(b, target, this, null));
-				possibleMoves = BitBoard.clearBit(possibleMoves, index);
-			}
+		if(AIController.useBitBoards){
 
 		}else{
 			// Gets vertical moves
@@ -48,6 +25,39 @@ public class Queen extends Piece {
 			moves.addAll(Utils.getDiagonalMoves(b, this));
 		}
 
+		return moves;
+	}
+	
+	static List<Move> getMovesFromBitboard(Board b, long queens, boolean player){
+		List<Move> moves = new ArrayList<Move>();
+		while (queens != 0){
+			int from = BitBoard.bitScanForward(queens);
+			
+			long friendlyBB;
+			if(player){
+				friendlyBB = b.bitboard.pieceBitBoards[0];
+			}else{
+				friendlyBB = b.bitboard.pieceBitBoards[1];
+			}
+			long bbAllPieces = b.bitboard.combine(); 
+			
+			long bbStraightBlockers = bbAllPieces & MagicBitboards.occupancyMaskRook[from];
+			int rookDatabaseIndex = (int)(bbStraightBlockers * MagicBitboards.magicNumberRook[from] >>> MagicBitboards.magicNumberShiftsRook[from]);
+			long possibleMoves = MagicBitboards.magicMovesRook[from][rookDatabaseIndex];
+			
+			long bbDiagonalBlockers = bbAllPieces & MagicBitboards.occupancyMaskBishop[from];
+			int bishopDatabaseIndex = (int)(bbDiagonalBlockers * MagicBitboards.magicNumberBishop[from] >>> MagicBitboards.magicNumberShiftsBishop[from]);
+			possibleMoves |= MagicBitboards.magicMovesBishop[from][bishopDatabaseIndex];
+
+			possibleMoves &= ~friendlyBB;
+			
+			while (possibleMoves != 0){
+				int to = BitBoard.bitScanForward(possibleMoves);
+				moves.add(new Move(b, new Point(from), new Point(to), null));
+				possibleMoves = BitBoard.clearBit(possibleMoves, to);
+			}
+			queens = BitBoard.clearBit(queens, from);
+		}
 		return moves;
 	}
 

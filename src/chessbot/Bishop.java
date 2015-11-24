@@ -12,30 +12,40 @@ public class Bishop extends Piece {
 
 		List<Move> moves = new ArrayList<Move>();
 
-		if(b.useBitBoards){
-			long friendlyBB;
-			if(this.player){
-				friendlyBB = b.bitboard.pieceBitBoards[0];
-			}else{
-				friendlyBB = b.bitboard.pieceBitBoards[1];
-			}
-			long bbAllPieces = b.bitboard.combine(); 
-			long bbBlockers = bbAllPieces & MagicBitboards.occupancyMaskBishop[position.getIndex()];
-			int databaseIndex = (int)(bbBlockers * MagicBitboards.magicNumberBishop[position.getIndex()] >>> MagicBitboards.magicNumberShiftsBishop[position.getIndex()]);
-			long possibleMoves = MagicBitboards.magicMovesBishop[position.getIndex()][databaseIndex];
-			possibleMoves &= ~friendlyBB;
-			while (possibleMoves != 0){
-				int index = BitBoard.bitScanForward(possibleMoves);
-				Point target = new Point(index);
-				moves.add(new Move(b, target, this, null));
-				possibleMoves = BitBoard.clearBit(possibleMoves, index);
-			}
+		if(AIController.useBitBoards){
 
 		}else{
 			// Get Diagonal moves
 			moves.addAll(Utils.getDiagonalMoves(b, this));
 		}
 
+		return moves;
+	}
+	
+	static List<Move> getMovesFromBitboard(Board b, long bishops, boolean player){
+		List<Move> moves = new ArrayList<Move>();
+		while (bishops != 0){
+			int from = BitBoard.bitScanForward(bishops);
+			
+			long friendlyBB;
+			if(player){
+				friendlyBB = b.bitboard.pieceBitBoards[0];
+			}else{
+				friendlyBB = b.bitboard.pieceBitBoards[1];
+			}
+			long bbAllPieces = b.bitboard.combine(); 
+			long bbBlockers = bbAllPieces & MagicBitboards.occupancyMaskBishop[from];
+			int databaseIndex = (int)(bbBlockers * MagicBitboards.magicNumberBishop[from] >>> MagicBitboards.magicNumberShiftsBishop[from]);
+			long possibleMoves = MagicBitboards.magicMovesBishop[from][databaseIndex];
+			possibleMoves &= ~friendlyBB;
+			
+			while (possibleMoves != 0){
+				int to = BitBoard.bitScanForward(possibleMoves);
+				moves.add(new Move(b, new Point(from), new Point(to), null));
+				possibleMoves = BitBoard.clearBit(possibleMoves, to);
+			}
+			bishops = BitBoard.clearBit(bishops, from);
+		}
 		return moves;
 	}
 

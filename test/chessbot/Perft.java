@@ -14,6 +14,7 @@ import java.io.File;
 public class Perft {
 
 	int leafNodes = 0;
+	static final int TEST_LIMIT = 10;
 
 	@Before
 	public void init() {
@@ -36,7 +37,10 @@ public class Perft {
 		}
 		textReader.close();
 
+		int testNum = 0;
 		for (String test : tests) {
+			testNum++;
+			if (testNum > TEST_LIMIT) break;
 			String[] strSplit = test.split(" ;");
 
 			// Map array to correct variables
@@ -50,6 +54,8 @@ public class Perft {
 			}
 
 			Board b = Utils.boardFromFEN(FEN);
+			
+			System.out.println("\n### Running Test #" + testNum + " ###\n");
 
 			for (int i = 1; i <= depths.length; i++) {
 				//i = 1;

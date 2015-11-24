@@ -12,24 +12,8 @@ public class Rook extends Piece {
 
 		List<Move> moves = new ArrayList<Move>();
 		
-		if(b.useBitBoards){
-			long friendlyBB;
-			if(this.player){
-				friendlyBB = b.bitboard.pieceBitBoards[0];
-			}else{
-				friendlyBB = b.bitboard.pieceBitBoards[1];
-			}
-			long bbAllPieces = b.bitboard.combine(); 
-			long bbBlockers = bbAllPieces & MagicBitboards.occupancyMaskRook[position.getIndex()];
-			int databaseIndex = (int)(bbBlockers * MagicBitboards.magicNumberRook[position.getIndex()] >>> MagicBitboards.magicNumberShiftsRook[position.getIndex()]);
-			long possibleMoves = MagicBitboards.magicMovesRook[position.getIndex()][databaseIndex] & ~friendlyBB;
-
-			while (possibleMoves != 0){
-				int index = BitBoard.bitScanForward(possibleMoves);
-				Point target = new Point(index);
-				moves.add(new Move(b, target, this, null));
-				possibleMoves = BitBoard.clearBit(possibleMoves, index);
-			}
+		if(AIController.useBitBoards){
+			
 
 		}else{
 
@@ -42,6 +26,34 @@ public class Rook extends Piece {
 		return moves;
 	}
 
+	
+	static List<Move> getMovesFromBitboard(Board b, long rooks, boolean player){
+		List<Move> moves = new ArrayList<Move>();
+		while (rooks != 0){
+			int from = BitBoard.bitScanForward(rooks);
+			
+			long friendlyBB;
+			if(player){
+				friendlyBB = b.bitboard.pieceBitBoards[0];
+			}else{
+				friendlyBB = b.bitboard.pieceBitBoards[1];
+			}
+			long bbAllPieces = b.bitboard.combine(); 
+			long bbBlockers = bbAllPieces & MagicBitboards.occupancyMaskRook[from];
+			int databaseIndex = (int)(bbBlockers * MagicBitboards.magicNumberRook[from] >>> MagicBitboards.magicNumberShiftsRook[from]);
+			long possibleMoves = MagicBitboards.magicMovesRook[from][databaseIndex];
+			possibleMoves &= ~friendlyBB;
+
+			while (possibleMoves != 0){
+				int to = BitBoard.bitScanForward(possibleMoves);
+				moves.add(new Move(b, new Point(from), new Point(to), null));
+				possibleMoves = BitBoard.clearBit(possibleMoves, to);
+			}
+			rooks = BitBoard.clearBit(rooks, from);
+		}
+		return moves;
+	}
+	
 	// Constructor
 	public Rook(int x, int y, boolean p) {
 

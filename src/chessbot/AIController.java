@@ -28,15 +28,16 @@ public class AIController {
 	String currentECO = "";
 	
 	// Speed up techniques
-	boolean PVSearch = true; // Using null window search
-	boolean killerHeuristic = true; // Records 3 killer moves per depth to evaluate first
-	boolean TTMoveReordering = true; // Transposition entries are evaluated first
-	boolean useTTEvals = true; // Use previous TT entries when encountered
-	boolean iterativeDeepeningMoveReordering = true; // Evaluate the best moves at the previous depth first
-	boolean quiescenceSearch = true; // Complete basic quiescence search after finishing main search to counter horizon effect
-	boolean sortMoves = true;
-	boolean aspirationWindow = false;
+	static boolean PVSearch = true; // Using null window search
+	static boolean killerHeuristic = true; // Records 3 killer moves per depth to evaluate first
+	static boolean TTMoveReordering = true; // Transposition entries are evaluated first
+	static boolean useTTEvals = true; // Use previous TT entries when encountered
+	static boolean iterativeDeepeningMoveReordering = true; // Evaluate the best moves at the previous depth first
+	static boolean quiescenceSearch = true; // Complete basic quiescence search after finishing main search to counter horizon effect
+	static boolean sortMoves = true;
+	static boolean aspirationWindow = false;
 	static boolean useOpeningBook = false;
+	static boolean useBitBoards = true;
 	
 	//Hashtable to store number of computations at each depth (serves no functional purpose)
 	Hashtable<Integer, Integer> computationsAtDepth = new Hashtable<Integer, Integer>(100);

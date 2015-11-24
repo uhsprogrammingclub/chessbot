@@ -1,9 +1,10 @@
 package chessbot;
 
 public class BitBoard {
-	long[] pieceBitBoards = new long[14];
+	long[] pieceBitBoards = new long[8];
 	static long[] setMask = new long[64];
 	static long[] clearMask = new long[64];
+	static long[] kingAttacks = new long[64];
 	
 	static final long RANK_1 = 0x00000000000000FFL;
 	static final long FILE_A = 0x0101010101010101L;
@@ -11,18 +12,12 @@ public class BitBoard {
 	enum BitBoards {
 		White(0),
 		Black(1),
-		WPawn(2),
-		WRook(3),
-		WBishop(4),
-		WKnight(5),
-		WQueen(6),
-		WKing(7),
-		BPawn(8),
-		BRook(9),
-		BBishop(10),
-		BKnight(11),
-		BQueen(12),
-		BKing(13);
+		Pawn(2),
+		Rook(3),
+		Bishop(4),
+		Knight(5),
+		Queen(6),
+		King(7);
 		public final int i;
 		
 		BitBoards(int i){
@@ -32,7 +27,7 @@ public class BitBoard {
 	
 	public BitBoard(Board board){
 		if (setMask[0] == 0){
-			initMasks();
+			initPresets();
 		}
  		for (int i = 0; i < board.locations.length; i++){
 			Piece p = board.locations[i];
@@ -43,7 +38,7 @@ public class BitBoard {
 		}
 	}
 	
-	static void initMasks(){
+	static void initPresets(){
 		for (int i = 0; i < 64; i++){
 			setMask[i] = (long)1 << i;
 			clearMask[i] = ~setMask[i];
@@ -51,8 +46,8 @@ public class BitBoard {
 	}
 	
 	
-	static int getBitBoard(String p, boolean player){
-		int index = 14;
+	static int getBitBoard(String p){
+		int index = 8;
 		if (p == "p"){
 			index = 2;
 		}else if (p == "r"){
@@ -66,7 +61,6 @@ public class BitBoard {
 		}else if (p == "k"){
 			index = 7;
 		}
-		if (!player) index +=6;
 		
 		return index;
 	}
@@ -78,6 +72,8 @@ public class BitBoard {
 			}else{
 				pieceBitBoards[BitBoards.Black.i] = setBit(pieceBitBoards[BitBoards.Black.i], p.position.getIndex());
 			}
+			int pieceBoard = getBitBoard(p.symbol);
+			pieceBitBoards[pieceBoard] = setBit(pieceBitBoards[pieceBoard], p.position.getIndex());
 		}
 		
 	}
@@ -117,37 +113,39 @@ public class BitBoard {
 		return combinedBitboard;
 	}
 	
-	long pawnsAbleToPush(long pawns, boolean player){
-		if (player){
-			pawns <<= 8;
-		}else{
-			pawns >>= 8;
-		}
-		return (pawns & ~combine());
-	}
-	
-	long pawnsAbleToDoublePush(long pawns, boolean player){
+	long pawnPushTo(long pawns, boolean player){
 		long rank4;
+		long pushBB = 0;
 		if (player){
 			rank4 = RANK_1 << 24;
+			pawns = up(pawns);
+			pawns &= ~combine();
+			pushBB |= pawns;
+			pawns = up(pawns);
 		}else{
 			rank4 = RANK_1 << 32;
+			pawns = down(pawns);
+			pawns &= ~combine();
+			pushBB |= pawns;
+			pawns = down(pawns);
 		}
-		return (pawnsAbleToPush(pawnsAbleToPush(pawns, player), player) & ~combine() & rank4);
+		pushBB |= pawns & ~combine() & rank4;
+		
+		return (pushBB);
 	}
 	
-	long pawnsAbleToAttack(long pawns, boolean player, long enPassant){
+
+	
+	long pawnsAttackTo(long pawns, boolean player, long enPassant){
 		long rightAttack = 0;
 		long leftAttack = 0;
 		if (player){
-			rightAttack = (pawns << 9 & ~FILE_A) & ~RANK_1;
-			leftAttack = (pawns << 7 & ~(FILE_A << 7)) & ~RANK_1;
+			rightAttack = upRight(pawns);
+			leftAttack = upLeft(pawns);
 		}else{
-			rightAttack = (pawns >> 7 & ~FILE_A) & ~(RANK_1 << 56);
-			leftAttack = (pawns >> 9 & ~(FILE_A << 7)) & ~(RANK_1 << 56);
+			rightAttack = downRight(pawns);
+			leftAttack = downLeft(pawns);
 		}
-		///System.out.println("Right Attack "+player+":\n" + toString(rightAttack));
-		//System.out.println("Left Attack "+player+":\n" + toString(leftAttack));
 		long enemy;
 		if (player){
 			enemy = pieceBitBoards[BitBoards.Black.i];
@@ -156,10 +154,6 @@ public class BitBoard {
 		}
 		enemy |= enPassant;
 		long attack = (rightAttack | leftAttack) & enemy;
-		//System.out.println("Attack "+player+":\n" + toString(attack));
-		//System.out.println("Enemy of "+player+":\n" + toString(enemy));
-		//System.out.println("White Pieces:\n" + toString(pieceBitBoards[BitBoards.White.i]));
-		//System.out.println("Black Pieces:\n" + toString(pieceBitBoards[BitBoards.Black.i]));
 		return attack;
 	}
 
@@ -204,4 +198,14 @@ public class BitBoard {
 		return setBits;
 	}
 	
+	
+	//helper methods
+	static long up(long bb){return bb << 8;}
+	static long down(long bb){ return bb >>> 8; }
+	static long right(long bb){ return bb << 1 & ~FILE_A; }
+	static long left(long bb){ return bb >> 1 & ~(FILE_A<<7); }
+	static long upRight(long bb){ return up(right(bb)); }
+	static long upLeft(long bb){ return up(left(bb)); }
+	static long downRight(long bb){ return down(right(bb)); }
+	static long downLeft(long bb){ return down(left(bb)); }
 }
