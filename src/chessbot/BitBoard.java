@@ -6,6 +6,7 @@ public class BitBoard {
 	static long[] clearMask = new long[64];
 	static long[] kingAttacks = new long[64];
 	static long[] knightAttacks = new long[64];
+	static long[] neighborFiles = new long[8];
 	
 	static final long RANK_1 = 0x00000000000000FFL;
 	static final long FILE_A = 0x0101010101010101L;
@@ -57,6 +58,13 @@ public class BitBoard {
 			
 			knightAttacks[i] = up(h1) | down(h1) | up(up(h2)) | down(down(h2));
 		}
+		
+		for(int i = 0; i < 8; i++){
+			long tempBoard = FILE_A <<  (i-1) | (FILE_A << 1+i);
+			if(i == 0 || i == 7) tempBoard &= ~(FILE_A | (FILE_A<<7));
+			neighborFiles[i] = tempBoard;
+		}
+		
 	}
 	
 	

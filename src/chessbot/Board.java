@@ -505,6 +505,9 @@ public class Board {
 					int pawnScore = 0;
 					
 					if (isIsolatedPawn(p)) pawnScore -= isolatedPawnValue;
+					
+					System.out.println(p + " " + isIsolatedPawn(p));
+					
 					if (isDoubledPawn(p)) pawnScore -= doubledPawnValue;
 					if (isHalfOpenFile(p)) pawnScore -= halfOpenFileValue;
 					if (isInPawnChain(p)) pawnScore += pawnChainValue;
@@ -558,15 +561,18 @@ public class Board {
 	//evaluation for isolated pawns
 	public boolean isIsolatedPawn(Piece pawn)
 	{
+		int side = pawn.player ? 0 : 1;
+		return (BitBoard.neighborFiles[pawn.getX()] & (bitboard.pieceBitBoards[2] & bitboard.pieceBitBoards[side])) == 0 ? true : false; // 2 = pawn bb's
+		
+		/*
 		for(Piece p: pieceList)
 		{
 			if(p.symbol.equals("p") && p.player == pawn.player && (p.getX() == pawn.getX()+1 || p.getX() == pawn.getX()-1))
 			{
 				return false;
 			}
-		}
-		
-		return true;
+		}*/
+
 	}
 	
 	public boolean isDoubledPawn(Piece pawn)
