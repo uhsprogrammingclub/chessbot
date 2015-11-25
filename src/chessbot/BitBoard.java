@@ -11,21 +11,14 @@ public class BitBoard {
 	static final long RANK_1 = 0x00000000000000FFL;
 	static final long FILE_A = 0x0101010101010101L;
 	
-	enum BitBoards {
-		White(0),
-		Black(1),
-		Pawn(2),
-		Rook(3),
-		Bishop(4),
-		Knight(5),
-		Queen(6),
-		King(7);
-		public final int i;
-		
-		BitBoards(int i){
-			this.i = i;
-		}
-	}
+	static final int WHITE = 0;
+	static final int BLACK = 1;
+	static final int PAWNS = 2;
+	static final int KNIGHTS = 3;
+	static final int BISHOPS = 4;
+	static final int ROOKS = 5;
+	static final int QUEENS = 6;
+	static final int KINGS = 7;
 	
 	public BitBoard(Board board){
 		if (setMask[0] == 0){
@@ -72,11 +65,11 @@ public class BitBoard {
 		int index = 8;
 		if (p == "p"){
 			index = 2;
-		}else if (p == "r"){
+		}else if (p == "n"){
 			index = 3;
 		}else if (p == "b"){
 			index = 4;
-		}else if (p == "n"){
+		}else if (p == "r"){
 			index = 5;
 		}else if (p == "q"){
 			index = 6;
@@ -90,9 +83,9 @@ public class BitBoard {
 	void setBitFromPiece(Piece p){
 		if (p.worth != 0){
 			if (p.player){
-				pieceBitBoards[BitBoards.White.i] = setBit(pieceBitBoards[BitBoards.White.i], p.position.getIndex());
+				pieceBitBoards[WHITE] = setBit(pieceBitBoards[WHITE], p.position.getIndex());
 			}else{
-				pieceBitBoards[BitBoards.Black.i] = setBit(pieceBitBoards[BitBoards.Black.i], p.position.getIndex());
+				pieceBitBoards[BLACK] = setBit(pieceBitBoards[BLACK], p.position.getIndex());
 			}
 			int pieceBoard = getBitBoard(p.symbol);
 			pieceBitBoards[pieceBoard] = setBit(pieceBitBoards[pieceBoard], p.position.getIndex());
@@ -170,9 +163,9 @@ public class BitBoard {
 		}
 		long enemy;
 		if (player){
-			enemy = pieceBitBoards[BitBoards.Black.i];
+			enemy = pieceBitBoards[BLACK];
 		}else{
-			enemy = pieceBitBoards[BitBoards.White.i];
+			enemy = pieceBitBoards[WHITE];
 		}
 		enemy |= enPassant;
 		long attack = (rightAttack | leftAttack) & enemy;
@@ -219,11 +212,11 @@ public class BitBoard {
 		}else{
 			enemyBB =  pieceBitBoards[0];
 		}
-		knights = knightAttacks[to] & pieceBitBoards[BitBoards.Knight.i];
-		kings = kingAttacks[to] & pieceBitBoards[BitBoards.King.i];
-		bishopsQueens = bishopAttack(to, player) & (pieceBitBoards[BitBoards.Bishop.i] | pieceBitBoards[BitBoards.Queen.i]);
-		rooksQueens = rookAttack(to, player) & (pieceBitBoards[BitBoards.Rook.i] | pieceBitBoards[BitBoards.Queen.i]);
-		pawns = pawnsAttack(1L << to, player, 0) & pieceBitBoards[BitBoards.Pawn.i];
+		knights = knightAttacks[to] & pieceBitBoards[KNIGHTS];
+		kings = kingAttacks[to] & pieceBitBoards[KINGS];
+		bishopsQueens = bishopAttack(to, player) & (pieceBitBoards[BISHOPS] | pieceBitBoards[QUEENS]);
+		rooksQueens = rookAttack(to, player) & (pieceBitBoards[ROOKS] | pieceBitBoards[QUEENS]);
+		pawns = pawnsAttack(1L << to, player, 0) & pieceBitBoards[PAWNS];
 		
 		long allPieces = knights | kings | bishopsQueens | rooksQueens | pawns;
 		return enemyBB & allPieces;
@@ -270,6 +263,15 @@ public class BitBoard {
 		return setBits;
 	}
 	
+	long getLeastValuablePiece(long bb){
+		for (int piece = PAWNS; piece <= KINGS; piece += 1) {
+	      long subset = bb & pieceBitBoards[piece];
+	      if ( subset != 0){
+	         return subset & -subset; // single bit
+	      }
+		}
+		return 0; // empty set
+	}
 	
 	//helper methods
 	static long up(long bb){return bb << 8;}

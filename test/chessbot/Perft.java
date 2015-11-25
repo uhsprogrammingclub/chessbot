@@ -14,7 +14,7 @@ import java.io.File;
 public class Perft {
 
 	int leafNodes = 0;
-	static final int TEST_LIMIT = 10;
+	static final int TEST_LIMIT = 10000;
 
 	@Before
 	public void init() {
@@ -45,7 +45,7 @@ public class Perft {
 
 			// Map array to correct variables
 			String FEN = strSplit[0];
-			//FEN = "rnbqkbnr/ppppppp1/7p/8/8/2N5/PPPPPPPP/R1BQKBNR w KQkq - 0 2";
+			//FEN = "r1bqkbnr/pppppppp/8/8/1n6/3P4/PPPKPPPP/RNBQ1BNR w kq - 0 2";
 
 			int[] depths = new int[strSplit.length - 1];
 
