@@ -5,6 +5,10 @@ import java.util.List;
 
 public class King extends Piece {
 
+	
+	static  final int WORTH = 10000;
+	
+	
 	@Override
 	// findMoves() method which identifies possible moves
 	// The King Piece can move vertically, horizontally, or diagonally 1 square
@@ -67,7 +71,7 @@ public class King extends Piece {
 	public King(int x, int y, boolean p) {
 
 		// Setting base values for the Queen piece
-		worth = 10000;
+		worth = WORTH;
 		player = p;
 		symbol = "k";
 

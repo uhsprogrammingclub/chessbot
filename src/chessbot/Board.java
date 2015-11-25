@@ -469,7 +469,7 @@ public class Board {
 		if(this.computerCastle == CastleState.CASTLE_RUINED) score -= 15;
 		return score;
 	}
-
+	
 	// Analyze the board, and assign a numeric value to it for the position
 	// based on how favorable it is for the designated player.
 	public int scoreBoard(boolean player) {

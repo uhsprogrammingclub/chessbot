@@ -213,6 +213,52 @@ public class BitBoard {
 		long allPieces = knights | kings | bishopsQueens | rooksQueens | pawns;
 		return enemyBB & allPieces;
 	}
+	
+	
+	
+	int getValue( int index ){
+		long piece = 1L << index;
+		if ((piece & pieceBitBoards[PAWNS]) != 0){
+			return Pawn.WORTH;
+		}else if ((piece & pieceBitBoards[KNIGHTS]) != 0){
+			return Knight.WORTH;
+		}else if ((piece & pieceBitBoards[BISHOPS]) != 0){
+			return Bishop.WORTH;
+		}else if ((piece & pieceBitBoards[ROOKS]) != 0){
+			return Rook.WORTH;
+		}else if ((piece & pieceBitBoards[QUEENS]) != 0){
+			return Queen.WORTH;
+		}else if ((piece & pieceBitBoards[KINGS]) != 0){
+			return King.WORTH;
+		}
+		return 0;
+	}
+	
+	int SEE ( int to, boolean player)
+	{
+	   int[] gain = new int[32];
+	   int d = 0;
+	   long mayXray = pieceBitBoards[PAWNS] | pieceBitBoards[BISHOPS] | pieceBitBoards[ROOKS] | pieceBitBoards[QUEENS];
+	   long occ = combine();
+	   long attacks = attacksTo(to, player);
+	   long fromSet = getLeastValuablePiece(attacks);
+	   gain[d] = getValue(to);
+	   while (fromSet != 0){
+	      d++; // next depth and side
+	      gain[d]  = getValue(bitScanForward(fromSet)) - gain[d-1]; // speculative store, if defended
+	      if (Math.max(-gain[d-1], gain[d]) < 0) break; // pruning does not influence the result
+	      attacks ^= fromSet; // reset bit in set to traverse
+	      occ ^= fromSet; // reset bit in temporary occupancy (for x-Rays)
+	      if ( (fromSet & mayXray) != 0 ){
+	    	  //attacks |= considerXrays(occ);
+	      }
+	      fromSet = getLeastValuablePiece(attacks);
+	   }
+	   while (--d != 0){
+	      gain[d-1]= -Math.max(-gain[d-1], gain[d]);
+	   }
+	   return gain[0];
+	}
 
 	
 	static int bitScanForward(long bb){

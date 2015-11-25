@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Bishop extends Piece {
 
+	static  final int WORTH = 330;
 	@Override
 	// findMoves() method which identifies possible moves
 	// The Bishop Piece can move diagonally as far as it can
@@ -42,7 +43,7 @@ public class Bishop extends Piece {
 	public Bishop(int x, int y, boolean p) {
 
 		// Setting base values for the Queen piece
-		worth = 330;
+		worth = WORTH;
 		player = p;
 		symbol = "b";
 

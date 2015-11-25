@@ -4,6 +4,8 @@ import java.util.*;
 
 //Methods for the Queen Piece
 public class Queen extends Piece {
+	
+	static  final int WORTH = 900;
 
 	@Override
 	// findMoves() method which identifies possible moves
@@ -50,7 +52,7 @@ public class Queen extends Piece {
 	public Queen(int x, int y, boolean p) {
 
 		// Setting base values for the Queen piece
-		worth = 900;
+		worth = WORTH;
 		player = p;
 		symbol = "q";
 

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Rook extends Piece {
+	
+	static  final int WORTH = 500;
 
 	@Override
 	// findMoves() method which identifies possible moves
@@ -47,7 +49,7 @@ public class Rook extends Piece {
 	public Rook(int x, int y, boolean p) {
 
 		// Setting base values for the Queen piece
-		worth = 500;
+		worth = WORTH;
 		player = p;
 		symbol = "r";
 
