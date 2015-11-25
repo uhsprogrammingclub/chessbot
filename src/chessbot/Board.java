@@ -2,8 +2,6 @@ package chessbot;
 
 import java.util.*;
 
-import chessbot.BitBoard.BitBoards;
-
 //Class to hold board variables and methods
 public class Board {
 
@@ -348,24 +346,26 @@ public class Board {
 				}
 			}
 		}*/
-		/*for (Piece p: pieceList){
-			if (p.alive && p.player == playerMove){
-				rawMoves.addAll(p.findMoves(this));
+		if (!AIController.useBitBoards){
+			for (Piece p: pieceList){
+				if (p.alive && p.player == playerMove){
+					rawMoves.addAll(p.findMoves(this));
+				}
 			}
-		}*/
-		long friendlyBB;
-		if (playerMove){
-			friendlyBB = bitboard.pieceBitBoards[BitBoard.BitBoards.White.i];
 		}else{
-			friendlyBB = bitboard.pieceBitBoards[BitBoard.BitBoards.Black.i];
+			long friendlyBB;
+			if (playerMove){
+				friendlyBB = bitboard.pieceBitBoards[BitBoard.WHITE];
+			}else{
+				friendlyBB = bitboard.pieceBitBoards[BitBoard.BLACK];
+			}
+			rawMoves.addAll(Pawn.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.PAWNS], playerMove));
+			rawMoves.addAll(Rook.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.ROOKS], playerMove));
+			rawMoves.addAll(Bishop.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.BISHOPS], playerMove));
+			rawMoves.addAll(Queen.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.QUEENS], playerMove));
+			rawMoves.addAll(King.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.KINGS], playerMove));
+			rawMoves.addAll(Knight.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.KNIGHTS], playerMove));
 		}
-		rawMoves.addAll(Pawn.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.BitBoards.Pawn.i], playerMove));
-		rawMoves.addAll(Rook.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.BitBoards.Rook.i], playerMove));
-		rawMoves.addAll(Bishop.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.BitBoards.Bishop.i], playerMove));
-		rawMoves.addAll(Queen.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.BitBoards.Queen.i], playerMove));
-		rawMoves.addAll(King.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.BitBoards.King.i], playerMove));
-		rawMoves.addAll(Knight.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.BitBoards.Knight.i], playerMove));
-
 
 		return rawMoves;
 	}
@@ -392,7 +392,7 @@ public class Board {
 			}else{
 				friendlyBB =  bitboard.pieceBitBoards[1];
 			}
-			int kingIndex = BitBoard.bitScanForward(bitboard.pieceBitBoards[BitBoard.BitBoards.King.i] & friendlyBB);
+			int kingIndex = BitBoard.bitScanForward(bitboard.pieceBitBoards[BitBoard.KINGS] & friendlyBB);
 			if (bitboard.attacksTo(kingIndex, player) != 0){
 				return true;
 			}
@@ -402,11 +402,28 @@ public class Board {
 
 	// Function that finds the King's position on the board
 	public Piece getKing(boolean player) {
-		
-		for (Piece p : pieceList) {
-			if (p.player == player && p.symbol.equals("k") && p.alive == true) {
+		if (!AIController.useBitBoards){
+			for (Piece p : pieceList) {
+				if (p.player == player && p.symbol.equals("k") && p.alive == true) {
+					// Return the King's position
+					return p;
+				}
+			}
+		}else{
+			long friendlyBB;
+			if(player){
+				friendlyBB = bitboard.pieceBitBoards[BitBoard.WHITE];
+			}else{
+				friendlyBB =  bitboard.pieceBitBoards[BitBoard.BLACK];
+			}
+			long king = friendlyBB & bitboard.pieceBitBoards[BitBoard.KINGS];
+			int kingIndex = BitBoard.bitScanForward(king);
+			Piece p = getPiece(new Point(kingIndex));
+			if (p.alive == true) {
 				// Return the King's position
 				return p;
+			}else{
+				System.out.println("ERROR: Dead King in bitboard!");
 			}
 		}
 		

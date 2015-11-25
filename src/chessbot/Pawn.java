@@ -30,7 +30,6 @@ public class Pawn extends Piece {
 		while (pawns != 0){
 			int from = BitBoard.bitScanForward(pawns);
 			long pawn = (long)1 << from;
-			
 			long possibleMoves = 0;
 			
 			long enPassantBit = 0;
