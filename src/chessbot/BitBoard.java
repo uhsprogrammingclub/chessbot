@@ -229,13 +229,13 @@ public class BitBoard {
 		return 0;
 	}
 
-	int SEE(int to, boolean player) {
+	int SEE(int to, int from, boolean player) {
 		player = !player;
 		int[] gain = new int[32];
 		int d = 0;
 		long occ = combine();
 		long attacks = attacksTo(occ, to, player);
-		long fromSet = getLeastValuablePiece(attacks);
+		long fromSet = 1L << from;
 		if (fromSet == 0) {
 			return 0;
 		}

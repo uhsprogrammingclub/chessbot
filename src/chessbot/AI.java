@@ -176,18 +176,13 @@ public class AI {
 		for (Move m : moves) {
 			moveNum++;
 			
-			int captureValue = m.destinationPc.worth;
-			
-			m.execute();
 			if (AIController.useBitBoards){
-				if (m.isCapture()){
-					captureValue -= board.bitboard.SEE(m.to.getIndex(), board.playerMove);
-					if (captureValue < 0){
-						m.reverse();
-						continue; //unbeneficial capture.
-					}
+				int captureValue = board.bitboard.SEE(m.to.getIndex(), m.from.getIndex(), board.playerMove);
+				if (captureValue < 0){
+					continue; //Unbeneficial move
 				}
 			}
+			m.execute();
 			int currentScore = -qSearch(-beta, -alpha);
 			m.reverse();
 			
