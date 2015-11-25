@@ -35,8 +35,8 @@ public class Queen extends Piece {
 		while (queens != 0){
 			int from = BitBoard.bitScanForward(queens);
 			
-			long possibleMoves = b.bitboard.bishopAttack(from, player);
-			possibleMoves |= b.bitboard.rookAttack(from, player);
+			long possibleMoves = b.bitboard.bishopAttack(b.bitboard.combine(), from, player);
+			possibleMoves |= b.bitboard.rookAttack(b.bitboard.combine(), from, player);
 			
 			while (possibleMoves != 0){
 				int to = BitBoard.bitScanForward(possibleMoves);

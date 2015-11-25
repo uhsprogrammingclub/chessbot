@@ -27,7 +27,7 @@ public class Bishop extends Piece {
 		List<Move> moves = new ArrayList<Move>();
 		while (bishops != 0){
 			int from = BitBoard.bitScanForward(bishops);
-			long possibleMoves = b.bitboard.bishopAttack(from, player);
+			long possibleMoves = b.bitboard.bishopAttack(b.bitboard.combine(), from, player);
 			
 			while (possibleMoves != 0){
 				int to = BitBoard.bitScanForward(possibleMoves);

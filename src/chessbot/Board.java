@@ -393,7 +393,7 @@ public class Board {
 				friendlyBB =  bitboard.pieceBitBoards[1];
 			}
 			int kingIndex = BitBoard.bitScanForward(bitboard.pieceBitBoards[BitBoard.KINGS] & friendlyBB);
-			if (bitboard.attacksTo(kingIndex, player) != 0){
+			if (bitboard.attacksTo(bitboard.combine(), kingIndex, player) != 0){
 				return true;
 			}
 		}

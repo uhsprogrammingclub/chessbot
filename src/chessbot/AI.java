@@ -125,7 +125,7 @@ public class AI {
 	public AI(Board board) {
 		this.board = board;
 	}
-
+	
 	// Basic Quiescence Search
 	int qSearch(int alpha, int beta) {
 		AIC.checkTimeLimit();
@@ -176,7 +176,18 @@ public class AI {
 		for (Move m : moves) {
 			moveNum++;
 			
+			int captureValue = m.destinationPc.worth;
+			
 			m.execute();
+			if (AIController.useBitBoards){
+				if (m.isCapture()){
+					captureValue -= board.bitboard.SEE(m.to.getIndex(), board.playerMove);
+					if (captureValue < 0){
+						m.reverse();
+						continue; //unbeneficial capture.
+					}
+				}
+			}
 			int currentScore = -qSearch(-beta, -alpha);
 			m.reverse();
 			
@@ -317,7 +328,7 @@ public class AI {
 			moveNum++;	
 			move.execute();
 			int currentScore;
-			if (!newAlpha || !AIC.PVSearch){
+			if (!newAlpha || !AIController.PVSearch){
 				currentScore = -negaMax( -beta, -alpha, depth + 1, maxDepth);
 			}else{
 				currentScore = -negaMax( -alpha-1, -alpha, depth + 1, maxDepth); //Do a null window search

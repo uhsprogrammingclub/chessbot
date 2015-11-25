@@ -33,7 +33,7 @@ public class Rook extends Piece {
 		List<Move> moves = new ArrayList<Move>();
 		while (rooks != 0){
 			int from = BitBoard.bitScanForward(rooks);
-			long possibleMoves = b.bitboard.rookAttack(from, player);
+			long possibleMoves = b.bitboard.rookAttack(b.bitboard.combine(), from, player);
 			
 			while (possibleMoves != 0){
 				int to = BitBoard.bitScanForward(possibleMoves);

@@ -23,68 +23,76 @@ public class Perft {
 
 	@Test
 	public void test() throws IOException {
-		long startTime = System.currentTimeMillis();
-		String filePath = new File("").getAbsolutePath() + "/PerftTests";
-
-		FileReader fr = new FileReader(filePath);
-		BufferedReader textReader = new BufferedReader(fr);
-
-		int lines = 126;
-		String[] tests = new String[lines];
-
-		for (int i = 0; i < lines; i++) {
-			tests[i] = textReader.readLine();
-		}
-		textReader.close();
-
-		int testNum = 0;
-		for (String test : tests) {
-			testNum++;
-			if (testNum > TEST_LIMIT) break;
-			String[] strSplit = test.split(" ;");
-
-			// Map array to correct variables
-			String FEN = strSplit[0];
-			//FEN = "r1bqkbnr/pppppppp/8/8/1n6/3P4/PPPKPPPP/RNBQ1BNR w kq - 0 2";
-
-			int[] depths = new int[strSplit.length - 1];
-
-			for (int i = 0; i < depths.length; i++) {
-				depths[i] = Integer.parseInt(strSplit[i + 1].substring(3));
+		String firstResult = "";
+		for (int j = 0; j < 2; j++){
+			long startTime = System.currentTimeMillis();
+			String filePath = new File("").getAbsolutePath() + "/PerftTests";
+	
+			FileReader fr = new FileReader(filePath);
+			BufferedReader textReader = new BufferedReader(fr);
+	
+			int lines = 126;
+			String[] tests = new String[lines];
+	
+			for (int i = 0; i < lines; i++) {
+				tests[i] = textReader.readLine();
 			}
-
-			Board b = Utils.boardFromFEN(FEN);
-			
-			System.out.println("\n### Running Test #" + testNum + " ###\n");
-
-			for (int i = 1; i <= depths.length; i++) {
-				//i = 1;
-				System.out.println(b);
-				System.out.println("Starting Test To Depth: " + i);
-				leafNodes = 0;
-				
-				List<Move> moves = b.allMoves();
-
-				Collections.sort(moves);
-
-				int moveNum = 0;
-				for (Move m : moves) {
-					moveNum++;
-
-					int oldNodes = leafNodes;
-					m.execute();
-					PerftTest(b, i - 1);
-					m.reverse();
-
-					System.out.println("Move: " + moveNum + " " + m + " " + (leafNodes - oldNodes));
+			textReader.close();
+	
+			int testNum = 0;
+			if (j == 1){
+				AIController.useBitBoards = false;
+			}
+			for (String test : tests) {
+				testNum++;
+				if (testNum > TEST_LIMIT) break;
+				String[] strSplit = test.split(" ;");
+	
+				// Map array to correct variables
+				String FEN = strSplit[0];
+				//FEN = "r1bqkbnr/pppppppp/8/8/1n6/3P4/PPPKPPPP/RNBQ1BNR w kq - 0 2";
+	
+				int[] depths = new int[strSplit.length - 1];
+	
+				for (int i = 0; i < depths.length; i++) {
+					depths[i] = Integer.parseInt(strSplit[i + 1].substring(3));
 				}
-
-				System.out.println("leaf nodes: " + leafNodes + ", expected: " + depths[i - 1]);
-
-				assertEquals("Depth " + i + ": " + FEN, depths[i - 1], leafNodes);
+	
+				Board b = Utils.boardFromFEN(FEN);
+				
+				System.out.println("\n### Running Test #" + testNum + " ###\n");
+	
+				for (int i = 1; i <= depths.length; i++) {
+					//i = 1;
+					System.out.println(b);
+					System.out.println("Starting Test To Depth: " + i);
+					leafNodes = 0;
+					
+					List<Move> moves = b.allMoves();
+	
+					Collections.sort(moves);
+	
+					int moveNum = 0;
+					for (Move m : moves) {
+						moveNum++;
+	
+						int oldNodes = leafNodes;
+						m.execute();
+						PerftTest(b, i - 1);
+						m.reverse();
+	
+						System.out.println("Move: " + moveNum + " " + m + " " + (leafNodes - oldNodes));
+					}
+	
+					System.out.println("leaf nodes: " + leafNodes + ", expected: " + depths[i - 1]);
+	
+					assertEquals("Depth " + i + ": " + FEN, depths[i - 1], leafNodes);
+				}
 			}
+			System.out.println(firstResult);
+			firstResult = "Perft test finished successfully in "+(System.currentTimeMillis()-startTime)/60000.0 + " mins";
+			System.out.println(firstResult);
 		}
-		System.out.println("Perft test finished successfully in "+(System.currentTimeMillis()-startTime)/60000.0 + " mins");
 	}
 
 	void PerftTest(Board b, int depth) {
