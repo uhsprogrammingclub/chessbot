@@ -51,8 +51,8 @@ public class MagicBitboards {
         for (bitRef = 0; bitRef < 64; bitRef++)
         {
             mask = isRook ? occupancyMaskRook[bitRef] : occupancyMaskBishop[bitRef];
-            setBitsInMask = BitBoard.getSetBits(mask);
-            int bitCount = BitBoard.countSetBits(mask);
+            setBitsInMask = BB.getSetBits(mask);
+            int bitCount = BB.countSetBits(mask);
             variationCount = (int)(1L << bitCount);
             for (i=0; i<variationCount; i++)
             {
@@ -60,7 +60,7 @@ public class MagicBitboards {
  
                 // find bits set in index "i" and map them to bits in the 64 bit "occupancyVariation"
  
-                setBitsInIndex = BitBoard.getSetBits(i); // an array of integers showing which bits are set
+                setBitsInIndex = BB.getSetBits(i); // an array of integers showing which bits are set
               
                 for (j=0; j < setBitsInIndex.length; j++)
                 {
@@ -150,7 +150,7 @@ public class MagicBitboards {
  
         for (bitRef = 0; bitRef < 64; bitRef++)
         {
-            int bitCount = BitBoard.countSetBits(isRook ? occupancyMaskRook[bitRef] : occupancyMaskBishop[bitRef]);
+            int bitCount = BB.countSetBits(isRook ? occupancyMaskRook[bitRef] : occupancyMaskBishop[bitRef]);
             variationCount = (int)(1L << bitCount);
             boolean fail;
             long usedBy[] = new long[(int)(1L << bitCount)];
@@ -197,7 +197,7 @@ public class MagicBitboards {
  
         for (bitRef = 0; bitRef < 64; bitRef++)
         {
-            bitCount = isRook ? BitBoard.countSetBits(occupancyMaskRook[bitRef]) : BitBoard.countSetBits(occupancyMaskBishop[bitRef]);
+            bitCount = isRook ? BB.countSetBits(occupancyMaskRook[bitRef]) : BB.countSetBits(occupancyMaskBishop[bitRef]);
             variations = (int)(1L << bitCount);
  
             for (i = 0; i < variations; i++)

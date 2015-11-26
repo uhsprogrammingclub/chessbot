@@ -30,15 +30,15 @@ public class Rook extends Piece {
 	static List<Move> getMovesFromBitboard(Board b, long rooks, boolean player){
 		List<Move> moves = new ArrayList<Move>();
 		while (rooks != 0){
-			int from = BitBoard.bitScanForward(rooks);
+			int from = BB.bitScanForward(rooks);
 			long possibleMoves = b.bitboard.rookAttack(from, player);
 			
 			while (possibleMoves != 0){
-				int to = BitBoard.bitScanForward(possibleMoves);
+				int to = BB.bitScanForward(possibleMoves);
 				moves.add(new Move(b, new Point(from), new Point(to), null));
-				possibleMoves = BitBoard.clearBit(possibleMoves, to);
+				possibleMoves = BB.clearBit(possibleMoves, to);
 			}
-			rooks = BitBoard.clearBit(rooks, from);
+			rooks = BB.clearBit(rooks, from);
 		}
 		return moves;
 	}

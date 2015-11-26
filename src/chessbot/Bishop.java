@@ -25,15 +25,15 @@ public class Bishop extends Piece {
 	static List<Move> getMovesFromBitboard(Board b, long bishops, boolean player){
 		List<Move> moves = new ArrayList<Move>();
 		while (bishops != 0){
-			int from = BitBoard.bitScanForward(bishops);
+			int from = BB.bitScanForward(bishops);
 			long possibleMoves = b.bitboard.bishopAttack(from, player);
 			
 			while (possibleMoves != 0){
-				int to = BitBoard.bitScanForward(possibleMoves);
+				int to = BB.bitScanForward(possibleMoves);
 				moves.add(new Move(b, new Point(from), new Point(to), null));
-				possibleMoves = BitBoard.clearBit(possibleMoves, to);
+				possibleMoves = BB.clearBit(possibleMoves, to);
 			}
-			bishops = BitBoard.clearBit(bishops, from);
+			bishops = BB.clearBit(bishops, from);
 		}
 		return moves;
 	}

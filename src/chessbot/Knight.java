@@ -21,9 +21,9 @@ public class Knight extends Piece {
 		List<Move> moves = new ArrayList<Move>();
 		
 		while (knights != 0){
-			int from = BitBoard.bitScanForward(knights);
+			int from = BB.bitScanForward(knights);
 					
-			long possibleMoves = BitBoard.knightAttacks[from];
+			long possibleMoves = BB.knightAttacks[from];
 			
 			long friendlyBB;
 			if(player){
@@ -34,12 +34,12 @@ public class Knight extends Piece {
 			possibleMoves &= ~friendlyBB;
 			
 			while (possibleMoves != 0){
-				int to = BitBoard.bitScanForward(possibleMoves);
+				int to = BB.bitScanForward(possibleMoves);
 				Point target = new Point(to);
 				moves.add(new Move(b, new Point(from), target, null));
-				possibleMoves = BitBoard.clearBit(possibleMoves, to);
+				possibleMoves = BB.clearBit(possibleMoves, to);
 			}
-			knights = BitBoard.clearBit(knights, from);
+			knights = BB.clearBit(knights, from);
 		}
 		return moves;
 	}

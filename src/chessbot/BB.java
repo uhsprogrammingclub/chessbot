@@ -1,6 +1,6 @@
 package chessbot;
 
-public class BitBoard {
+public class BB {
 	long[] pieceBitBoards = new long[8];
 	static long[] setMask = new long[64];
 	static long[] clearMask = new long[64];
@@ -20,7 +20,7 @@ public class BitBoard {
 	static final int QUEENS = 6;
 	static final int KINGS = 7;
 	
-	public BitBoard(Board board){
+	public BB(Board board){
 		if (setMask[0] == 0){
 			initPresets();
 		}
@@ -250,9 +250,9 @@ public class BitBoard {
 		
 		int i = 0;
 		while (bb != 0){
-			int index = BitBoard.bitScanForward(bb);
+			int index = BB.bitScanForward(bb);
 			setBits[i] = index;
-			bb = BitBoard.clearBit(bb, index);
+			bb = BB.clearBit(bb, index);
 			
 			if (bb == 0 && i != setBits.length-1){
 				System.out.println("ERROR: getSetBits did not get index of all bits.");
@@ -282,4 +282,23 @@ public class BitBoard {
 	static long upLeft(long bb){ return up(left(bb)); }
 	static long downRight(long bb){ return down(right(bb)); }
 	static long downLeft(long bb){ return down(left(bb)); }
+	
+	static long upFill(long bb){
+		bb |= (bb << 8);
+		bb |= (bb << 16);
+		bb |= (bb << 32);
+		return bb;
+	}
+	
+	static long downFill(long bb){
+		bb |= (bb >>> 8);
+		bb |= (bb >>> 16);
+		bb |= (bb >>> 32);
+		return bb;
+	}
+	
+	static long fillColumn(long bb){
+		return downFill(bb) | upFill(bb);
+	}
+	
 }

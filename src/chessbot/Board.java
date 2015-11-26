@@ -27,7 +27,7 @@ public class Board {
 	// One-dimensional array to hold simple list of pieces
 	List<Piece> pieceList = new ArrayList<Piece>();
 	
-	BitBoard bitboard;
+	BB bitboard;
 	
 	//Boolean that stores whether it is the player's move
 	boolean playerMove;
@@ -48,8 +48,8 @@ public class Board {
 	int halfmoveClock = 0;
 	int fullMoveCounter = 0;
 	
-	int isolatedPawnValue = 29;
-	int doubledPawnValue = 50;
+	int isolatedPawnValue = 10;
+	int doubledPawnValue = 20;
 	int halfOpenFileValue = 25;
 	int pawnChainValue = 25;
 	int holeValue = 25;
@@ -81,7 +81,7 @@ public class Board {
 			// Create a new line
 			aString += "\n";
 		}
-		aString += BitBoard.toString(bitboard.combine());
+		//aString += BitBoard.toString(bitboard.combine());
 		aString += "\n";
 		
 		//aString += BitBoard.toString(bitboard.pawnsAbleToDoublePush(true));
@@ -222,7 +222,7 @@ public class Board {
 	public void setSquare(Point pos, Piece piece) {
 		if (pos.squareExists()){
 			for (int i = 0; i < bitboard.pieceBitBoards.length; i++){
-				bitboard.pieceBitBoards[i] = BitBoard.clearBit(bitboard.pieceBitBoards[i], pos.getIndex());
+				bitboard.pieceBitBoards[i] = BB.clearBit(bitboard.pieceBitBoards[i], pos.getIndex());
 			}
 			locations[pos.getIndex()] = piece;
 			piece.position = pos;
@@ -254,7 +254,7 @@ public class Board {
 		
 		playerMove = playerGoesFirst;
 		
-		bitboard = new BitBoard(this);
+		bitboard = new BB(this);
 	}
 	
 	//Find all possible capture moves
@@ -355,16 +355,16 @@ public class Board {
 		}else{
 			long friendlyBB;
 			if (playerMove){
-				friendlyBB = bitboard.pieceBitBoards[BitBoard.WHITE];
+				friendlyBB = bitboard.pieceBitBoards[BB.WHITE];
 			}else{
-				friendlyBB = bitboard.pieceBitBoards[BitBoard.BLACK];
+				friendlyBB = bitboard.pieceBitBoards[BB.BLACK];
 			}
-			rawMoves.addAll(Pawn.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.PAWNS], playerMove));
-			rawMoves.addAll(Rook.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.ROOKS], playerMove));
-			rawMoves.addAll(Bishop.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.BISHOPS], playerMove));
-			rawMoves.addAll(Queen.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.QUEENS], playerMove));
-			rawMoves.addAll(King.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.KINGS], playerMove));
-			rawMoves.addAll(Knight.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.KNIGHTS], playerMove));
+			rawMoves.addAll(Pawn.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.PAWNS], playerMove));
+			rawMoves.addAll(Rook.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.ROOKS], playerMove));
+			rawMoves.addAll(Bishop.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.BISHOPS], playerMove));
+			rawMoves.addAll(Queen.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.QUEENS], playerMove));
+			rawMoves.addAll(King.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.KINGS], playerMove));
+			rawMoves.addAll(Knight.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.KNIGHTS], playerMove));
 		}
 
 		return rawMoves;
@@ -392,7 +392,7 @@ public class Board {
 			}else{
 				friendlyBB =  bitboard.pieceBitBoards[1];
 			}
-			int kingIndex = BitBoard.bitScanForward(bitboard.pieceBitBoards[BitBoard.KINGS] & friendlyBB);
+			int kingIndex = BB.bitScanForward(bitboard.pieceBitBoards[BB.KINGS] & friendlyBB);
 			if (bitboard.attacksTo(kingIndex, player) != 0){
 				return true;
 			}
@@ -412,12 +412,12 @@ public class Board {
 		}else{
 			long friendlyBB;
 			if(player){
-				friendlyBB = bitboard.pieceBitBoards[BitBoard.WHITE];
+				friendlyBB = bitboard.pieceBitBoards[BB.WHITE];
 			}else{
-				friendlyBB =  bitboard.pieceBitBoards[BitBoard.BLACK];
+				friendlyBB =  bitboard.pieceBitBoards[BB.BLACK];
 			}
-			long king = friendlyBB & bitboard.pieceBitBoards[BitBoard.KINGS];
-			int kingIndex = BitBoard.bitScanForward(king);
+			long king = friendlyBB & bitboard.pieceBitBoards[BB.KINGS];
+			int kingIndex = BB.bitScanForward(king);
 			Piece p = getPiece(new Point(kingIndex));
 			if (p.alive == true) {
 				// Return the King's position
@@ -503,7 +503,19 @@ public class Board {
 		if(oldEntry != null && pHash == oldEntry.pawnZobrist){
 			pawnEvaluation = oldEntry.eval;
 		}else{
-
+			
+			//Complete passed pawn evaluations
+			long botPawns = bitboard.pieceBitBoards[2] & bitboard.pieceBitBoards[1];
+			long playerPawns = bitboard.pieceBitBoards[2] & bitboard.pieceBitBoards[0];
+			
+			pawnEvaluation += checkBotPassedPawns(playerPawns, botPawns) - checkPlayerPassedPawns(playerPawns, botPawns);
+			System.out.println(pawnEvaluation);
+			pawnEvaluation += checkDoubledPawns(playerPawns) - checkDoubledPawns(botPawns);
+			System.out.println(pawnEvaluation);
+			pawnEvaluation += checkIsolatedPawns(playerPawns, botPawns); 
+			System.out.println(pawnEvaluation);
+			
+			
 			for (Piece p : pieceList) {
 				if (p.alive && p.symbol.equals("p")){
 					
@@ -522,9 +534,6 @@ public class Board {
 					int pawnScore = 0;
 					
 					if (isIsolatedPawn(p)) pawnScore -= isolatedPawnValue;
-					
-					System.out.println(p + " " + isIsolatedPawn(p));
-					
 					if (isDoubledPawn(p)) pawnScore -= doubledPawnValue;
 					if (isHalfOpenFile(p)) pawnScore -= halfOpenFileValue;
 					if (isInPawnChain(p)) pawnScore += pawnChainValue;
@@ -575,21 +584,69 @@ public class Board {
 		return pawnEvaluation;
 	}
 	
+	public int checkIsolatedPawns(long playerPawns, long botPawns){
+		
+		long protectedColumns = (BB.left(BB.fillColumn(playerPawns)) | BB.right(BB.fillColumn(playerPawns)));	
+		long playerIsolatedPawns = playerPawns & ~protectedColumns;
+		protectedColumns = BB.left(BB.fillColumn(botPawns)) | BB.right(BB.fillColumn(botPawns));
+		long botIsolatedPawns = botPawns & ~protectedColumns;
+		return isolatedPawnValue * (BB.countSetBits(playerIsolatedPawns) - BB.countSetBits(botIsolatedPawns));
+	}
+	
+	public int checkDoubledPawns(long pawns){
+		int turn = (pawns & ~bitboard.pieceBitBoards[0]) == 0 ? 1 : -1;		
+		long rearSpans = turn == 1 ? BB.down(BB.downFill(pawns)) :  BB.up(BB.upFill(pawns));
+		long result = rearSpans & pawns;
+		return BB.countSetBits(result) * 20; // 20 = penalty for a doubled pawn
+	}
+	
+	public int checkBotPassedPawns(long playerPawns, long botPawns){
+		long allFrontSpans = BB.up(BB.upFill(playerPawns));
+		allFrontSpans |= BB.left(allFrontSpans) | BB.right(allFrontSpans);
+		long result = botPawns & ~allFrontSpans;
+		return BB.countSetBits(result) * 60;
+	}
+
+	public int checkPlayerPassedPawns(long playerPawns, long botPawns){
+		long allFrontSpans = BB.down(BB.downFill(botPawns));
+		allFrontSpans |= BB.left(allFrontSpans) | BB.right(allFrontSpans);
+		long result = playerPawns & ~allFrontSpans;
+		return BB.countSetBits(result) * 60;
+	}
+	
+	public boolean isPassedPawn(Piece pawn){
+		long frontSpan = (BB.neighborFiles[pawn.getX()] | (BB.FILE_A << pawn.getX()));
+		if(pawn.player ) frontSpan <<= (8 * (pawn.getY() + 1)); else frontSpan >>>= (8 * (8-pawn.getY()));
+		System.out.println(BB.toString(frontSpan));
+		int otherSide = pawn.player ? 1 : 0;
+		if( ((bitboard.pieceBitBoards[2] & bitboard.pieceBitBoards[otherSide]) & ~frontSpan) != ~frontSpan){ // 2 = pawns bit baord
+			
+		}
+		
+		return true;
+	}
+	
 	//evaluation for isolated pawns
 	public boolean isIsolatedPawn(Piece pawn)
 	{
-		int side = pawn.player ? 0 : 1;
-		return (BitBoard.neighborFiles[pawn.getX()] & (bitboard.pieceBitBoards[2] & bitboard.pieceBitBoards[side])) == 0 ? true : false; // 2 = pawn bb's
-		
-		/*
-		for(Piece p: pieceList)
-		{
-			if(p.symbol.equals("p") && p.player == pawn.player && (p.getX() == pawn.getX()+1 || p.getX() == pawn.getX()-1))
+		if(AIController.useBitBoards){
+			int side = pawn.player ? 0 : 1;
+			return (BB.neighborFiles[pawn.getX()] & (bitboard.pieceBitBoards[2] & bitboard.pieceBitBoards[side])) == 0 ? true : false; // 2 = pawn bb's
+			
+		}else{
+			
+			for(Piece p: pieceList)
 			{
-				return false;
+				if(p.symbol.equals("p") && p.player == pawn.player && (p.getX() == pawn.getX()+1 || p.getX() == pawn.getX()-1))
+				{
+					return false;
+				}
 			}
-		}*/
 
+		}
+		return false;
+		
+		
 	}
 	
 	public boolean isDoubledPawn(Piece pawn)

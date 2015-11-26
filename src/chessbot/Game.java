@@ -68,7 +68,7 @@ public class Game {
 		//g.setFEN("rn1qkb1r/pp2pppp/2pp4/3nP3/3P2b1/5N2/PPP1BPPP/RNBQ1RK1 w kq - 0 7");
 		//g.setFEN("r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 4"); //Fried Liver Attack
 		//g.setFEN("1k2r3/1pp2pp1/p6p/P2K3P/4r3/8/7q/8 b - - 0 36");
-		g.setFEN("rnbqkbnr/ppp1p1pp/8/3P4/6p1/8/PPPP1P1P/RNBQKBNR w KQkq - 0 4");
+		g.setFEN("rnbqk2r/2p4p/1p2P1P1/7n/P2P4/P2P4/5P1P/RNBQKBNR b KQkq - 0 12");
 		g.setFEN(setup);
 		g.init();
 		g.start();
@@ -81,14 +81,19 @@ public class Game {
 		setBoard(setup);
 		initGUI();
 		
+
+		
 		System.out.println(b.evaluatePawnStructure());
+		
+		
+		System.exit(0);
 		
 		playerMovesFirst = b.playerMove;
 	}
 	
 	static void loadBitboards(){
 		if (AIController.useBitBoards){
-			BitBoard.initPresets();
+			BB.initPresets();
 			MagicBitboards.generateOccupancyVariations(true);
 			MagicBitboards.generateMoveDatabase(true);
 			MagicBitboards.generateOccupancyVariations(false);
