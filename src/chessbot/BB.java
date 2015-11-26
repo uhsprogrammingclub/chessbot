@@ -6,7 +6,6 @@ public class BB {
 	static long[] clearMask = new long[64];
 	static long[] kingAttacks = new long[64];
 	static long[] knightAttacks = new long[64];
-	static long[] neighborFiles = new long[8];
 
 	static final long RANK_1 = 0x00000000000000FFL;
 	static final long FILE_A = 0x0101010101010101L;
@@ -307,7 +306,7 @@ public class BB {
 		}
 		return 0; // empty set
 	}
-
+	
 	// helper methods
 	static long up(long bb) {
 		return bb << 8;
@@ -340,7 +339,6 @@ public class BB {
 	static long downLeft(long bb) {
 		return down(left(bb));
 	}
-	
 	static long upFill(long bb){
 		bb |= (bb << 8);
 		bb |= (bb << 16);

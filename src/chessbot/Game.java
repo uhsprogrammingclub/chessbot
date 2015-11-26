@@ -68,9 +68,9 @@ public class Game {
 		//g.setFEN("rn1qkb1r/pp2pppp/2pp4/3nP3/3P2b1/5N2/PPP1BPPP/RNBQ1RK1 w kq - 0 7");
 		//g.setFEN("r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 4"); //Fried Liver Attack
 		//g.setFEN("1k2r3/1pp2pp1/p6p/P2K3P/4r3/8/7q/8 b - - 0 36");
-		g.setFEN("rnbqk2r/2p4p/1p2P1P1/7n/P2P4/P2P4/5P1P/RNBQKBNR b KQkq - 0 12");
+		//g.setFEN("rnbqk2r/2p4p/1p2P1P1/7n/P2P4/P2P4/5P1P/RNBQKBNR b KQkq - 0 12");
 		//g.setFEN("rnbqkbnr/ppppppp1/7p/8/8/2N5/PPPPPPPP/R1BQKBNR w KQkq - 0 2");
-		//g.setFEN("1k1r3q/1ppn3p/p4b2/4p3/8/P2N2P1/1PP1R1BP/2K1Q3 w - - 0 0");
+		g.setFEN("1k1r3q/1ppn3p/p4b2/4p3/8/P2N2P1/1PP1R1BP/2K1Q3 w - - 0 0");
 		//g.setFEN("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"); //Everything
 		g.setFEN(setup);
 		g.init();

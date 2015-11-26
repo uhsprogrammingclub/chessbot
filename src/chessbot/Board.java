@@ -49,10 +49,10 @@ public class Board {
 	int fullMoveCounter = 0;
 	
 	int isolatedPawnValue = 10;
-	int doubledPawnValue = 20;
-	int halfOpenFileValue = 25;
-	int pawnChainValue = 25;
-	int holeValue = 25;
+	int doubledPawnValue = 10;
+	int halfOpenFileValue = 10;
+	int pawnChainValue = 10;
+	int holeValue = 10;
 
 	// Override java.lang.Object.toString method to create easier to read output
 	// in the form of a table
@@ -509,74 +509,20 @@ public class Board {
 			long botPawns = bitboard.pieceBitBoards[2] & bitboard.pieceBitBoards[1];
 			long playerPawns = bitboard.pieceBitBoards[2] & bitboard.pieceBitBoards[0];
 			
-			pawnEvaluation += checkBotPassedPawns(playerPawns, botPawns) - checkPlayerPassedPawns(playerPawns, botPawns);
-			System.out.println(pawnEvaluation);
-			pawnEvaluation += checkDoubledPawns(playerPawns) - checkDoubledPawns(botPawns);
-			System.out.println(pawnEvaluation);
+			pawnEvaluation += checkPassedPawns(playerPawns, botPawns);
+			System.out.println("After Passed Pawns: " + pawnEvaluation);
+			pawnEvaluation += checkDoubledPawns(playerPawns, botPawns);
+			System.out.println("After Double Pawns" + pawnEvaluation);
 			pawnEvaluation += checkIsolatedPawns(playerPawns, botPawns); 
-			System.out.println(pawnEvaluation);
+			System.out.println("After Isolated Pawns: " + pawnEvaluation);
 			pawnEvaluation += checkPawnChains(playerPawns, botPawns);
-			
-			
-			for (Piece p : pieceList) {
-				if (p.alive && p.symbol.equals("p")){
-					
-					//Add the current position of the pawn to the filled array
-					if((p.player && p.getY() < 4) || (!p.player && p.getY() > 3)) filledSquares[p.getY()][p.getX()] = 1;
-				
-					//Add the squares the pawn can attack to the filled array
-					if( (p.player && p.getY() < 3) || (!p.player && p.getY() > 4) ){
-						
-						int direction = p.player ? 1 : -1;
-						if(p.getX() > 0 && p.getY() < 7 && p.getY() > 0) filledSquares[p.getY() + direction][p.getX()-1] = 1;
-						if(p.getX() < 7 && p.getY() < 7 && p.getY() > 0) filledSquares[p.getY() + direction][p.getX()+1] = 1;
-					
-					}		
-					
-					int pawnScore = 0;
-					
-					if (isHalfOpenFile(p)) pawnScore -= halfOpenFileValue;
-					if (isInPawnChain(p)) pawnScore += pawnChainValue;
-
-					/*** Implementation for pawn structure analysis goes here ***/
-					
-					//Implementation of Backwards Pawns
-
-					//Implementation of Holes
-							
-					pawnScore = pawnScore*(p.player ? -1 : 1);
-					pawnEvaluation += pawnScore;
-				}
-			}
-			
-			//Account for holes
-			int playerHoles = 0;
-			int computerHoles = 0;
-
-			for(int i = 0; i < 8; i++){
-				for(int j = 0; j < 8; j++){
-					
-					//If the square is filled...
-					if(filledSquares[i][j] == 1) continue;
-					
-					//If it is a square of interest in the middle
-					if(i > 1 && i < 6 && j > 1 && j < 6){
-						//If it is on the player's side
-						if(i < 4) playerHoles++; else computerHoles++;
-						
-					}
-
-					//Create negative impacts for holes in front of castled king - may potentially become out-dated if king moves around a lot
-					if(this.getKing(true).getX() > 4 && this.getKing(true).getY() < 2 && j > 4 && (i == 2 || i == 1)) playerHoles++;	
-					else if(this.getKing(true).getX() < 3 && this.getKing(true).getY() < 2 && j < 3 && (i == 2 || i == 1)) playerHoles++;
-					else if(this.getKing(false).getX() > 4 && this.getKing(false).getY() > 5 && j > 4 && (i == 5 || i == 6)) computerHoles++;
-					else if(this.getKing(false).getX() < 3 && this.getKing(false).getY() > 5 && j < 3 && (i == 5 || i == 6)) computerHoles++;
-				}
-			}
-			//System.out.println("player holes: " + playerHoles + "computer holes: " + computerHoles);
-			//Adjust the evaluation accordingly
-			pawnEvaluation += (playerHoles - computerHoles) * holeValue;
-		}
+			System.out.println("After Pawn Chains: " +  pawnEvaluation);
+			pawnEvaluation += checkHalfOpenFiles(playerPawns, botPawns);
+			System.out.println("After Half Open Files: " + pawnEvaluation);
+			pawnEvaluation += checkHoles(playerPawns, botPawns);
+			System.out.println("After Holes: " + pawnEvaluation);
+			System.exit(0);
+		}	
 	
 		//Add the entry to the hash table
 		StructureTable.addEntry(new StructureHashEntry(pHash, pawnEvaluation));
@@ -584,8 +530,29 @@ public class Board {
 		return pawnEvaluation;
 	}
 	
+	public int checkHoles(long playerPawns, long botPawns){
+		long playerFilled = (BB.upLeft(playerPawns) | BB.upRight(playerPawns)) | playerPawns;
+		long botFilled = (BB.downLeft(botPawns) | BB.downRight(botPawns)) | botPawns;
+		long playerResult = ~playerFilled & 0x3C3C0000L;
+		long botResult = ~botFilled & 0x3C3C00000000L;
+		return holeValue * (BB.countSetBits(playerResult) - BB.countSetBits(botResult));
+		
+		// Note: currently does not consider increased importance of holes in front of castled king 
+		
+	}
+	
+	public int checkHalfOpenFiles(long playerPawns, long botPawns){
+		long playerFiles = BB.fillColumn(playerPawns);
+		long botFiles = BB.fillColumn(botPawns);
+		long playerResult = playerFiles & ~botFiles & 255;
+		long botResult = ~playerFiles & botFiles & 255;	
+		return (BB.countSetBits(botResult) - BB.countSetBits(playerResult)) * halfOpenFileValue;
+	}
+	
 	public int checkPawnChains(long playerPawns, long botPawns){
-		return 0;
+		long playerResult = (BB.upLeft(playerPawns) | BB.upRight(playerPawns)) & playerPawns;
+		long botResult = (BB.downLeft(botPawns) | BB.downRight(botPawns)) & botPawns;
+		return (BB.countSetBits(botResult) - BB.countSetBits(playerResult) * pawnChainValue);
 	}
 	
 	public int checkIsolatedPawns(long playerPawns, long botPawns){
@@ -597,40 +564,28 @@ public class Board {
 		return isolatedPawnValue * (BB.countSetBits(playerIsolatedPawns) - BB.countSetBits(botIsolatedPawns));
 	}
 	
-	public int checkDoubledPawns(long pawns){
-		int turn = (pawns & ~bitboard.pieceBitBoards[0]) == 0 ? 1 : -1;		
-		long rearSpans = turn == 1 ? BB.down(BB.downFill(pawns)) :  BB.up(BB.upFill(pawns));
-		long result = rearSpans & pawns;
-		return BB.countSetBits(result) * 20; // 20 = penalty for a doubled pawn
-	}
-	
-	public int checkBotPassedPawns(long playerPawns, long botPawns){
-		long allFrontSpans = BB.up(BB.upFill(playerPawns));
-		allFrontSpans |= BB.left(allFrontSpans) | BB.right(allFrontSpans);
-		long result = botPawns & ~allFrontSpans;
-		return BB.countSetBits(result) * 60;
-	}
-
-	public int checkPlayerPassedPawns(long playerPawns, long botPawns){
-		long allFrontSpans = BB.down(BB.downFill(botPawns));
-		allFrontSpans |= BB.left(allFrontSpans) | BB.right(allFrontSpans);
-		long result = playerPawns & ~allFrontSpans;
-		return BB.countSetBits(result) * 60;
-	}
-	
-	public boolean isPassedPawn(Piece pawn){
-		long frontSpan = (BB.neighborFiles[pawn.getX()] | (BB.FILE_A << pawn.getX()));
-		if(pawn.player ) frontSpan <<= (8 * (pawn.getY() + 1)); else frontSpan >>>= (8 * (8-pawn.getY()));
-		System.out.println(BB.toString(frontSpan));
-		int otherSide = pawn.player ? 1 : 0;
-		if( ((bitboard.pieceBitBoards[2] & bitboard.pieceBitBoards[otherSide]) & ~frontSpan) != ~frontSpan){ // 2 = pawns bit baord
-			
-		}
+	public int checkDoubledPawns(long playerPawns, long botPawns){
 		
-		return true;
+		long playerRearSpans = BB.down(BB.downFill(playerPawns));
+		long botRearSpans = BB.down(BB.downFill(botPawns));
+		long playerResult = playerRearSpans & playerPawns;
+		long botResult = botRearSpans & botPawns;
+		return (BB.countSetBits(playerResult) - BB.countSetBits(botResult)) * doubledPawnValue;
+	}
+	
+	public int checkPassedPawns(long playerPawns, long botPawns){
+		long playerFrontSpans = BB.up(BB.upFill(playerPawns));
+		long botFrontSpans = BB.up(BB.downFill(botPawns));
+		playerFrontSpans |= BB.left(playerFrontSpans) | BB.right(playerFrontSpans);
+		botFrontSpans |= BB.left(botFrontSpans) | BB.right(botFrontSpans);
+		long playerResult = playerPawns & ~botFrontSpans;
+		long botResult = botPawns & ~playerFrontSpans;
+		return (BB.countSetBits(botResult) - BB.countSetBits(playerResult)) * 60;
 	}
 	
 	//evaluation for isolated pawns
+	
+	/*Deprecated Functions 
 	public boolean isIsolatedPawn(Piece pawn)
 	{
 				
@@ -686,6 +641,7 @@ public class Board {
 		}
 		return false;
 	}
+	*/
 	
 	public void setValues(Map<Value, Integer> valuesMap){
 		
@@ -825,5 +781,5 @@ public class Board {
 			System.exit(0);
 			return 0;
 		}
+		}
 	}
-}
