@@ -84,14 +84,8 @@ public class Game {
 		setBoard(setup);
 		initGUI();
 		
-
-		
-		System.out.println(b.evaluatePawnStructure());
-		
-		
-		System.exit(0);
-		
 		playerMovesFirst = b.playerMove;
+		
 	}
 	
 	static void loadBitboards(){

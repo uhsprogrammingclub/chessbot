@@ -496,8 +496,6 @@ public class Board {
 		//Get hash of current board
 		long pHash = Zobrist.getPawnZobristHash(this);
 		int index = Zobrist.getIndex(pHash, TranspositionTable.hashSize);
-		
-		int[][] filledSquares = new int[8][8];
 				
 		//find entry with same index
 		StructureHashEntry oldEntry = StructureTable.pawns.get(index);
@@ -508,20 +506,13 @@ public class Board {
 			//Complete passed pawn evaluations
 			long botPawns = bitboard.pieceBitBoards[2] & bitboard.pieceBitBoards[1];
 			long playerPawns = bitboard.pieceBitBoards[2] & bitboard.pieceBitBoards[0];
-			
+
 			pawnEvaluation += checkPassedPawns(playerPawns, botPawns);
-			System.out.println("After Passed Pawns: " + pawnEvaluation);
 			pawnEvaluation += checkDoubledPawns(playerPawns, botPawns);
-			System.out.println("After Double Pawns" + pawnEvaluation);
 			pawnEvaluation += checkIsolatedPawns(playerPawns, botPawns); 
-			System.out.println("After Isolated Pawns: " + pawnEvaluation);
 			pawnEvaluation += checkPawnChains(playerPawns, botPawns);
-			System.out.println("After Pawn Chains: " +  pawnEvaluation);
 			pawnEvaluation += checkHalfOpenFiles(playerPawns, botPawns);
-			System.out.println("After Half Open Files: " + pawnEvaluation);
 			pawnEvaluation += checkHoles(playerPawns, botPawns);
-			System.out.println("After Holes: " + pawnEvaluation);
-			System.exit(0);
 		}	
 	
 		//Add the entry to the hash table
@@ -552,7 +543,7 @@ public class Board {
 	public int checkPawnChains(long playerPawns, long botPawns){
 		long playerResult = (BB.upLeft(playerPawns) | BB.upRight(playerPawns)) & playerPawns;
 		long botResult = (BB.downLeft(botPawns) | BB.downRight(botPawns)) & botPawns;
-		return (BB.countSetBits(botResult) - BB.countSetBits(playerResult) * pawnChainValue);
+		return (BB.countSetBits(botResult) - BB.countSetBits(playerResult)) * pawnChainValue;
 	}
 	
 	public int checkIsolatedPawns(long playerPawns, long botPawns){
@@ -583,7 +574,6 @@ public class Board {
 		return (BB.countSetBits(botResult) - BB.countSetBits(playerResult)) * 60;
 	}
 	
-	//evaluation for isolated pawns
 	
 	/*Deprecated Functions 
 	public boolean isIsolatedPawn(Piece pawn)
@@ -642,6 +632,7 @@ public class Board {
 		return false;
 	}
 	*/
+	
 	
 	public void setValues(Map<Value, Integer> valuesMap){
 		
@@ -760,8 +751,7 @@ public class Board {
 		
 		if(p.symbol.equals("p")){
 			return gridFromPerspective(pawnPieceSquares, p.player)[p.getY()][p.getX()];
-		}
-		else if(p.symbol.equals("n")){
+		}else if(p.symbol.equals("n")){
 			return gridFromPerspective(knightPieceSquares, p.player)[p.getY()][p.getX()];
 		}
 		else if(p.symbol.equals("b")){
@@ -781,5 +771,7 @@ public class Board {
 			System.exit(0);
 			return 0;
 		}
-		}
 	}
+	
+}
+
