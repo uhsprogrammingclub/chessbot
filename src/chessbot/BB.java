@@ -161,12 +161,7 @@ public class BB {
 	}
 
 	long rookAttack(long consideredPiecesBB, int from, boolean player) {
-		long friendlyBB;
-		if (player) {
-			friendlyBB = pieceBitBoards[0];
-		} else {
-			friendlyBB = pieceBitBoards[1];
-		}
+		long friendlyBB = getFriendlyBB(player);
 		long bbBlockers = consideredPiecesBB & MagicBitboards.occupancyMaskRook[from];
 		int databaseIndex = (int) (bbBlockers
 				* MagicBitboards.magicNumberRook[from] >>> MagicBitboards.magicNumberShiftsRook[from]);
@@ -177,12 +172,7 @@ public class BB {
 	}
 
 	long bishopAttack(long consideredPiecesBB, int from, boolean player) {
-		long friendlyBB;
-		if (player) {
-			friendlyBB = pieceBitBoards[0];
-		} else {
-			friendlyBB = pieceBitBoards[1];
-		}
+		long friendlyBB = getFriendlyBB(player);
 		long bbBlockers = consideredPiecesBB & MagicBitboards.occupancyMaskBishop[from];
 		int databaseIndex = (int) (bbBlockers
 				* MagicBitboards.magicNumberBishop[from] >>> MagicBitboards.magicNumberShiftsBishop[from]);
@@ -194,12 +184,7 @@ public class BB {
 
 	long attacksTo(long consideredPiecesBB, int to, boolean player) {
 		long knights, kings, bishopsQueens, rooksQueens, pawns;
-		long enemyBB;
-		if (player) {
-			enemyBB = pieceBitBoards[1];
-		} else {
-			enemyBB = pieceBitBoards[0];
-		}
+		long enemyBB = getFriendlyBB(!player);
 		knights = knightAttacks[to] & pieceBitBoards[KNIGHTS];
 		kings = kingAttacks[to] & pieceBitBoards[KINGS];
 		bishopsQueens = bishopAttack(consideredPiecesBB, to, player)
@@ -307,6 +292,16 @@ public class BB {
 		return 0; // empty set
 	}
 	
+	long getFriendlyBB(boolean player){
+		long friendlyBB;
+		if(player){
+			friendlyBB = pieceBitBoards[BB.WHITE];
+		}else{
+			friendlyBB =  pieceBitBoards[BB.BLACK];
+		}
+		return friendlyBB;
+	}
+
 	// helper methods
 	static long up(long bb) {
 		return bb << 8;

@@ -102,76 +102,38 @@ public class Board {
 
 	}
 	
-	public boolean canCastleKSide(Piece king){
+	public boolean canCastle(boolean player, boolean kSide){
 		
-		if((king.player && playerKSideCastle) || (!king.player && botKSideCastle)){
-				
-			//Check to make sure there is not a piece there...
-			if(king.getX() != 4 || !isEmptySquare(new Point(king.getX() + 1, king.getY())) || !isEmptySquare(new Point(king.getX() + 2, king.getY()))){
-				return false;
-			}
-			
-			if(isCheck(king.player)){
-				return false;
-			}
-			
-			Move testMove = new Move(this, new Point(king.getX() +1, king.getY()), king, null);
-			testMove.execute();
-			if(isCheck(king.player)){
-				testMove.reverse();
-				return false;
-			}
-			testMove.reverse();
-			
-			Move testMove2 = new Move(this, new Point(king.getX() +2, king.getY()), king, null);
-			testMove2.execute();
-			if(isCheck(king.player)){
-				testMove2.reverse();
-				return false;
-			}
-			
-			testMove2.reverse();
-			
-			return true;	
-			
+		if (isCheck(player)){
+			return false;
 		}
+		long allBB = bitboard.combine();
+		
+		if (player && playerKSideCastle && kSide){
+			if ((allBB & 0x0000000000000060L) != 0 || bitboard.attacksTo(allBB, 5, player) != 0 || bitboard.attacksTo(allBB, 6, player) != 0){
+				return false;
+			}
+			return true;
+		}else if (!player && botKSideCastle && kSide){
+			if ((allBB & 0x6000000000000000L) != 0 || bitboard.attacksTo(allBB, 61, player) != 0 || bitboard.attacksTo(allBB, 62, player) != 0){
+				return false;
+			}
+			return true;
+		}else if (player && playerQSideCastle && !kSide){
+			if ((allBB & 0x000000000000000EL) != 0 || bitboard.attacksTo(allBB, 3, player) != 0 || bitboard.attacksTo(allBB, 2, player) != 0){
+				return false;
+			}
+			return true;
+		}else if (!player && botQSideCastle && !kSide){
+			if ((allBB & 0x0E00000000000000L) != 0 || bitboard.attacksTo(allBB, 59, player) != 0 || bitboard.attacksTo(allBB, 58, player) != 0){
+				return false;
+			}
+			return true;
+		}
+		
 		return false;
 	}
-	
-	public boolean canCastleQSide(Piece king){
-		
-		if((king.player && playerQSideCastle) || (!king.player && botQSideCastle)){
-				
-			//Check to make sure there is not a piece there...
-			if(king.getX() != 4 || !isEmptySquare(new Point(king.getX() - 1, king.getY())) || !isEmptySquare(new Point(king.getX() - 2, king.getY())) || !isEmptySquare(new Point(king.getX() - 3, king.getY()))){
-				return false;
-			}
-			
-			if(isCheck(king.player)){
-				return false;
-			}
-			
-			Move testMove = new Move(this, new Point(king.getX() - 1, king.getY()), king, null);
-			testMove.execute();
-			if(isCheck(king.player)){
-				testMove.reverse();
-				return false;
-			}
-			testMove.reverse();
-			
-			Move testMove2 = new Move(this, new Point(king.getX() - 2, king.getY()), king, null);
-			testMove2.execute();
-			if(isCheck(king.player)){
-				testMove2.reverse();
-				return false;
-			}
-			
-			testMove2.reverse();
-		
-			return true;	
-		}
-		return false;
-	}
+
 
 	// Function that returns true if a certain square is empty
 	public boolean isEmptySquare(Point p) {
@@ -353,12 +315,7 @@ public class Board {
 				}
 			}
 		}else{
-			long friendlyBB;
-			if (playerMove){
-				friendlyBB = bitboard.pieceBitBoards[BB.WHITE];
-			}else{
-				friendlyBB = bitboard.pieceBitBoards[BB.BLACK];
-			}
+			long friendlyBB = bitboard.getFriendlyBB(playerMove);
 			rawMoves.addAll(Pawn.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.PAWNS], playerMove));
 			rawMoves.addAll(Rook.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.ROOKS], playerMove));
 			rawMoves.addAll(Bishop.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.BISHOPS], playerMove));
@@ -386,12 +343,7 @@ public class Board {
 				System.exit(0);
 			}
 		}else{
-			long friendlyBB;
-			if(player){
-				friendlyBB = bitboard.pieceBitBoards[0];
-			}else{
-				friendlyBB =  bitboard.pieceBitBoards[1];
-			}
+			long friendlyBB = bitboard.getFriendlyBB(player);
 			int kingIndex = BB.bitScanForward(bitboard.pieceBitBoards[BB.KINGS] & friendlyBB);
 
 			if (bitboard.attacksTo(bitboard.combine(), kingIndex, player) != 0){
@@ -411,12 +363,7 @@ public class Board {
 				}
 			}
 		}else{
-			long friendlyBB;
-			if(player){
-				friendlyBB = bitboard.pieceBitBoards[BB.WHITE];
-			}else{
-				friendlyBB =  bitboard.pieceBitBoards[BB.BLACK];
-			}
+			long friendlyBB = bitboard.getFriendlyBB(player);
 			long king = friendlyBB & bitboard.pieceBitBoards[BB.KINGS];
 			int kingIndex = BB.bitScanForward(king);
 			Piece p = getPiece(new Point(kingIndex));
@@ -479,11 +426,15 @@ public class Board {
 		int score = 0;
 
 		// Sum the worth of all of the pieces to get a base score
-		for (Piece p : pieceList) {
-			if (p.player == player && p.alive)
-				score += p.getWorth() + getPieceSquare(p);
-		}
-	
+		long friendlyBB = bitboard.getFriendlyBB(player);
+		
+		score += Pawn.WORTH * BB.countSetBits(bitboard.pieceBitBoards[BB.PAWNS] & friendlyBB);
+		score += Knight.WORTH * BB.countSetBits(bitboard.pieceBitBoards[BB.KNIGHTS] & friendlyBB);
+		score += Bishop.WORTH * BB.countSetBits(bitboard.pieceBitBoards[BB.BISHOPS] & friendlyBB);
+		score += Rook.WORTH * BB.countSetBits(bitboard.pieceBitBoards[BB.ROOKS] & friendlyBB);
+		score += Queen.WORTH * BB.countSetBits(bitboard.pieceBitBoards[BB.QUEENS] & friendlyBB);
+		score += King.WORTH * BB.countSetBits(bitboard.pieceBitBoards[BB.KINGS] & friendlyBB);
+		
 		return score;
 	}
 	

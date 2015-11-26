@@ -29,12 +29,7 @@ public class Knight extends Piece {
 					
 			long possibleMoves = BB.knightAttacks[from];
 			
-			long friendlyBB;
-			if(player){
-				friendlyBB = b.bitboard.pieceBitBoards[0];
-			}else{
-				friendlyBB = b.bitboard.pieceBitBoards[1];
-			}
+			long friendlyBB = b.bitboard.getFriendlyBB(player);
 			possibleMoves &= ~friendlyBB;
 			
 			while (possibleMoves != 0){
