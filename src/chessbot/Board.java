@@ -16,7 +16,8 @@ public class Board {
 		DOUBLED_PAWN,
 		HALF_OPEN_FILE,
 		PAWN_CHAIN,
-		HOLE
+		HOLE,
+		PASSED_PAWN
 	}
 	
 	final static int CHECKMATE = 1000000;
@@ -53,6 +54,7 @@ public class Board {
 	int halfOpenFileValue = 10;
 	int pawnChainValue = 10;
 	int holeValue = 10;
+	int passedPawnValue = 60;
 
 	// Override java.lang.Object.toString method to create easier to read output
 	// in the form of a table
@@ -110,7 +112,7 @@ public class Board {
 		long allBB = bitboard.combine();
 		
 		if (player && playerKSideCastle && kSide){
-			if ((allBB & 0x0000000000000060L) != 0 || bitboard.attacksTo(allBB, 5, player) != 0 || bitboard.attacksTo(allBB, 6, player) != 0){
+			if ((allBB & 0x60L) != 0 || bitboard.attacksTo(allBB, 5, player) != 0 || bitboard.attacksTo(allBB, 6, player) != 0){
 				return false;
 			}
 			return true;
@@ -120,7 +122,7 @@ public class Board {
 			}
 			return true;
 		}else if (player && playerQSideCastle && !kSide){
-			if ((allBB & 0x000000000000000EL) != 0 || bitboard.attacksTo(allBB, 3, player) != 0 || bitboard.attacksTo(allBB, 2, player) != 0){
+			if ((allBB & 0xEL) != 0 || bitboard.attacksTo(allBB, 3, player) != 0 || bitboard.attacksTo(allBB, 2, player) != 0){
 				return false;
 			}
 			return true;
@@ -455,8 +457,8 @@ public class Board {
 		}else{
 			
 			//Complete passed pawn evaluations
-			long botPawns = bitboard.pieceBitBoards[2] & bitboard.pieceBitBoards[1];
-			long playerPawns = bitboard.pieceBitBoards[2] & bitboard.pieceBitBoards[0];
+			long botPawns = bitboard.pieceBitBoards[BB.PAWNS] & bitboard.pieceBitBoards[BB.BLACK];
+			long playerPawns = bitboard.pieceBitBoards[BB.PAWNS] & bitboard.pieceBitBoards[BB.WHITE];
 
 			pawnEvaluation += checkPassedPawns(playerPawns, botPawns);
 			pawnEvaluation += checkDoubledPawns(playerPawns, botPawns);
@@ -484,11 +486,11 @@ public class Board {
 	}
 	
 	public int checkHalfOpenFiles(long playerPawns, long botPawns){
-		long playerFiles = BB.fillColumn(playerPawns);
-		long botFiles = BB.fillColumn(botPawns);
-		long playerResult = playerFiles & ~botFiles & 255;
-		long botResult = ~playerFiles & botFiles & 255;	
-		return (BB.countSetBits(botResult) - BB.countSetBits(playerResult)) * halfOpenFileValue;
+		long playerFiles = BB.fillFile(playerPawns);
+		long botFiles = BB.fillFile(botPawns);
+		long playerResult = playerFiles & ~botFiles & 0xFFL;
+		long botResult = ~playerFiles & botFiles & 0xFFL;	
+		return (BB.countSetBits(playerResult) - BB.countSetBits(botResult)) * halfOpenFileValue;
 	}
 	
 	public int checkPawnChains(long playerPawns, long botPawns){
@@ -499,17 +501,19 @@ public class Board {
 	
 	public int checkIsolatedPawns(long playerPawns, long botPawns){
 		
-		long protectedColumns = (BB.left(BB.fillColumn(playerPawns)) | BB.right(BB.fillColumn(playerPawns)));	
-		long playerIsolatedPawns = playerPawns & ~protectedColumns;
-		protectedColumns = BB.left(BB.fillColumn(botPawns)) | BB.right(BB.fillColumn(botPawns));
-		long botIsolatedPawns = botPawns & ~protectedColumns;
+		long pawnFiles = BB.fillFile(playerPawns);
+		long protectedFiles = (BB.left(pawnFiles) | BB.right(pawnFiles));	
+		long playerIsolatedPawns = playerPawns & ~protectedFiles;
+		pawnFiles = BB.fillFile(botPawns);
+		protectedFiles = BB.left(pawnFiles) | BB.right(pawnFiles);
+		long botIsolatedPawns = botPawns & ~protectedFiles;
 		return isolatedPawnValue * (BB.countSetBits(playerIsolatedPawns) - BB.countSetBits(botIsolatedPawns));
 	}
 	
 	public int checkDoubledPawns(long playerPawns, long botPawns){
 		
 		long playerRearSpans = BB.down(BB.downFill(playerPawns));
-		long botRearSpans = BB.down(BB.downFill(botPawns));
+		long botRearSpans = BB.up(BB.upFill(botPawns));
 		long playerResult = playerRearSpans & playerPawns;
 		long botResult = botRearSpans & botPawns;
 		return (BB.countSetBits(playerResult) - BB.countSetBits(botResult)) * doubledPawnValue;
@@ -517,12 +521,12 @@ public class Board {
 	
 	public int checkPassedPawns(long playerPawns, long botPawns){
 		long playerFrontSpans = BB.up(BB.upFill(playerPawns));
-		long botFrontSpans = BB.up(BB.downFill(botPawns));
+		long botFrontSpans = BB.down(BB.downFill(botPawns));
 		playerFrontSpans |= BB.left(playerFrontSpans) | BB.right(playerFrontSpans);
 		botFrontSpans |= BB.left(botFrontSpans) | BB.right(botFrontSpans);
 		long playerResult = playerPawns & ~botFrontSpans;
 		long botResult = botPawns & ~playerFrontSpans;
-		return (BB.countSetBits(botResult) - BB.countSetBits(playerResult)) * 60;
+		return (BB.countSetBits(botResult) - BB.countSetBits(playerResult)) * passedPawnValue;
 	}
 	
 	
@@ -599,6 +603,8 @@ public class Board {
 				pawnChainValue = entry.getValue();
 			}else if (entry.getKey() == Value.HOLE){
 				holeValue = entry.getValue();
+			}else if (entry.getKey() == Value.PASSED_PAWN){
+				passedPawnValue = entry.getValue();
 			}
 		}
 	}

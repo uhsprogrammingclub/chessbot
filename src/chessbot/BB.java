@@ -348,7 +348,7 @@ public class BB {
 		return bb;
 	}
 	
-	static long fillColumn(long bb){
+	static long fillFile(long bb){
 		return downFill(bb) | upFill(bb);
 	}
 }
