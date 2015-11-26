@@ -30,7 +30,7 @@ public class Pawn extends Piece {
 	static List<Move> getMovesFromBitboard(Board b, long pawns, boolean player){
 		List<Move> moves = new ArrayList<Move>();
 		while (pawns != 0){
-			int from = BitBoard.bitScanForward(pawns);
+			int from = BB.bitScanForward(pawns);
 			long pawn = (long)1 << from;
 			long possibleMoves = 0;
 			
@@ -42,7 +42,7 @@ public class Pawn extends Piece {
 			possibleMoves |= b.bitboard.pawnPush(pawn, player);
 			
 			while (possibleMoves != 0){
-				int to = BitBoard.bitScanForward(possibleMoves);
+				int to = BB.bitScanForward(possibleMoves);
 				Point target = new Point(to);
 				if(target.y == 0 || target.y == 7){
 					moves.add(new Move(b, new Point(from), target, "q"));
@@ -52,9 +52,9 @@ public class Pawn extends Piece {
 				}else{
 					moves.add(new Move(b, new Point(from), target, null));
 				}
-				possibleMoves = BitBoard.clearBit(possibleMoves, to);
+				possibleMoves = BB.clearBit(possibleMoves, to);
 			}
-			pawns = BitBoard.clearBit(pawns, from);
+			pawns = BB.clearBit(pawns, from);
 		}
 		return moves;
 	}

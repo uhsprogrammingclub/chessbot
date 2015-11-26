@@ -46,9 +46,9 @@ public class King extends Piece {
 			moves.add(new Move(b, new Point(kingPiece.getX() - 2, kingPiece.getY()), kingPiece, null));
 		}
 		
-		int from = BitBoard.bitScanForward(king);
+		int from = BB.bitScanForward(king);
 		
-		long possibleMoves = BitBoard.kingAttacks[from];
+		long possibleMoves = BB.kingAttacks[from];
 		
 		long friendlyBB;
 		if(player){
@@ -59,10 +59,10 @@ public class King extends Piece {
 		possibleMoves &= ~friendlyBB;
 		
 		while (possibleMoves != 0){
-			int to = BitBoard.bitScanForward(possibleMoves);
+			int to = BB.bitScanForward(possibleMoves);
 			Point target = new Point(to);
 			moves.add(new Move(b, new Point(from), target, null));
-			possibleMoves = BitBoard.clearBit(possibleMoves, to);
+			possibleMoves = BB.clearBit(possibleMoves, to);
 		}
 		return moves;
 	}

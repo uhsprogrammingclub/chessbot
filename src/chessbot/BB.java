@@ -1,6 +1,6 @@
 package chessbot;
 
-public class BitBoard {
+public class BB {
 	long[] pieceBitBoards = new long[8];
 	static long[] setMask = new long[64];
 	static long[] clearMask = new long[64];
@@ -19,7 +19,7 @@ public class BitBoard {
 	static final int QUEENS = 6;
 	static final int KINGS = 7;
 
-	public BitBoard(Board board) {
+	public BB(Board board) {
 		if (setMask[0] == 0) {
 			initPresets();
 		}
@@ -284,9 +284,9 @@ public class BitBoard {
 
 		int i = 0;
 		while (bb != 0) {
-			int index = BitBoard.bitScanForward(bb);
+			int index = BB.bitScanForward(bb);
 			setBits[i] = index;
-			bb = BitBoard.clearBit(bb, index);
+			bb = BB.clearBit(bb, index);
 
 			if (bb == 0 && i != setBits.length - 1) {
 				System.out.println("ERROR: getSetBits did not get index of all bits.");

@@ -27,7 +27,7 @@ public class Board {
 	// One-dimensional array to hold simple list of pieces
 	List<Piece> pieceList = new ArrayList<Piece>();
 	
-	BitBoard bitboard;
+	BB bitboard;
 	
 	//Boolean that stores whether it is the player's move
 	boolean playerMove;
@@ -81,7 +81,7 @@ public class Board {
 			// Create a new line
 			aString += "\n";
 		}
-		aString += BitBoard.toString(bitboard.combine());
+		aString += BB.toString(bitboard.combine());
 		aString += "\n";
 		
 		//aString += BitBoard.toString(bitboard.pawnsAbleToDoublePush(true));
@@ -222,7 +222,7 @@ public class Board {
 	public void setSquare(Point pos, Piece piece) {
 		if (pos.squareExists()){
 			for (int i = 0; i < bitboard.pieceBitBoards.length; i++){
-				bitboard.pieceBitBoards[i] = BitBoard.clearBit(bitboard.pieceBitBoards[i], pos.getIndex());
+				bitboard.pieceBitBoards[i] = BB.clearBit(bitboard.pieceBitBoards[i], pos.getIndex());
 			}
 			locations[pos.getIndex()] = piece;
 			piece.position = pos;
@@ -254,7 +254,7 @@ public class Board {
 		
 		playerMove = playerGoesFirst;
 		
-		bitboard = new BitBoard(this);
+		bitboard = new BB(this);
 	}
 	
 	//Find all possible capture moves
@@ -355,16 +355,16 @@ public class Board {
 		}else{
 			long friendlyBB;
 			if (playerMove){
-				friendlyBB = bitboard.pieceBitBoards[BitBoard.WHITE];
+				friendlyBB = bitboard.pieceBitBoards[BB.WHITE];
 			}else{
-				friendlyBB = bitboard.pieceBitBoards[BitBoard.BLACK];
+				friendlyBB = bitboard.pieceBitBoards[BB.BLACK];
 			}
-			rawMoves.addAll(Pawn.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.PAWNS], playerMove));
-			rawMoves.addAll(Rook.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.ROOKS], playerMove));
-			rawMoves.addAll(Bishop.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.BISHOPS], playerMove));
-			rawMoves.addAll(Queen.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.QUEENS], playerMove));
-			rawMoves.addAll(King.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.KINGS], playerMove));
-			rawMoves.addAll(Knight.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BitBoard.KNIGHTS], playerMove));
+			rawMoves.addAll(Pawn.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.PAWNS], playerMove));
+			rawMoves.addAll(Rook.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.ROOKS], playerMove));
+			rawMoves.addAll(Bishop.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.BISHOPS], playerMove));
+			rawMoves.addAll(Queen.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.QUEENS], playerMove));
+			rawMoves.addAll(King.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.KINGS], playerMove));
+			rawMoves.addAll(Knight.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.KNIGHTS], playerMove));
 		}
 
 		return rawMoves;
@@ -392,7 +392,7 @@ public class Board {
 			}else{
 				friendlyBB =  bitboard.pieceBitBoards[1];
 			}
-			int kingIndex = BitBoard.bitScanForward(bitboard.pieceBitBoards[BitBoard.KINGS] & friendlyBB);
+			int kingIndex = BB.bitScanForward(bitboard.pieceBitBoards[BB.KINGS] & friendlyBB);
 			if (bitboard.attacksTo(bitboard.combine(), kingIndex, player) != 0){
 				return true;
 			}
@@ -412,12 +412,12 @@ public class Board {
 		}else{
 			long friendlyBB;
 			if(player){
-				friendlyBB = bitboard.pieceBitBoards[BitBoard.WHITE];
+				friendlyBB = bitboard.pieceBitBoards[BB.WHITE];
 			}else{
-				friendlyBB =  bitboard.pieceBitBoards[BitBoard.BLACK];
+				friendlyBB =  bitboard.pieceBitBoards[BB.BLACK];
 			}
-			long king = friendlyBB & bitboard.pieceBitBoards[BitBoard.KINGS];
-			int kingIndex = BitBoard.bitScanForward(king);
+			long king = friendlyBB & bitboard.pieceBitBoards[BB.KINGS];
+			int kingIndex = BB.bitScanForward(king);
 			Piece p = getPiece(new Point(kingIndex));
 			if (p.alive == true) {
 				// Return the King's position

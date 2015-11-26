@@ -33,17 +33,17 @@ public class Queen extends Piece {
 	static List<Move> getMovesFromBitboard(Board b, long queens, boolean player){
 		List<Move> moves = new ArrayList<Move>();
 		while (queens != 0){
-			int from = BitBoard.bitScanForward(queens);
+			int from = BB.bitScanForward(queens);
 			
 			long possibleMoves = b.bitboard.bishopAttack(b.bitboard.combine(), from, player);
 			possibleMoves |= b.bitboard.rookAttack(b.bitboard.combine(), from, player);
 			
 			while (possibleMoves != 0){
-				int to = BitBoard.bitScanForward(possibleMoves);
+				int to = BB.bitScanForward(possibleMoves);
 				moves.add(new Move(b, new Point(from), new Point(to), null));
-				possibleMoves = BitBoard.clearBit(possibleMoves, to);
+				possibleMoves = BB.clearBit(possibleMoves, to);
 			}
-			queens = BitBoard.clearBit(queens, from);
+			queens = BB.clearBit(queens, from);
 		}
 		return moves;
 	}
