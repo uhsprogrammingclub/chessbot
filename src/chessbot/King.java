@@ -18,10 +18,10 @@ public class King extends Piece {
 
 		if (!AIController.useBitBoards){
 			// Get castling moves
-			if(b.canCastleKSide(player)){
+			if(b.canCastle(player, true)){
 				moves.add(new Move(b, new Point(this.getX() + 2, this.getY()), this, null));
 			}
-			if(b.canCastleQSide(player)){
+			if(b.canCastle(player, false)){
 				moves.add(new Move(b, new Point(this.getX() - 2, this.getY()), this, null));
 			}
 			// Gets vertical moves
@@ -39,10 +39,10 @@ public class King extends Piece {
 		List<Move> moves = new ArrayList<Move>();
 		
 		Piece kingPiece = b.getKing(player);
-		if(b.canCastleKSide(player)){
+		if(b.canCastle(player, true)){
 			moves.add(new Move(b, new Point(kingPiece.getX() + 2, kingPiece.getY()), kingPiece, null));
 		}
-		if(b.canCastleQSide(player)){
+		if(b.canCastle(player, false)){
 			moves.add(new Move(b, new Point(kingPiece.getX() - 2, kingPiece.getY()), kingPiece, null));
 		}
 		

@@ -102,25 +102,30 @@ public class Board {
 
 	}
 	
-	public boolean canCastleKSide(boolean player){
+	public boolean canCastle(boolean player, boolean kSide){
 		
 		if (isCheck(player)){
 			return false;
 		}
 		long allBB = bitboard.combine();
-		if (player && playerKSideCastle){
-			if ((allBB & 0x0000000000000060L) != 0){
-				return false;
-			}
-			if (bitboard.attacksTo(allBB, 5, player) != 0 || bitboard.attacksTo(allBB, 6, player) != 0){
+		
+		if (player && playerKSideCastle && kSide){
+			if ((allBB & 0x0000000000000060L) != 0 || bitboard.attacksTo(allBB, 5, player) != 0 || bitboard.attacksTo(allBB, 6, player) != 0){
 				return false;
 			}
 			return true;
-		}else if (!player && botKSideCastle){
-			if ((allBB & 0x6000000000000000L) != 0){
+		}else if (!player && botKSideCastle && kSide){
+			if ((allBB & 0x6000000000000000L) != 0 || bitboard.attacksTo(allBB, 61, player) != 0 || bitboard.attacksTo(allBB, 62, player) != 0){
 				return false;
 			}
-			if (bitboard.attacksTo(allBB, 61, player) != 0 || bitboard.attacksTo(allBB, 62, player) != 0){
+			return true;
+		}else if (player && playerQSideCastle && !kSide){
+			if ((allBB & 0x000000000000000EL) != 0 || bitboard.attacksTo(allBB, 3, player) != 0 || bitboard.attacksTo(allBB, 2, player) != 0){
+				return false;
+			}
+			return true;
+		}else if (!player && botQSideCastle && !kSide){
+			if ((allBB & 0x0E00000000000000L) != 0 || bitboard.attacksTo(allBB, 59, player) != 0 || bitboard.attacksTo(allBB, 58, player) != 0){
 				return false;
 			}
 			return true;
@@ -128,33 +133,7 @@ public class Board {
 		
 		return false;
 	}
-	
-	public boolean canCastleQSide(boolean player){
-		
-		if (isCheck(player)){
-			return false;
-		}
-		long allBB = bitboard.combine();
-		if (player && playerQSideCastle){
-			if ((allBB & 0x000000000000000EL) != 0){
-				return false;
-			}
-			if (bitboard.attacksTo(allBB, 3, player) != 0 || bitboard.attacksTo(allBB, 2, player) != 0){
-				return false;
-			}
-			return true;
-		}else if (!player && botQSideCastle){
-			if ((allBB & 0x0E00000000000000L) != 0){
-				return false;
-			}
-			if (bitboard.attacksTo(allBB, 59, player) != 0 || bitboard.attacksTo(allBB, 58, player) != 0){
-				return false;
-			}
-			return true;
-		}
-		
-		return false;
-	}
+
 
 	// Function that returns true if a certain square is empty
 	public boolean isEmptySquare(Point p) {
