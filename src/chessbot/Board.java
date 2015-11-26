@@ -514,6 +514,7 @@ public class Board {
 			System.out.println(pawnEvaluation);
 			pawnEvaluation += checkIsolatedPawns(playerPawns, botPawns); 
 			System.out.println(pawnEvaluation);
+			pawnEvaluation += checkPawnChains(playerPawns, botPawns);
 			
 			
 			for (Piece p : pieceList) {
@@ -580,6 +581,10 @@ public class Board {
 		StructureTable.addEntry(new StructureHashEntry(pHash, pawnEvaluation));
 			
 		return pawnEvaluation;
+	}
+	
+	public int checkPawnChains(long playerPawns, long botPawns){
+		return 0;
 	}
 	
 	public int checkIsolatedPawns(long playerPawns, long botPawns){
