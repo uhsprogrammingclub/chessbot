@@ -533,8 +533,6 @@ public class Board {
 					
 					int pawnScore = 0;
 					
-					if (isIsolatedPawn(p)) pawnScore -= isolatedPawnValue;
-					if (isDoubledPawn(p)) pawnScore -= doubledPawnValue;
 					if (isHalfOpenFile(p)) pawnScore -= halfOpenFileValue;
 					if (isInPawnChain(p)) pawnScore += pawnChainValue;
 
