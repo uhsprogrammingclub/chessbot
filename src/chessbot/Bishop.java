@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Bishop extends Piece {
 
+	static  final int WORTH = 330;
 	@Override
 	// findMoves() method which identifies possible moves
 	// The Bishop Piece can move diagonally as far as it can
@@ -26,8 +27,9 @@ public class Bishop extends Piece {
 		List<Move> moves = new ArrayList<Move>();
 		while (bishops != 0){
 			int from = BB.bitScanForward(bishops);
-			long possibleMoves = b.bitboard.bishopAttack(from, player);
-			
+
+			long possibleMoves = b.bitboard.bishopAttack(b.bitboard.combine(), from, player);
+
 			while (possibleMoves != 0){
 				int to = BB.bitScanForward(possibleMoves);
 				moves.add(new Move(b, new Point(from), new Point(to), null));
@@ -42,7 +44,7 @@ public class Bishop extends Piece {
 	public Bishop(int x, int y, boolean p) {
 
 		// Setting base values for the Queen piece
-		worth = 330;
+		worth = WORTH;
 		player = p;
 		symbol = "b";
 

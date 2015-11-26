@@ -3,6 +3,10 @@ package chessbot;
 import java.util.*;
 
 public class Knight extends Piece {
+	
+	static  final int WORTH = 320;
+	
+	
 	@Override
 	// findMoves() method which identifies possible moves
 	// The Knight Piece can move ...

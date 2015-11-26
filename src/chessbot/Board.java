@@ -81,7 +81,7 @@ public class Board {
 			// Create a new line
 			aString += "\n";
 		}
-		//aString += BitBoard.toString(bitboard.combine());
+		//aString += BB.toString(bitboard.combine());
 		aString += "\n";
 		
 		//aString += BitBoard.toString(bitboard.pawnsAbleToDoublePush(true));
@@ -393,7 +393,8 @@ public class Board {
 				friendlyBB =  bitboard.pieceBitBoards[1];
 			}
 			int kingIndex = BB.bitScanForward(bitboard.pieceBitBoards[BB.KINGS] & friendlyBB);
-			if (bitboard.attacksTo(kingIndex, player) != 0){
+
+			if (bitboard.attacksTo(bitboard.combine(), kingIndex, player) != 0){
 				return true;
 			}
 		}
@@ -469,7 +470,7 @@ public class Board {
 		if(this.computerCastle == CastleState.CASTLE_RUINED) score -= 15;
 		return score;
 	}
-
+	
 	// Analyze the board, and assign a numeric value to it for the position
 	// based on how favorable it is for the designated player.
 	public int scoreBoard(boolean player) {
@@ -632,23 +633,16 @@ public class Board {
 	//evaluation for isolated pawns
 	public boolean isIsolatedPawn(Piece pawn)
 	{
-		if(AIController.useBitBoards){
-			int side = pawn.player ? 0 : 1;
-			return (BB.neighborFiles[pawn.getX()] & (bitboard.pieceBitBoards[2] & bitboard.pieceBitBoards[side])) == 0 ? true : false; // 2 = pawn bb's
-			
-		}else{
-			
-			for(Piece p: pieceList)
+				
+		for(Piece p: pieceList)
+		{
+			if(p.symbol.equals("p") && p.player == pawn.player && (p.getX() == pawn.getX()+1 || p.getX() == pawn.getX()-1))
 			{
-				if(p.symbol.equals("p") && p.player == pawn.player && (p.getX() == pawn.getX()+1 || p.getX() == pawn.getX()-1))
-				{
-					return false;
-				}
+				return false;
 			}
-
 		}
+
 		return false;
-		
 		
 	}
 	

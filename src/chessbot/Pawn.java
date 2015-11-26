@@ -3,6 +3,8 @@ package chessbot;
 import java.util.*;
 
 public class Pawn extends Piece {
+	
+	static  final int WORTH = 100;
 
 	// Finds all moves for the Pawn piece
 	// Looks directly in front, diagonally left, and diagonally right. Needs to
@@ -63,7 +65,7 @@ public class Pawn extends Piece {
 	public Pawn(int x, int y, boolean p) {
 
 		// Setting base values for the Pawn piece
-		worth = 100;
+		worth = WORTH;
 		player = p;
 		symbol = "p";
 
