@@ -353,12 +353,7 @@ public class Board {
 				}
 			}
 		}else{
-			long friendlyBB;
-			if (playerMove){
-				friendlyBB = bitboard.pieceBitBoards[BB.WHITE];
-			}else{
-				friendlyBB = bitboard.pieceBitBoards[BB.BLACK];
-			}
+			long friendlyBB = bitboard.getFriendlyBB(playerMove);
 			rawMoves.addAll(Pawn.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.PAWNS], playerMove));
 			rawMoves.addAll(Rook.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.ROOKS], playerMove));
 			rawMoves.addAll(Bishop.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.BISHOPS], playerMove));
@@ -386,12 +381,7 @@ public class Board {
 				System.exit(0);
 			}
 		}else{
-			long friendlyBB;
-			if(player){
-				friendlyBB = bitboard.pieceBitBoards[0];
-			}else{
-				friendlyBB =  bitboard.pieceBitBoards[1];
-			}
+			long friendlyBB = bitboard.getFriendlyBB(player);
 			int kingIndex = BB.bitScanForward(bitboard.pieceBitBoards[BB.KINGS] & friendlyBB);
 			if (bitboard.attacksTo(bitboard.combine(), kingIndex, player) != 0){
 				return true;
@@ -410,12 +400,7 @@ public class Board {
 				}
 			}
 		}else{
-			long friendlyBB;
-			if(player){
-				friendlyBB = bitboard.pieceBitBoards[BB.WHITE];
-			}else{
-				friendlyBB =  bitboard.pieceBitBoards[BB.BLACK];
-			}
+			long friendlyBB = bitboard.getFriendlyBB(player);
 			long king = friendlyBB & bitboard.pieceBitBoards[BB.KINGS];
 			int kingIndex = BB.bitScanForward(king);
 			Piece p = getPiece(new Point(kingIndex));
@@ -478,11 +463,15 @@ public class Board {
 		int score = 0;
 
 		// Sum the worth of all of the pieces to get a base score
-		for (Piece p : pieceList) {
-			if (p.player == player && p.alive)
-				score += p.getWorth() + getPieceSquare(p);
-		}
-	
+		long friendlyBB = bitboard.getFriendlyBB(player);
+		
+		score += Pawn.WORTH * BB.countSetBits(bitboard.pieceBitBoards[BB.PAWNS] & friendlyBB);
+		score += Knight.WORTH * BB.countSetBits(bitboard.pieceBitBoards[BB.KNIGHTS] & friendlyBB);
+		score += Bishop.WORTH * BB.countSetBits(bitboard.pieceBitBoards[BB.BISHOPS] & friendlyBB);
+		score += Rook.WORTH * BB.countSetBits(bitboard.pieceBitBoards[BB.ROOKS] & friendlyBB);
+		score += Queen.WORTH * BB.countSetBits(bitboard.pieceBitBoards[BB.QUEENS] & friendlyBB);
+		score += King.WORTH * BB.countSetBits(bitboard.pieceBitBoards[BB.KINGS] & friendlyBB);
+		
 		return score;
 	}
 	
