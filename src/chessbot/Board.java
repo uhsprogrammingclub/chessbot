@@ -102,74 +102,57 @@ public class Board {
 
 	}
 	
-	public boolean canCastleKSide(Piece king){
+	public boolean canCastleKSide(boolean player){
 		
-		if((king.player && playerKSideCastle) || (!king.player && botKSideCastle)){
-				
-			//Check to make sure there is not a piece there...
-			if(king.getX() != 4 || !isEmptySquare(new Point(king.getX() + 1, king.getY())) || !isEmptySquare(new Point(king.getX() + 2, king.getY()))){
-				return false;
-			}
-			
-			if(isCheck(king.player)){
-				return false;
-			}
-			
-			Move testMove = new Move(this, new Point(king.getX() +1, king.getY()), king, null);
-			testMove.execute();
-			if(isCheck(king.player)){
-				testMove.reverse();
-				return false;
-			}
-			testMove.reverse();
-			
-			Move testMove2 = new Move(this, new Point(king.getX() +2, king.getY()), king, null);
-			testMove2.execute();
-			if(isCheck(king.player)){
-				testMove2.reverse();
-				return false;
-			}
-			
-			testMove2.reverse();
-			
-			return true;	
-			
+		if (isCheck(player)){
+			return false;
 		}
+		long allBB = bitboard.combine();
+		if (player && playerKSideCastle){
+			if ((allBB & 0x0000000000000060L) != 0){
+				return false;
+			}
+			if (bitboard.attacksTo(allBB, 5, player) != 0 || bitboard.attacksTo(allBB, 6, player) != 0){
+				return false;
+			}
+			return true;
+		}else if (!player && botKSideCastle){
+			if ((allBB & 0x6000000000000000L) != 0){
+				return false;
+			}
+			if (bitboard.attacksTo(allBB, 61, player) != 0 || bitboard.attacksTo(allBB, 62, player) != 0){
+				return false;
+			}
+			return true;
+		}
+		
 		return false;
 	}
 	
-	public boolean canCastleQSide(Piece king){
+	public boolean canCastleQSide(boolean player){
 		
-		if((king.player && playerQSideCastle) || (!king.player && botQSideCastle)){
-				
-			//Check to make sure there is not a piece there...
-			if(king.getX() != 4 || !isEmptySquare(new Point(king.getX() - 1, king.getY())) || !isEmptySquare(new Point(king.getX() - 2, king.getY())) || !isEmptySquare(new Point(king.getX() - 3, king.getY()))){
-				return false;
-			}
-			
-			if(isCheck(king.player)){
-				return false;
-			}
-			
-			Move testMove = new Move(this, new Point(king.getX() - 1, king.getY()), king, null);
-			testMove.execute();
-			if(isCheck(king.player)){
-				testMove.reverse();
-				return false;
-			}
-			testMove.reverse();
-			
-			Move testMove2 = new Move(this, new Point(king.getX() - 2, king.getY()), king, null);
-			testMove2.execute();
-			if(isCheck(king.player)){
-				testMove2.reverse();
-				return false;
-			}
-			
-			testMove2.reverse();
-		
-			return true;	
+		if (isCheck(player)){
+			return false;
 		}
+		long allBB = bitboard.combine();
+		if (player && playerQSideCastle){
+			if ((allBB & 0x000000000000000EL) != 0){
+				return false;
+			}
+			if (bitboard.attacksTo(allBB, 3, player) != 0 || bitboard.attacksTo(allBB, 2, player) != 0){
+				return false;
+			}
+			return true;
+		}else if (!player && botQSideCastle){
+			if ((allBB & 0x0E00000000000000L) != 0){
+				return false;
+			}
+			if (bitboard.attacksTo(allBB, 59, player) != 0 || bitboard.attacksTo(allBB, 58, player) != 0){
+				return false;
+			}
+			return true;
+		}
+		
 		return false;
 	}
 
