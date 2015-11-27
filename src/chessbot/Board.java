@@ -46,6 +46,14 @@ public class Board {
 	
 	List<String> moveHistory = new ArrayList<String>();
 	
+	int pawnPhase = 0;
+	int knightPhase = 1;
+	int bishopPhase = 1;
+	int rookPhase = 2;
+	int queenPhase = 4;
+	int totalPhase = 8 * pawnPhase + 4 * knightPhase + 4 * bishopPhase + 4 * rookPhase + 2 * queenPhase; 
+	
+	
 	int halfmoveClock = 0;
 	int fullMoveCounter = 0;
 	
@@ -626,8 +634,28 @@ public class Board {
 			return flippedGrid;
 		}
 	}
+
+	public int getPhase(){
+		int phase = totalPhase;
+		phase -= (BB.countSetBits(bitboard.pieceBitBoards[BB.PAWNS]) * pawnPhase 
+				+ BB.countSetBits(bitboard.pieceBitBoards[BB.BISHOPS]) * bishopPhase
+				+ BB.countSetBits(bitboard.pieceBitBoards[BB.KNIGHTS]) * knightPhase
+				+ BB.countSetBits(bitboard.pieceBitBoards[BB.QUEENS]) * queenPhase);
+		
+		return (phase * 256 + (totalPhase / 2)) / totalPhase;
+	}
 	
-	public int getPieceSquare(Piece p){
+	public int latePieceSquares(int phase){
+		return 0;
+	}
+	
+	public int earlyPieceSquares(int phase){
+		return 0;
+		
+	}
+	
+	public int f(Piece p){
+		
 		
 		int[][] pawnPieceSquares = {
 				
@@ -704,6 +732,17 @@ public class Board {
 			{  20, 20,  0,  0,  0,  0, 20, 20 },
 			{  20, 30, 10,  0,  0, 10, 30, 20 }
 			
+		};
+		
+		int[][] kingPieceSquaresL = {
+			{ -50,-40,-30,-20,-20,-30,-40,-50 },
+			{ -30,-20,-10,  0,  0,-10,-20,-30 },
+			{ -30,-10, 20, 30, 30, 20,-10,-30 },
+			{ -30,-10, 30, 40, 40, 30,-10,-30 },
+			{ -30,-10, 30, 40, 40, 30,-10,-30 },
+			{ -30,-10, 20, 30, 30, 20,-10,-30 },
+			{ -30,-30,  0,  0,  0,  0,-30,-30 },
+			{ -50,-30,-30,-30,-30,-30,-30,-50 }
 		};
 		
 		if(p.symbol.equals("p")){
