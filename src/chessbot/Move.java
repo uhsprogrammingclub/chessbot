@@ -199,7 +199,7 @@ public class Move implements Comparable<Move>{
 				makeMove(promotionPiece);
 				return;
 			}
-			System.out.println("SAN conversion failed pawn move: " + originalSAN + b);
+			System.out.println("SAN conversion failed pawn move: " + originalSAN + "\n" + b);
 		}
 		
 		if (SAN.length() == 1 && Character.isLowerCase(SAN.charAt(0))){
@@ -211,7 +211,7 @@ public class Move implements Comparable<Move>{
 				makeMove(promotionPiece);
 				return;
 			}
-			System.out.println("SAN conversion failed: pawn capture: " + originalSAN + b);
+			System.out.println("SAN conversion failed: pawn capture: " + originalSAN + "\n" +b);
 		}
 		
 		pieceString = SAN.substring(0, 1).toLowerCase();
@@ -237,7 +237,7 @@ public class Move implements Comparable<Move>{
 				}
 			}
 		}
-		System.out.println("SAN conversion failed final: " + originalSAN + b);
+		System.out.println("SAN conversion failed final: " + originalSAN + "\n" + b);
 		
 	}
 

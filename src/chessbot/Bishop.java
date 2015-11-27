@@ -14,7 +14,7 @@ public class Bishop extends Piece {
 		List<Move> moves = new ArrayList<Move>();
 
 		if(AIController.useBitBoards){
-
+			moves.addAll(getMovesFromBitboard(b, 1L << position.getIndex(), player));
 		}else{
 			// Get Diagonal moves
 			moves.addAll(Utils.getDiagonalMoves(b, this));

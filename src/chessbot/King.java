@@ -30,6 +30,8 @@ public class King extends Piece {
 			moves.addAll(Utils.getHorizontalMoves(b, this));
 			// Get Diagonal moves
 			moves.addAll(Utils.getDiagonalMoves(b, this));
+		}else{
+			moves.addAll(getMovesFromBitboard(b, 1L << position.getIndex(), player));
 		}
 		
 		return moves;
