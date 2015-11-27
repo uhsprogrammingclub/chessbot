@@ -243,7 +243,12 @@ public class Move implements Comparable<Move>{
 
 	void execute() {
 		if (!executed) {
+			board.history[board.halfMoves].zobrist = Zobrist.getZobristHash(board);
+			board.history[board.halfMoves].fiftyMove = board.fiftyMove;
+			board.history[board.halfMoves].move = this; // Can eventually replace moveHistory
+			
 			board.moveHistory.add(this.toString());
+			
 			if (castleMove){
 				if (castleRookMove == null){
 				
@@ -264,6 +269,7 @@ public class Move implements Comparable<Move>{
 			if (board.isEmptySquare(destinationPc.position)){
 				board.setSquare(from, destinationPc);
 			}else{
+				board.fiftyMove = 0;
 				board.setSquare(from, new Empty());
 			}
 			
@@ -298,6 +304,7 @@ public class Move implements Comparable<Move>{
 			
 			board.enPassantTarget = null;
 			if(piece.symbol.equals("r")){
+				
 				if (from.x == 0){
 					if(piece.player){
 						if(!board.playerKSideCastle){
@@ -324,6 +331,9 @@ public class Move implements Comparable<Move>{
 					}
 				}
 			}else if(piece.symbol.equals("p")){
+				
+				board.fiftyMove = 0;
+				
 				if (from.y == 1 && to.y == 3){
 					board.enPassantTarget = new Point(to.x, 2);
 				}else if (from.y == 6 && to.y == 4){
@@ -351,6 +361,9 @@ public class Move implements Comparable<Move>{
 				
 			}
 			
+			board.fiftyMove++;
+			board.halfMoves++;
+			
 			destinationPc.alive = false;
 			executed = true;
 			board.playerMove = !board.playerMove;
@@ -362,6 +375,11 @@ public class Move implements Comparable<Move>{
 
 	void reverse() {
 		if (executed) {
+			
+			board.halfMoves--;
+			board.fiftyMove = board.history[board.halfMoves].fiftyMove;
+			
+			
 			board.moveHistory.remove(board.moveHistory.size()-1);
 			
 			if(promotionMove){

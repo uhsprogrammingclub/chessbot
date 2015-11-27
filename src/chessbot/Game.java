@@ -24,7 +24,7 @@ public class Game {
 	
 	//Points to be created by the GUI
 	static volatile Point squareFrom = null;
-	static volatile Point squareTo = null;
+	static volatile Point squareTo = null; 
 	
 	//The current board of the game
 	Board b;
@@ -82,6 +82,11 @@ public class Game {
 		
 		loadBitboards();
 		setBoard(setup);
+		
+		for(int i = 0; i < 2048; i++){
+			b.history[i] = new HistoryEntry();
+		}
+		
 		initGUI();
 		
 		playerMovesFirst = b.playerMove;

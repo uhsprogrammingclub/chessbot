@@ -20,6 +20,8 @@ public class Board {
 		PASSED_PAWN
 	}
 	
+	final static int CONTEMPT_FACTOR = -370;
+	
 	final static int CHECKMATE = 1000000;
 
 	// One-dimensional array to hold the locations of all of the pieces
@@ -46,7 +48,12 @@ public class Board {
 	
 	List<String> moveHistory = new ArrayList<String>();
 	
-	int halfmoveClock = 0;
+	
+	int fiftyMove = 0;
+	int halfMoves = 0; 
+	
+	HistoryEntry[] history = new HistoryEntry[2048]; // 2048 half moves as max moves in a game - will never be reached
+	
 	int fullMoveCounter = 0;
 	
 	int isolatedPawnValue = 10;
@@ -396,9 +403,13 @@ public class Board {
 	// Function that retrieves numeric value assigned to position. High values
 	// are good for the player, low values good for the computer
 	public int evaluateBoard() {
+		
 		int score = scoreBoard(false) - scoreBoard(true);
-		score += evaluatePawnStructure();
-		score += evaluateCastling();
+		
+		if(AIController.usePawnEvals){
+			score += evaluatePawnStructure();
+			score += evaluateCastling();
+		}
 		
 		if( isGameOver() ){
 			if (isCheck(playerMove) && allMoves().size() == 0){

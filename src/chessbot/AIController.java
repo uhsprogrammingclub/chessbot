@@ -38,8 +38,9 @@ public class AIController {
 	static boolean aspirationWindow = false;
 	static boolean useOpeningBook = false;
 	static boolean useBitBoards = true;
+	static boolean usePawnEvals;
 	
-	//Hashtable to store number of computations at each depth (serves no functional purpose)
+	// Hashtable to store number of computations at each depth (serves no functional purpose)
 	Hashtable<Integer, Integer> computationsAtDepth = new Hashtable<Integer, Integer>(100);
 
 	// To hold the principal variation at each depth (serves no functional purpose)

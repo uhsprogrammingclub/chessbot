@@ -126,7 +126,16 @@ public class AI {
 		this.board = board;
 	}
 	
-	// Basic Quiescence Search
+	boolean isRepetition(){
+		for(int i = board.history.length - board.fiftyMove; i < board.history.length - 1; i++){
+			if(Zobrist.getZobristHash(board) == board.history[i].zobrist){
+				System.out.println("Rep rep it up!");
+				return true;
+			}
+		}
+		return false;	
+	}
+	// Quiescence Search
 	int qSearch(int alpha, int beta) {
 		AIC.checkTimeLimit();
 		// Increment the static computations
@@ -227,6 +236,13 @@ public class AI {
 		long zHash = Zobrist.getZobristHash(board);
 		int index = Zobrist.getIndex(zHash, TranspositionTable.hashSize);
 		
+		if( (isRepetition() || board.fiftyMove >= 100) && depth > 0) {
+			System.out.println("Repetition: " + board.fiftyMove + " " + depth);
+			System.out.println(Board.CONTEMPT_FACTOR);
+			return Board.CONTEMPT_FACTOR;
+			
+		}
+		
 		//find entry with same index
 		HashEntry oldEntry = TranspositionTable.trans.get(index);
 	
@@ -239,7 +255,7 @@ public class AI {
 			
 			AIC.computationsAtDepth.put(depth, AIC.computationsAtDepth.get(depth) + 1);
 			
-			if (AIC.useTTEvals && oldEntry != null && oldEntry.zobrist == zHash && oldEntry.nodeType == HashEntry.PV_NODE){
+			if (AIC.useTTEvals && oldEntry != null && oldEntry.zobrist == zHash && oldEntry.nodeType == HashEntry.PV_NODE && (board.fiftyMove + oldEntry.depthLeft >= 100)){
 				return oldEntry.eval; //passes up the pre-computed evaluation
 			}else{
 				if(AIC.quiescenceSearch){
@@ -346,7 +362,7 @@ public class AI {
 			
 			if (currentScore > maxValue) {
 				bestMove = move;
-				if (depth == 0){
+				if (depth == 0 && !isRepetition() && board.fiftyMove < 100){
 					HashEntry newEntry = new HashEntry(zHash, maxDepth - depth, currentScore, HashEntry.PV_NODE, new Move(board, move));
 					TranspositionTable.addEntry(newEntry);
 					AIC.bestRootMove = new MoveAndScore(new Move(board, bestMove), currentScore);
