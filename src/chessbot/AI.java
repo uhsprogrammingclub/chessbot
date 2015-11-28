@@ -68,6 +68,13 @@ public class AI {
 			if (board.currentZobrist == board.zobristHistory.get(i)){
 				return true;
 			}
+		}
+		return false;
+	}
+	
+	boolean pvCausesRepetition(){
+		PV pv = new PV(board);
+		for (int i = board.zobristHistory.size()-board.halfMoveClock; i < board.zobristHistory.size()-1; i++){
 			for (Long z : pv.zobristList){
 				if (z == board.zobristHistory.get(i)){
 					return true;
@@ -261,7 +268,7 @@ public class AI {
 			
 			AIC.computationsAtDepth.put(depth, AIC.computationsAtDepth.get(depth) + 1);
 			
-			if (AIC.useTTEvals && oldEntry != null && oldEntry.zobrist == zHash && oldEntry.nodeType == HashEntry.PV_NODE && (oldEntry.depthLeft+board.halfMoveClock) < 100 && !isRepetition()){
+			if (AIC.useTTEvals && oldEntry != null && oldEntry.zobrist == zHash && oldEntry.nodeType == HashEntry.PV_NODE && (oldEntry.depthLeft+board.halfMoveClock) < 100 && !!pvCausesRepetition()){
 				return oldEntry.eval; //passes up the pre-computed evaluation
 			}else{
 				if(AIC.quiescenceSearch){
@@ -295,7 +302,7 @@ public class AI {
 		if(oldEntry != null //if there is an old entry
 			&& oldEntry.zobrist == zHash){  //and the boards are the same
 			
-			if (AIC.useTTEvals && oldEntry.depthLeft >= (maxDepth - depth) && (oldEntry.depthLeft+board.halfMoveClock) < 100 && !isRepetition()){
+			if (AIC.useTTEvals && oldEntry.depthLeft >= (maxDepth - depth) && (oldEntry.depthLeft+board.halfMoveClock) < 100 && !pvCausesRepetition()){
 				if(oldEntry.nodeType == HashEntry.PV_NODE){ //the evaluated node is PV
 					if (depth != 0){
 						return oldEntry.eval; //passes up the pre-computed evaluation
