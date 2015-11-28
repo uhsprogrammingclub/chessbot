@@ -35,9 +35,6 @@ public class TournamentTesting {
 			TranspositionTable.trans.clear();
 			
 			Board b = Utils.boardFromFEN(Game.defaultSetup);
-			//for(int l = 0; l < 2048; l++){
-				//b.history[l] = new HistoryEntry();
-			//}
 			
 			// playerTwo has experimental features, playerOne does not
 			while(true){
@@ -86,7 +83,7 @@ public class TournamentTesting {
 				AI playerTwo = new AI(b);
 
 				//For the experimental...
-				AIController.quiescenceSearch = true;
+				AIController.usePawnEvaluations = true;
 				playerTwo.search();
 				if (playerTwo.AIC.bestRootMove != null) {
 					playerTwo.AIC.bestRootMove.move.execute();
@@ -94,9 +91,8 @@ public class TournamentTesting {
 				
 				System.out.println(b);
 				System.out.println(playerTwo.AIC.bestRootMove + " " + b.evaluateBoard());
-				//System.out.println("Fifty Moves: " + b.fiftyMove + " Half Moves: " + b.halfMoves);
 				
-				AIController.quiescenceSearch = false;
+				AIController.usePawnEvaluations = false;
 		
 			}
 			

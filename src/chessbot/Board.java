@@ -413,7 +413,7 @@ public class Board {
 	// are good for the player, low values good for the computer
 	public int evaluateBoard() {
 		int score = scoreBoard(false) - scoreBoard(true);
-		score += evaluatePawnStructure();
+		if(AIController.usePawnEvaluations) score += evaluatePawnStructure();
 		score += evaluateCastling();
 		
 		if( isGameOver() ){
