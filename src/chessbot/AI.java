@@ -47,8 +47,8 @@ public class AI {
 			AIC.researches += AIC.totalNodes - nodesBeforeResearch;
 			
 			if (AIC.aspirationWindow){
-				alpha = result - 30;
-				beta = result + 30;
+				alpha = result - 10;
+				beta = result + 10;
 			}
 			if (result == Board.CHECKMATE || result == -Board.CHECKMATE){
 				AIC.stopSearching = true;
@@ -268,7 +268,7 @@ public class AI {
 			
 			AIC.computationsAtDepth.put(depth, AIC.computationsAtDepth.get(depth) + 1);
 			
-			if (AIC.useTTEvals && oldEntry != null && oldEntry.zobrist == zHash && oldEntry.nodeType == HashEntry.PV_NODE && (oldEntry.depthLeft+board.halfMoveClock) < 100 && !!pvCausesRepetition()){
+			if (AIC.useTTEvals && oldEntry != null && oldEntry.zobrist == zHash && oldEntry.nodeType == HashEntry.PV_NODE && (oldEntry.depthLeft+board.halfMoveClock) < 100 && !pvCausesRepetition()){
 				return oldEntry.eval; //passes up the pre-computed evaluation
 			}else{
 				if(AIC.quiescenceSearch){
@@ -310,7 +310,7 @@ public class AI {
 						AIC.bestRootMove = new MoveAndScore(new Move(board, oldEntry.move), oldEntry.eval);
 						return oldEntry.eval;
 					}
-				}else if(depth != 0 && oldEntry.nodeType == HashEntry.CUT_NODE && oldEntry.eval >= beta){ //beta cutoff
+				}else if(depth != 0 && oldEntry.nodeType == HashEntry.CUT_NODE && oldEntry.eval >= beta){ //beta cutoff	
 					return oldEntry.eval;
 				}else if(depth != 0 && oldEntry.nodeType == HashEntry.ALL_NODE && oldEntry.eval <= alpha){ //beta cutoff
 					return oldEntry.eval;
@@ -406,7 +406,6 @@ public class AI {
 			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.CUT_NODE, new Move(board, bestMove));
 		}else if (!newAlpha){
 			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.ALL_NODE, new Move(board, bestMove));
-
 		}else{
 			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.PV_NODE, new Move(board, bestMove));
 		}

@@ -59,6 +59,8 @@ public class Board {
 	int passedPawnValue = 60;
 	
 	int contemptFactor = 0;
+	
+	Piece emptySquare = new Empty();
 
 	// Override java.lang.Object.toString method to create easier to read output
 	// in the form of a table
@@ -181,9 +183,7 @@ public class Board {
 			return locations[pos.getIndex()];
 		}else{
 			System.out.println("ERROR: getPiece(Point pos) called invalid square");
-			Piece empty = new Empty();
-			empty.setPosition(pos.x, pos.y);
-			return empty;
+			return emptySquare;
 		}
 	}
 	
@@ -211,8 +211,7 @@ public class Board {
 
 		// Fill the locations array with empty squares
 		for (int i = 0; i < locations.length; i++) {
-			Empty temp = new Empty();
-			locations[i] = temp;
+			locations[i] = emptySquare;
 		}
 
 		// Place the pieces passed in the list
@@ -495,8 +494,14 @@ public class Board {
 	public int checkHoles(long playerPawns, long botPawns){
 		long playerFilled = (BB.upLeft(playerPawns) | BB.upRight(playerPawns)) | playerPawns;
 		long botFilled = (BB.downLeft(botPawns) | BB.downRight(botPawns)) | botPawns;
-		long playerResult = ~playerFilled & 0x3C3C0000L;
-		long botResult = ~botFilled & 0x3C3C00000000L;
+		
+		long playerKing = bitboard.pieceBitBoards[BB.KINGS] & bitboard.pieceBitBoards[BB.WHITE];
+		long botKing = bitboard.pieceBitBoards[BB.KINGS] & bitboard.pieceBitBoards[BB.BLACK];
+		long playerKingHoles = BB.fillFile(BB.RANK_1 & (playerKing | BB.right(playerKing) | BB.left(playerKing))) & ( BB.up(BB.RANK_1));
+		long botKingHoles = BB.fillFile(BB.RANK_8 & (botKing | BB.right(botKing) | BB.left(botKing))) & ( BB.down(BB.RANK_8));
+		
+		long playerResult = ~playerFilled & (0x3C3C0000L | playerKingHoles);
+		long botResult = ~botFilled & (0x3C3C00000000L | botKingHoles);
 		return holeValue * (BB.countSetBits(playerResult) - BB.countSetBits(botResult));
 		
 		// Note: currently does not consider increased importance of holes in front of castled king 
@@ -506,8 +511,8 @@ public class Board {
 	public int checkHalfOpenFiles(long playerPawns, long botPawns){
 		long playerFiles = BB.fillFile(playerPawns);
 		long botFiles = BB.fillFile(botPawns);
-		long playerResult = playerFiles & ~botFiles & 0xFFL;
-		long botResult = ~playerFiles & botFiles & 0xFFL;	
+		long playerResult = playerFiles & ~botFiles & BB.RANK_1;
+		long botResult = ~playerFiles & botFiles & BB.RANK_1;	
 		return (BB.countSetBits(playerResult) - BB.countSetBits(botResult)) * halfOpenFileValue;
 	}
 	

@@ -277,7 +277,7 @@ public class Move implements Comparable<Move>{
 			if (board.isEmptySquare(destinationPc.position)){
 				board.setSquare(from, destinationPc);
 			}else{
-				board.setSquare(from, new Empty());
+				board.setSquare(from, board.emptySquare);
 			}
 			
 			if(promotionMove){
@@ -292,7 +292,7 @@ public class Move implements Comparable<Move>{
 			
 			if(enPassantMove){
 				enPassantCapture.alive = false;
-				board.setSquare(enPassantCapture.position, new Empty());
+				board.setSquare(enPassantCapture.position, board.emptySquare);
 			}
 		
 			//Change the castling variables depending on the piece being moved

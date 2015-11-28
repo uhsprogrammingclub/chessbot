@@ -15,7 +15,7 @@ public class PV {
 	}
 	
 	void findHashEntry(Board b){
-		long currentZHash = b.currentZobrist;
+		long currentZHash = Zobrist.getZobristHash(b);
 		int index = Zobrist.getIndex(currentZHash, TranspositionTable.hashSize);
 		//find entry with same index
 		HashEntry entry = TranspositionTable.trans.get(index);			

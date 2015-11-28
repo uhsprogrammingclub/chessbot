@@ -8,7 +8,9 @@ public class BB {
 	static long[] knightAttacks = new long[64];
 
 	static final long RANK_1 = 0x00000000000000FFL;
+	static final long RANK_8 = 0xFF00000000000000L;
 	static final long FILE_A = 0x0101010101010101L;
+	static final long FILE_H = 0x8080808080808080L;
 
 	static final int WHITE = 0;
 	static final int BLACK = 1;
@@ -48,7 +50,7 @@ public class BB {
 			long h1 = l2 | r2;
 			long h2 = l1 | r1;
 
-			knightAttacks[i] = up(h1) | down(h1) | up(up(h2)) | down(down(h2));
+			knightAttacks[i] = up(h1) | down(h1) | up(2, h2) | down(2, h2);
 		}
 	}
 
@@ -122,13 +124,13 @@ public class BB {
 		long rank4;
 		long pushBB = 0;
 		if (player) {
-			rank4 = RANK_1 << 24;
+			rank4 = up(3, RANK_1);
 			pawns = up(pawns);
 			pawns &= ~combine();
 			pushBB |= pawns;
 			pawns = up(pawns);
 		} else {
-			rank4 = RANK_1 << 32;
+			rank4 = down(3, RANK_8);
 			pawns = down(pawns);
 			pawns &= ~combine();
 			pushBB |= pawns;
@@ -306,9 +308,17 @@ public class BB {
 	static long up(long bb) {
 		return bb << 8;
 	}
+	
+	static long up(int num, long bb) {
+		return bb << 8*num;
+	}
 
 	static long down(long bb) {
 		return bb >>> 8;
+	}
+	
+	static long down(int num, long bb) {
+		return bb >>> 8*num;
 	}
 
 	static long right(long bb) {
@@ -316,7 +326,7 @@ public class BB {
 	}
 
 	static long left(long bb) {
-		return bb >> 1 & ~(FILE_A << 7);
+		return bb >> 1 & ~FILE_H;
 	}
 
 	static long upRight(long bb) {

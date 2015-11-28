@@ -12,7 +12,7 @@ public class AIController {
 	final int INFINITY = 1000000000;
 	
 	//Set the default time limit
-	static double timeLimit = 1000;
+	static double timeLimit = 2000;
 	
 	//Search stats
 	int totalNodes = 1;
@@ -36,7 +36,7 @@ public class AIController {
 	static boolean quiescenceSearch = true; // Complete basic quiescence search after finishing main search to counter horizon effect
 	static boolean sortMoves = true;
 	static boolean aspirationWindow = false;
-	static boolean useOpeningBook = true;
+	static boolean useOpeningBook = false;
 	static boolean useBitBoards = true;
 	
 	//Hashtable to store number of computations at each depth (serves no functional purpose)
