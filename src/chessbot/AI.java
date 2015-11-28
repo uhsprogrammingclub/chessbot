@@ -22,7 +22,7 @@ public class AI {
 		int currentDepth;
 		int alpha = -INFINITY;
 		int beta = INFINITY;
-		if (AIC.useOpeningBook){
+		if (AIController.useOpeningBook){
 			OpeningMove opening = OpeningBook.getOpeningMove(board, AIC.currentECO);
 			if (opening != null){
 				AIC.bestRootMove = new MoveAndScore(new Move(board, opening.move), 0);
@@ -46,11 +46,11 @@ public class AI {
 			}
 			AIC.researches += AIC.totalNodes - nodesBeforeResearch;
 			
-			if (AIC.aspirationWindow){
+			if (AIController.aspirationWindow){
 				alpha = result - 30;
 				beta = result + 30;
 			}
-			if (result == Board.CHECKMATE || result == -Board.CHECKMATE){
+			if (result == Evaluation.CHECKMATE || result == -Evaluation.CHECKMATE){
 				AIC.stopSearching = true;
 			}
 			if (AIC.stopSearching) {
@@ -153,7 +153,7 @@ public class AI {
 		List<Move> moves = new ArrayList<Move>();
 		if (board.isCheck(board.playerMove)){
 			moves = board.allMoves();
-			if (AIC.sortMoves){
+			if (AIController.sortMoves){
 				Collections.sort(moves);
 			}
 		}else{
@@ -164,7 +164,7 @@ public class AI {
 			
 			List<Move> captureMoves = board.captureMoves();
 			List<Move> checkMoves = board.checkMoves();
-			if (AIC.sortMoves){
+			if (AIController.sortMoves){
 				Collections.sort(captureMoves);
 				Collections.sort(checkMoves);
 			}
@@ -239,10 +239,10 @@ public class AI {
 			
 			AIC.computationsAtDepth.put(depth, AIC.computationsAtDepth.get(depth) + 1);
 			
-			if (AIC.useTTEvals && oldEntry != null && oldEntry.zobrist == zHash && oldEntry.nodeType == HashEntry.PV_NODE){
+			if (AIController.useTTEvals && oldEntry != null && oldEntry.zobrist == zHash && oldEntry.nodeType == HashEntry.PV_NODE){
 				return oldEntry.eval; //passes up the pre-computed evaluation
 			}else{
-				if(AIC.quiescenceSearch){
+				if(AIController.quiescenceSearch){
 					return qSearch(alpha, beta);
 				}else{
 					AIC.staticComputations++;
@@ -258,12 +258,12 @@ public class AI {
 		
 		List<Move> orderedMoves = new ArrayList<Move>();
 		List<Move> allAvailible = board.allMoves();
-		if (AIC.sortMoves){
+		if (AIController.sortMoves){
 			Collections.sort(allAvailible);
 		}
 		
 		if(depth == 0){
-			if (AIC.iterativeDeepeningMoveReordering) {
+			if (AIController.iterativeDeepeningMoveReordering) {
 				if (AIC.bestRootMove != null && allAvailible.contains(AIC.bestRootMove.move)){
 					orderedMoves.add(new Move(board, AIC.bestRootMove.move));
 				}
@@ -273,7 +273,7 @@ public class AI {
 		if(oldEntry != null //if there is an old entry
 			&& oldEntry.zobrist == zHash){  //and the boards are the same
 			
-			if (AIC.useTTEvals && oldEntry.depthLeft >= (maxDepth - depth) ){
+			if (AIController.useTTEvals && oldEntry.depthLeft >= (maxDepth - depth) ){
 				if(oldEntry.nodeType == HashEntry.PV_NODE){ //the evaluated node is PV
 					if (depth != 0){
 						return oldEntry.eval; //passes up the pre-computed evaluation
@@ -290,7 +290,7 @@ public class AI {
 						orderedMoves.add(new Move(board, oldEntry.move)); // make the move be computed first
 					}
 				}
-			}else if (AIC.TTMoveReordering){ // if the entry we have is not accurate enough
+			}else if (AIController.TTMoveReordering){ // if the entry we have is not accurate enough
 				if (!orderedMoves.contains(oldEntry.move) && allAvailible.contains(oldEntry.move)){
 					orderedMoves.add(new Move(board, oldEntry.move)); // make the move be computed first
 				}
@@ -298,7 +298,7 @@ public class AI {
 		
 		}
 		
-		if (AIC.killerHeuristic){
+		if (AIController.killerHeuristic){
 			for (Move m: getKillerMoves(depth)){
 				if (!orderedMoves.contains(m) && allAvailible.contains(m)){
 					orderedMoves.add(new Move(board, allAvailible.get(allAvailible.indexOf(m))));

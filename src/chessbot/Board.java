@@ -11,16 +11,6 @@ public class Board {
 	 **/
 	
 	public enum CastleState { CASTLED, CASTLE_RUINED, CAN_CASTLE };
-	public enum Value { 
-		ISOLATED_PAWN, 
-		DOUBLED_PAWN,
-		HALF_OPEN_FILE,
-		PAWN_CHAIN,
-		HOLE,
-		PASSED_PAWN
-	}
-	
-	final static int CHECKMATE = 1000000;
 
 	// One-dimensional array to hold the locations of all of the pieces
 	Piece[] locations = new Piece[64];
@@ -46,23 +36,8 @@ public class Board {
 	
 	List<String> moveHistory = new ArrayList<String>();
 	
-	int pawnPhase = 0;
-	int knightPhase = 1;
-	int bishopPhase = 1;
-	int rookPhase = 2;
-	int queenPhase = 4;
-	int totalPhase = 8 * pawnPhase + 4 * knightPhase + 4 * bishopPhase + 4 * rookPhase + 2 * queenPhase; 
-	
-	
 	int halfmoveClock = 0;
 	int fullMoveCounter = 0;
-	
-	int isolatedPawnValue = 10;
-	int doubledPawnValue = 10;
-	int halfOpenFileValue = 10;
-	int pawnChainValue = 10;
-	int holeValue = 10;
-	int passedPawnValue = 60;
 
 	// Override java.lang.Object.toString method to create easier to read output
 	// in the form of a table
@@ -410,7 +385,7 @@ public class Board {
 		
 		if( isGameOver() ){
 			if (isCheck(playerMove) && allMoves().size() == 0){
-				score = CHECKMATE * (playerMove ? 1 : -1);
+				score = Evaluation.CHECKMATE * (playerMove ? 1 : -1);
 			}else{
 				score = 0;
 			}
@@ -434,7 +409,12 @@ public class Board {
 
 		// Default the score to zero
 		int score = 0;
+		
+		//Implement piece square scores
+		score += ((earlyPieceSquares(player) * (256 - getPhase() )) + (latePieceSquares(player) * getPhase() )) / 256;
 
+		//System.out.println("Weighted: " + score);
+		
 		// Sum the worth of all of the pieces to get a base score
 		long friendlyBB = bitboard.getFriendlyBB(player);
 		
@@ -487,7 +467,7 @@ public class Board {
 		long botFilled = (BB.downLeft(botPawns) | BB.downRight(botPawns)) | botPawns;
 		long playerResult = ~playerFilled & 0x3C3C0000L;
 		long botResult = ~botFilled & 0x3C3C00000000L;
-		return holeValue * (BB.countSetBits(playerResult) - BB.countSetBits(botResult));
+		return Evaluation.holeValue * (BB.countSetBits(playerResult) - BB.countSetBits(botResult));
 		
 		// Note: currently does not consider increased importance of holes in front of castled king 
 		
@@ -498,13 +478,13 @@ public class Board {
 		long botFiles = BB.fillFile(botPawns);
 		long playerResult = playerFiles & ~botFiles & 0xFFL;
 		long botResult = ~playerFiles & botFiles & 0xFFL;	
-		return (BB.countSetBits(playerResult) - BB.countSetBits(botResult)) * halfOpenFileValue;
+		return (BB.countSetBits(playerResult) - BB.countSetBits(botResult)) * Evaluation.halfOpenFileValue;
 	}
 	
 	public int checkPawnChains(long playerPawns, long botPawns){
 		long playerResult = (BB.upLeft(playerPawns) | BB.upRight(playerPawns)) & playerPawns;
 		long botResult = (BB.downLeft(botPawns) | BB.downRight(botPawns)) & botPawns;
-		return (BB.countSetBits(botResult) - BB.countSetBits(playerResult)) * pawnChainValue;
+		return (BB.countSetBits(botResult) - BB.countSetBits(playerResult)) * Evaluation.pawnChainValue;
 	}
 	
 	public int checkIsolatedPawns(long playerPawns, long botPawns){
@@ -515,7 +495,7 @@ public class Board {
 		pawnFiles = BB.fillFile(botPawns);
 		protectedFiles = BB.left(pawnFiles) | BB.right(pawnFiles);
 		long botIsolatedPawns = botPawns & ~protectedFiles;
-		return isolatedPawnValue * (BB.countSetBits(playerIsolatedPawns) - BB.countSetBits(botIsolatedPawns));
+		return Evaluation.isolatedPawnValue * (BB.countSetBits(playerIsolatedPawns) - BB.countSetBits(botIsolatedPawns));
 	}
 	
 	public int checkDoubledPawns(long playerPawns, long botPawns){
@@ -524,7 +504,7 @@ public class Board {
 		long botRearSpans = BB.up(BB.upFill(botPawns));
 		long playerResult = playerRearSpans & playerPawns;
 		long botResult = botRearSpans & botPawns;
-		return (BB.countSetBits(playerResult) - BB.countSetBits(botResult)) * doubledPawnValue;
+		return (BB.countSetBits(playerResult) - BB.countSetBits(botResult)) * Evaluation.doubledPawnValue;
 	}
 	
 	public int checkPassedPawns(long playerPawns, long botPawns){
@@ -534,7 +514,7 @@ public class Board {
 		botFrontSpans |= BB.left(botFrontSpans) | BB.right(botFrontSpans);
 		long playerResult = playerPawns & ~botFrontSpans;
 		long botResult = botPawns & ~playerFrontSpans;
-		return (BB.countSetBits(botResult) - BB.countSetBits(playerResult)) * passedPawnValue;
+		return (BB.countSetBits(botResult) - BB.countSetBits(playerResult)) * Evaluation.passedPawnValue;
 	}
 	
 	
@@ -597,37 +577,38 @@ public class Board {
 	*/
 	
 	
-	public void setValues(Map<Value, Integer> valuesMap){
+	public void setValues(Map<Evaluation.Value, Integer> valuesMap){
 		
-		for (Map.Entry<Value, Integer> entry : valuesMap.entrySet())
+		for (Map.Entry<Evaluation.Value, Integer> entry : valuesMap.entrySet())
 		{
-			if (entry.getKey() == Value.DOUBLED_PAWN){
-				doubledPawnValue = entry.getValue();
-			}else if (entry.getKey() == Value.HALF_OPEN_FILE){
-				halfOpenFileValue = entry.getValue();
-			}else if (entry.getKey() == Value.ISOLATED_PAWN){
-				isolatedPawnValue = entry.getValue();
-			}else if (entry.getKey() == Value.PAWN_CHAIN){
-				pawnChainValue = entry.getValue();
-			}else if (entry.getKey() == Value.HOLE){
-				holeValue = entry.getValue();
-			}else if (entry.getKey() == Value.PASSED_PAWN){
-				passedPawnValue = entry.getValue();
+			if (entry.getKey() == Evaluation.Value.DOUBLED_PAWN){
+				Evaluation.doubledPawnValue = entry.getValue();
+			}else if (entry.getKey() == Evaluation.Value.HALF_OPEN_FILE){
+				Evaluation.halfOpenFileValue = entry.getValue();
+			}else if (entry.getKey() == Evaluation.Value.ISOLATED_PAWN){
+				Evaluation.isolatedPawnValue = entry.getValue();
+			}else if (entry.getKey() == Evaluation.Value.PAWN_CHAIN){
+				Evaluation.pawnChainValue = entry.getValue();
+			}else if (entry.getKey() == Evaluation.Value.HOLE){
+				Evaluation.holeValue = entry.getValue();
+			}else if (entry.getKey() == Evaluation.Value.PASSED_PAWN){
+				Evaluation.passedPawnValue = entry.getValue();
 			}
 		}
 	}
 	
-	public int[][] gridFromPerspective(int[][] grid, boolean player){
+	public int[] gridFromPerspective(int[] grid, boolean player){
 		
 		if(!player){
 			return grid;
 		}else{
 			
-			int[][] flippedGrid = new int[8][8];
+			int[] flippedGrid = new int[64];
 			
-			for(int i = 0; i < grid.length; i++){
-				for(int j = 0; j < grid[i].length; j++){
-					flippedGrid[i][j] = grid[7-i][j];
+			for(int i = 7; i < 32; i += 8){
+				for(int j = 0; j < 8; j++){
+					flippedGrid[i-j] = grid[63-(i-j)];
+					flippedGrid[63-(i-j)] = grid[i-j];
 				}
 			}
 			
@@ -636,137 +617,97 @@ public class Board {
 	}
 
 	public int getPhase(){
-		int phase = totalPhase;
-		phase -= (BB.countSetBits(bitboard.pieceBitBoards[BB.PAWNS]) * pawnPhase 
-				+ BB.countSetBits(bitboard.pieceBitBoards[BB.BISHOPS]) * bishopPhase
-				+ BB.countSetBits(bitboard.pieceBitBoards[BB.KNIGHTS]) * knightPhase
-				+ BB.countSetBits(bitboard.pieceBitBoards[BB.QUEENS]) * queenPhase);
+		int phase = Evaluation.totalPhase;
+		phase -= (BB.countSetBits(bitboard.pieceBitBoards[BB.PAWNS]) * Evaluation.pawnPhase 
+				+ BB.countSetBits(bitboard.pieceBitBoards[BB.BISHOPS]) * Evaluation.bishopPhase
+				+ BB.countSetBits(bitboard.pieceBitBoards[BB.KNIGHTS]) * Evaluation.knightPhase
+				+ BB.countSetBits(bitboard.pieceBitBoards[BB.QUEENS]) * Evaluation.queenPhase);
 		
-		return (phase * 256 + (totalPhase / 2)) / totalPhase;
+		return (phase * 256 + (Evaluation.totalPhase / 2)) / Evaluation.totalPhase;
 	}
 	
-	public int latePieceSquares(int phase){
-		return 0;
+	public int latePieceSquares(boolean player){
+		
+		int score = 0;
+
+		int[] indexes = { BB.PAWNS, BB.KNIGHTS, BB.BISHOPS, BB.QUEENS, BB.KINGS };
+
+		for (int index : indexes) {
+
+			int colorIndex = player ? BB.WHITE : BB.BLACK;
+			long pieces = bitboard.pieceBitBoards[index] & bitboard.pieceBitBoards[colorIndex];
+
+			int[] positions = BB.getSetBits(pieces);
+			
+			for (int i : positions) {
+
+				switch (index) {
+
+				case BB.PAWNS:
+					score += gridFromPerspective(Evaluation.knightPieceSquaresE, player)[63 - i];
+					break;
+				case BB.BISHOPS:
+					score += gridFromPerspective(Evaluation.bishopPieceSquaresE, player)[63 - i];
+					break;
+				case BB.KNIGHTS:
+					score += gridFromPerspective(Evaluation.knightPieceSquaresE, player)[63 - i];
+					break;
+				case BB.ROOKS:
+					score += gridFromPerspective(Evaluation.rookPieceSquaresE, player)[63 - i];
+					break;
+				case BB.KINGS:
+					score += gridFromPerspective(Evaluation.kingPieceSquaresL, player)[63 - i];
+
+				}
+
+			}
+
+		}
+
+		return score;
+
 	}
 	
-	public int earlyPieceSquares(int phase){
-		return 0;
+	public int earlyPieceSquares(boolean player) {
 		
-	}
-	
-	public int f(Piece p){
-		
-		
-		int[][] pawnPieceSquares = {
-				
-			{ 0,  0,  0,  0,  0,  0,  0,  0 },
-			{50, 50, 50, 50, 50, 50, 50, 50 },
-			{10, 10, 20, 30, 30, 20, 10, 10 },
-			{ 5,  5, 10, 25, 25, 10,  5,  5 },
-			{ 0,  0,  0, 20, 20,  0,  0,  0 },
-			{ 5, -5,-10,  0,  0,-10, -5,  5 },
-			{ 5, 10, 10,-20,-20, 10, 10,  5 },
-			{ 0,  0,  0,  0,  0,  0,  0,  0 }
-				  
-		};
-		
-		int[][] knightPieceSquares = {
+		int score = 0;
+
+		int[] indexes = { BB.PAWNS, BB.KNIGHTS, BB.BISHOPS, BB.QUEENS, BB.KINGS };
+
+		for (int index : indexes) {
+
+			int colorIndex = player ? BB.WHITE : BB.BLACK;
+			long pieces = bitboard.pieceBitBoards[index] & bitboard.pieceBitBoards[colorIndex];
+
+			int[] positions = BB.getSetBits(pieces);
 			
-			{ -50,-40,-20,-15,-15,-20,-40,-50 },
-			{ -30,-15, -5, -5, -5, -5,-15,-30 },
-			{ -20,  0, 10, 15, 15, 10,  0,-20 },
-			{ -20,  0, 15, 25, 25, 15,  0,-20 },
-			{ -20,  5, 20, 25, 25, 20,  5,-20 },
-			{ -20, 10, 15, 20, 20, 15, 10,-20 },
-			{ -30,-15,  5, 10, 10,  5,-15,-30 },
-			{ -50,-40,-20,-15,-15,-20,-40,-50 }
-			
-		};
-		
-		int[][] bishopPieceSquares = {
-				
-			{ -20,-10,-10,-10,-10,-10,-10,-20 },
-			{ -10,  0,  0,  0,  0,  0,  0,-10 },
-			{ -10,  0,  5, 10, 10,  5,  0,-10 },
-			{ -10,  5,  5, 10, 10,  5,  5,-10 },
-			{ -10,  0, 10, 10, 10, 10,  0,-10 },
-			{ -10, 10, 10, 10, 10, 10, 10,-10 },
-			{ -10,  5,  0,  0,  0,  0,  5,-10 },
-			{ -20,-10,-10,-10,-10,-10,-10,-20 }
-		};
-		
-		int[][] queenPieceSquares = {
-				
-			{ -20,-10,-10, -5, -5,-10,-10,-20 },
-			{ -10,  0,  0,  0,  0,  0,  0,-10 },
-			{ -10,  0,  5,  5,  5,  5,  0,-10 },
-			{  -5,  0,  5,  5,  5,  5,  0, -5 },
-			{   0,  0,  5,  5,  5,  5,  0, -5 },
-			{ -10,  5,  5,  5,  5,  5,  0,-10 },
-			{ -10,  0,  5,  0,  0,  0,  0,-10 },
-			{ -20,-10,-10, -5, -5,-10,-10,-20 }
-			
-		};
-		
-		int[][] rookPieceSquares = {
-				
-			{ 0,  0,  0,  0,  0,  0,  0,  0 },
-			{  5, 10, 10, 10, 10, 10, 10,  5 },
-			{ -5,  0,  0,  0,  0,  0,  0, -5 },
-			{ -5,  0,  0,  0,  0,  0,  0, -5 },
-			{ -5,  0,  0,  0,  0,  0,  0, -5 },
-			{ -5,  0,  0,  0,  0,  0,  0, -5 },
-			{ -5,  0,  0,  0,  0,  0,  0, -5 },
-			{  0,  0,  0,  5,  5,  0,  0,  0 }
-			
-		};
-		
-		int[][] kingPieceSquares = {
-				
-			{ -30,-40,-40,-50,-50,-40,-40,-30 },
-			{ -30,-40,-40,-50,-50,-40,-40,-30 },
-			{ -30,-40,-40,-50,-50,-40,-40,-30 },
-			{ -30,-40,-40,-50,-50,-40,-40,-30 },
-			{ -20,-30,-30,-40,-40,-30,-30,-20 },
-			{ -10,-20,-20,-20,-20,-20,-20,-10 },
-			{  20, 20,  0,  0,  0,  0, 20, 20 },
-			{  20, 30, 10,  0,  0, 10, 30, 20 }
-			
-		};
-		
-		int[][] kingPieceSquaresL = {
-			{ -50,-40,-30,-20,-20,-30,-40,-50 },
-			{ -30,-20,-10,  0,  0,-10,-20,-30 },
-			{ -30,-10, 20, 30, 30, 20,-10,-30 },
-			{ -30,-10, 30, 40, 40, 30,-10,-30 },
-			{ -30,-10, 30, 40, 40, 30,-10,-30 },
-			{ -30,-10, 20, 30, 30, 20,-10,-30 },
-			{ -30,-30,  0,  0,  0,  0,-30,-30 },
-			{ -50,-30,-30,-30,-30,-30,-30,-50 }
-		};
-		
-		if(p.symbol.equals("p")){
-			return gridFromPerspective(pawnPieceSquares, p.player)[p.getY()][p.getX()];
-		}else if(p.symbol.equals("n")){
-			return gridFromPerspective(knightPieceSquares, p.player)[p.getY()][p.getX()];
+			for (int i : positions) {
+
+				switch (index) {
+
+				case BB.PAWNS:
+					score += gridFromPerspective(Evaluation.knightPieceSquaresE, player)[63 - i];
+					break;
+				case BB.BISHOPS:
+					score += gridFromPerspective(Evaluation.bishopPieceSquaresE, player)[63 - i];
+					break;
+				case BB.KNIGHTS:
+					score += gridFromPerspective(Evaluation.knightPieceSquaresE, player)[63 - i];
+					break;
+				case BB.ROOKS:
+					score += gridFromPerspective(Evaluation.rookPieceSquaresE, player)[63 - i];
+					break;
+				case BB.KINGS:
+					score += gridFromPerspective(Evaluation.kingPieceSquaresE, player)[63 - i];
+
+				}
+
+			}
+
 		}
-		else if(p.symbol.equals("b")){
-			return gridFromPerspective(bishopPieceSquares, p.player)[p.getY()][p.getX()];
-		}
-		else if(p.symbol.equals("q")){
-			return gridFromPerspective(queenPieceSquares, p.player)[p.getY()][p.getX()];
-		}
-		else if(p.symbol.equals("r")){
-			return gridFromPerspective(rookPieceSquares, p.player)[p.getY()][p.getX()];
-		}
-		else if(p.symbol.equals("k")){
-			return gridFromPerspective(kingPieceSquares, p.player)[p.getY()][p.getX()];
-		}
-		else{
-			System.out.println("Invalid piece for Piece Square Function");
-			System.exit(0);
-			return 0;
-		}
+
+		return score;
+
 	}
 	
 }

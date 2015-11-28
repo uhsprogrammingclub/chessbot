@@ -14,8 +14,6 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import chessbot.Board.Value;
-
 public class AutomatedTuning {
 	
 	boolean winAtChess = false;
@@ -26,16 +24,16 @@ public class AutomatedTuning {
 	
 	Map<String, Integer> testSuites = new HashMap<String, Integer>();
 	
-	Map<Board.Value, Integer> initialValues = new HashMap<Board.Value, Integer>();
+	Map<Evaluation.Value, Integer> initialValues = new HashMap<Evaluation.Value, Integer>();
 	
 	@Before
 	public void init() {
 		Zobrist.zobristFillArray();
-		initialValues.put(Board.Value.DOUBLED_PAWN, 25);
-		initialValues.put(Board.Value.ISOLATED_PAWN, 25);
-		initialValues.put(Board.Value.HALF_OPEN_FILE, 25);
-		initialValues.put(Board.Value.PAWN_CHAIN, 25);
-		initialValues.put(Board.Value.HOLE, 25);
+		initialValues.put(Evaluation.Value.DOUBLED_PAWN, 25);
+		initialValues.put(Evaluation.Value.ISOLATED_PAWN, 25);
+		initialValues.put(Evaluation.Value.HALF_OPEN_FILE, 25);
+		initialValues.put(Evaluation.Value.PAWN_CHAIN, 25);
+		initialValues.put(Evaluation.Value.HOLE, 25);
 		
 		testSuites.put("Bratko-Kopec_Test", 24);
 		testSuites.put("Win_At_Chess_Suite", 300);
@@ -50,14 +48,14 @@ public class AutomatedTuning {
 			for (Map.Entry<String, Integer> suite : testSuites.entrySet()){
 				String suiteName = suite.getKey();
 				String[] tests = getTests(suiteName, suite.getValue());
-				Map<Board.Value, Integer> tunedMap = new HashMap<Board.Value, Integer>();
+				Map<Evaluation.Value, Integer> tunedMap = new HashMap<Evaluation.Value, Integer>();
 				tunedMap.putAll(initialValues);
 		
 				System.out.println("\n### Running "+suiteName+ " at " + time/1000.0 + "s ###\n");
 				
 				List<String> bestResults = new ArrayList<String>();
 				for (int interval = 25; interval > 0; interval /=2){
-					for (Map.Entry<Value, Integer> entry : tunedMap.entrySet())
+					for (Map.Entry<Evaluation.Value, Integer> entry : tunedMap.entrySet())
 					{
 						int tunedValue = tune(tunedMap, entry.getKey(), interval, tests, time, bestResults);
 						tunedMap.put(entry.getKey(), tunedValue);
@@ -98,11 +96,11 @@ public class AutomatedTuning {
 		return tests;
 	}
 	
-	public int tune(Map<Board.Value, Integer> valuesMap, Board.Value param, int interval, String[] tests, int time, List<String> bestResults){
+	public int tune(Map<Evaluation.Value, Integer> valuesMap, Evaluation.Value param, int interval, String[] tests, int time, List<String> bestResults){
 		int bestCorrect = 0;
 		int value = valuesMap.get(param);
 		for (int mod = 0; mod < 3; mod++){
-			Map<Board.Value, Integer> experimentalMap = new HashMap<Board.Value, Integer>();
+			Map<Evaluation.Value, Integer> experimentalMap = new HashMap<Evaluation.Value, Integer>();
 			experimentalMap.putAll(valuesMap);
 			int experimentalValue = value;
 			if (mod == 1){
@@ -127,7 +125,7 @@ public class AutomatedTuning {
 		return value;
 	}
 	
-	public int runTestSuite(String[] tests, Map<Board.Value, Integer> valuesMap, int time, String[] resultString){
+	public int runTestSuite(String[] tests, Map<Evaluation.Value, Integer> valuesMap, int time, String[] resultString){
 		int numOfTests = tests.length;
 		TranspositionTable.trans.clear();
 		StructureTable.pawns.clear();
