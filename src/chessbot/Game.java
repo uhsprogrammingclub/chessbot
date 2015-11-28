@@ -212,7 +212,6 @@ public class Game {
 		System.out.println("\nBot: " +move);
 
 		move.move.execute();
-		b.fullMoveCounter++;
 		System.out.println("Pawn Structure Score: " + b.evaluatePawnStructure());
 		
 		gui.updateBoard(b);

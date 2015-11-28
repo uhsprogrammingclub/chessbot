@@ -61,6 +61,21 @@ public class AI {
 		}
 		AIC.depthsPV.add("PV at final depth " + AIC.evaluateToDepth + ": " + new PV(board));
 	}
+	
+	boolean isRepetition(){
+		PV pv = new PV(board);
+		for (int i = board.zobristHistory.size()-board.halfMoveClock; i < board.zobristHistory.size()-1; i++){
+			if (board.currentZobrist == board.zobristHistory.get(i)){
+				return true;
+			}
+			for (Long z : pv.zobristList){
+				if (z == board.zobristHistory.get(i)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 	//Function that takes an input of the depth and the move to add to the killerMoves list
 	//A move is considered a killer move if it resulted in a beta cutoff at a different branch at the same depth
@@ -137,7 +152,7 @@ public class AI {
 
 		int standPat = board.evaluateBoard() * (board.playerMove ? -1 : 1);
 		
-		long zHash = Zobrist.getZobristHash(board);
+		long zHash = board.currentZobrist;
 		boolean newAlpha = false;
 
 		// Update the alpha if the position is an improvement
@@ -224,14 +239,21 @@ public class AI {
 		AIC.checkTimeLimit();
 		
 		//Get hash of current board
-		long zHash = Zobrist.getZobristHash(board);
+		long zHash = board.currentZobrist;
 		int index = Zobrist.getIndex(zHash, TranspositionTable.hashSize);
 		
 		//find entry with same index
 		HashEntry oldEntry = TranspositionTable.trans.get(index);
 	
+		if (isRepetition()){
+			return 0;
+		}
+		if (board.isGameOver() == true){
+			return board.evaluateBoard() * ( board.playerMove ? -1 : 1 );
+		}
+		
 		//Test if it is the final depth or the game is over
-		if (depth == maxDepth || board.isGameOver() == true) {
+		if (depth == maxDepth) {
 			
 			if (AIC.computationsAtDepth.get(depth) == null){
 				AIC.computationsAtDepth.put(depth, 0);
@@ -239,7 +261,7 @@ public class AI {
 			
 			AIC.computationsAtDepth.put(depth, AIC.computationsAtDepth.get(depth) + 1);
 			
-			if (AIC.useTTEvals && oldEntry != null && oldEntry.zobrist == zHash && oldEntry.nodeType == HashEntry.PV_NODE){
+			if (AIC.useTTEvals && oldEntry != null && oldEntry.zobrist == zHash && oldEntry.nodeType == HashEntry.PV_NODE && (oldEntry.depthLeft+board.halfMoveClock) < 100 && !isRepetition()){
 				return oldEntry.eval; //passes up the pre-computed evaluation
 			}else{
 				if(AIC.quiescenceSearch){
@@ -273,7 +295,7 @@ public class AI {
 		if(oldEntry != null //if there is an old entry
 			&& oldEntry.zobrist == zHash){  //and the boards are the same
 			
-			if (AIC.useTTEvals && oldEntry.depthLeft >= (maxDepth - depth) ){
+			if (AIC.useTTEvals && oldEntry.depthLeft >= (maxDepth - depth) && (oldEntry.depthLeft+board.halfMoveClock) < 100 && !isRepetition()){
 				if(oldEntry.nodeType == HashEntry.PV_NODE){ //the evaluated node is PV
 					if (depth != 0){
 						return oldEntry.eval; //passes up the pre-computed evaluation

@@ -45,9 +45,11 @@ public class Board {
 	Point enPassantTarget = null;
 	
 	List<String> moveHistory = new ArrayList<String>();
+	List<Long> zobristHistory = new ArrayList<Long>();
 	
 	int halfMoveClock = 0;
 	int fullMoveCounter = 0;
+	long currentZobrist = 0;
 	
 	int isolatedPawnValue = 10;
 	int doubledPawnValue = 10;
@@ -62,7 +64,7 @@ public class Board {
 	public String toString() {
 
 		// String variable to eventually return		
-		String aString = "FEN: " + Utils.boardToFEN(this) + " Board Zobrist Hash: " + Zobrist.getZobristHash(this) + "\n";
+		String aString = "FEN: " + Utils.boardToFEN(this) + " Board Zobrist Hash: " + currentZobrist + "\n";
 		//aString += "Piece List: "+pieceList +"\n";
 		aString += "Move History: "+moveHistory +"\n";
 		
@@ -219,6 +221,8 @@ public class Board {
 		playerMove = playerGoesFirst;
 		
 		bitboard = new BB(this);
+		
+		currentZobrist = Zobrist.getZobristHash(this);
 	}
 	
 	//Find all possible capture moves
@@ -391,6 +395,15 @@ public class Board {
 		}
 		if (halfMoveClock >= 100) {
 			return true;
+		}
+		for (int i = zobristHistory.size()-halfMoveClock; i < zobristHistory.size()-1; i++){
+			if (currentZobrist == zobristHistory.get(i)){
+				for (int ii = i+1; i < zobristHistory.size()-1; ii++){
+					if (currentZobrist == zobristHistory.get(ii)){
+						return true;
+					}
+				}
+			}
 		}
 		// Base case
 		return false;
