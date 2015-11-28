@@ -253,7 +253,7 @@ public class AI {
 		HashEntry oldEntry = TranspositionTable.trans.get(index);
 	
 		if (isRepetition()){
-			return 0;
+			return board.contemptFactor * ( board.playerMove ? -1 : 1 );
 		}
 		if (board.isGameOver() == true){
 			return board.evaluateBoard() * ( board.playerMove ? -1 : 1 );

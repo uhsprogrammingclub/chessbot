@@ -23,8 +23,8 @@ public class TournamentTesting {
 	@Test
 	public void TestAgainstSelf(){
 		
-		AIController.timeLimit = 500;
-		AIController.useOpeningBook = false;
+		AIController.timeLimit = 100;
+		AIController.useOpeningBook = true;
 		int numGames = 10;
 		
 		int playerOneWins = 0;
@@ -59,6 +59,7 @@ public class TournamentTesting {
 					break;
 				}
 			
+				b.contemptFactor = 10000;
 				playerOne.search();
 				if (playerOne.AIC.bestRootMove != null) {
 					
@@ -87,6 +88,7 @@ public class TournamentTesting {
 
 				//For the experimental...
 				AIController.quiescenceSearch = true;
+				b.contemptFactor = -10000;
 				playerTwo.search();
 				if (playerTwo.AIC.bestRootMove != null) {
 					playerTwo.AIC.bestRootMove.move.execute();

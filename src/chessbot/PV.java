@@ -26,7 +26,7 @@ public class PV {
 			}
 
 			if (zobristList.contains(entry.zobrist)){
-				System.out.println("PV in loop");
+				//System.out.println("PV in loop");
 				zobristList.add(entry.zobrist);
 				return;
 			}

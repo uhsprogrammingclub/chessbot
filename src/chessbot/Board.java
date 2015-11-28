@@ -57,6 +57,8 @@ public class Board {
 	int pawnChainValue = 10;
 	int holeValue = 10;
 	int passedPawnValue = 60;
+	
+	int contemptFactor = 0;
 
 	// Override java.lang.Object.toString method to create easier to read output
 	// in the form of a table
@@ -420,7 +422,7 @@ public class Board {
 			if (isCheck(playerMove) && allMoves().size() == 0){
 				score = CHECKMATE * (playerMove ? 1 : -1);
 			}else{
-				score = 0;
+				score = contemptFactor;
 			}
 		}
 		
