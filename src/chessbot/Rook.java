@@ -15,8 +15,7 @@ public class Rook extends Piece {
 		List<Move> moves = new ArrayList<Move>();
 		
 		if(AIController.useBitBoards){
-			
-
+			moves.addAll(getMovesFromBitboard(b, 1L << position.getIndex(), player));
 		}else{
 
 			// Gets vertical moves

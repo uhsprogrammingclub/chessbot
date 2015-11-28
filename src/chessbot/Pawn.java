@@ -22,6 +22,8 @@ public class Pawn extends Piece {
 			// Check diagonal
 			moves.addAll(Utils.getDiagonalMoves(b, this));
 		
+		}else{
+			moves.addAll(getMovesFromBitboard(b, 1L << position.getIndex(), player));
 		}
 		// Return moves
 		return moves;

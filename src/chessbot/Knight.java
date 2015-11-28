@@ -16,6 +16,8 @@ public class Knight extends Piece {
 		
 		if (!AIController.useBitBoards){
 			moves.addAll(Utils.getKnightMoves(b, this));
+		}else{
+			moves.addAll(getMovesFromBitboard(b, 1L << position.getIndex(), player));
 		}
 
 		return moves;
