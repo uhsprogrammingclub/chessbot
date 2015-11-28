@@ -70,7 +70,7 @@ public class Game {
 		//g.setFEN("1k2r3/1pp2pp1/p6p/P2K3P/4r3/8/7q/8 b - - 0 36");
 		//g.setFEN("rnbqk2r/2p4p/1p2P1P1/7n/P2P4/P2P4/5P1P/RNBQKBNR b KQkq - 0 12");
 		//g.setFEN("rnbqkbnr/ppppppp1/7p/8/8/2N5/PPPPPPPP/R1BQKBNR w KQkq - 0 2");
-		g.setFEN("8/8/5k2/2r5/4K3/8/8/8 w - - 0 1");
+		g.setFEN("8/8/p4k2/2r5/4K3/8/8/8 w - - 0 1");
 		//g.setFEN("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"); //Everything
 		g.setFEN(setup);
 		g.init();
@@ -82,13 +82,13 @@ public class Game {
 		
 		loadBitboards();
 		setBoard(setup);
-		/*System.out.println(b);
-		b.earlyPieceSquares(true);
-		b.earlyPieceSquares(false);
+		System.out.println(b);
+		//b.earlyPieceSquares(true);
+		//b.earlyPieceSquares(false);
 		b.latePieceSquares(true);
-		b.latePieceSquares(false);
-		b.evaluateBoard();
-		System.exit(0);*/
+		//b.latePieceSquares(false);
+		//b.evaluateBoard();
+		System.exit(0);
 		initGUI();
 		
 		playerMovesFirst = b.playerMove;

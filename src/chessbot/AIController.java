@@ -12,7 +12,7 @@ public class AIController {
 	final int INFINITY = 1000000000;
 	
 	//Set the default time limit
-	static double timeLimit = 1000;
+	static double timeLimit = 2000;
 	
 	//Search stats
 	int totalNodes = 1;

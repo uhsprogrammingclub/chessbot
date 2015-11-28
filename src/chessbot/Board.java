@@ -380,8 +380,8 @@ public class Board {
 	// are good for the player, low values good for the computer
 	public int evaluateBoard() {
 		int score = scoreBoard(false) - scoreBoard(true);
-		score += evaluatePawnStructure();
-		score += evaluateCastling();
+		score += evaluatePawnStructure() * (getPhase()/Evaluation.totalPhase);
+		//score += evaluateCastling();
 		
 		if( isGameOver() ){
 			if (isCheck(playerMove) && allMoves().size() == 0){
@@ -413,6 +413,8 @@ public class Board {
 		//Implement piece square scores
 		score += ((earlyPieceSquares(player) * (256 - getPhase() )) + (latePieceSquares(player) * getPhase() )) / 256;
 
+		System.out.println(score);
+		
 		//System.out.println("Weighted: " + score);
 		
 		// Sum the worth of all of the pieces to get a base score
@@ -612,6 +614,24 @@ public class Board {
 				}
 			}
 			
+			System.out.println("\nOriginal:");
+			
+			for(int i = 0; i < 64; i+=8){
+				System.out.println("");
+				for(int j = 0; j < 8; j++){
+					System.out.print(" " + grid[i+j] + " ");
+				}
+			}
+			
+			System.out.println("\nFlipped: ");
+			
+			for(int i = 0; i < 64; i+=8){
+				System.out.println("");
+				for(int j = 0; j < 8; j++){
+					System.out.print(" " + flippedGrid[i+j] + " ");
+				}
+			}
+			
 			return flippedGrid;
 		}
 	}
@@ -644,7 +664,8 @@ public class Board {
 				switch (index) {
 
 				case BB.PAWNS:
-					score += gridFromPerspective(Evaluation.knightPieceSquaresE, player)[63 - i];
+					score += gridFromPerspective(Evaluation.pawnPieceSquaresL, player)[63 - i];
+					System.exit(0);
 					break;
 				case BB.BISHOPS:
 					score += gridFromPerspective(Evaluation.bishopPieceSquaresE, player)[63 - i];
@@ -686,7 +707,7 @@ public class Board {
 				switch (index) {
 
 				case BB.PAWNS:
-					score += gridFromPerspective(Evaluation.knightPieceSquaresE, player)[63 - i];
+					score += gridFromPerspective(Evaluation.pawnPieceSquaresE, player)[63 - i];
 					break;
 				case BB.BISHOPS:
 					score += gridFromPerspective(Evaluation.bishopPieceSquaresE, player)[63 - i];
