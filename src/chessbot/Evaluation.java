@@ -11,12 +11,12 @@ public class Evaluation {
 		PASSED_PAWN
 	}
 	
-	static int isolatedPawnValue = 10;
-	static int doubledPawnValue = 10;
+	static int isolatedPawnValue = 20;
+	static int doubledPawnValue = 15;
 	static int halfOpenFileValue = 10;
-	static int pawnChainValue = 10;
-	static int holeValue = 10;
-	static int passedPawnValue = 60;
+	static int pawnChainValue = 5;
+	static int holeValue = 0;
+	static int passedPawnValue = 30;
 	
 	final static int CHECKMATE = 1000000;
 	
@@ -41,10 +41,10 @@ public class Evaluation {
 	static int[] pawnPieceSquaresL = {		
 		  0,  0,  0,  0,  0,  0,  0,  0,
 		 50, 50, 50, 50, 50, 50, 50, 50,
-		 30, 20, 20, 30, 30, 20, 20, 30,
-		 20, 15, 15, 25, 25, 15, 15, 20,
-		 15, 10, 10, 20, 20, 10, 10, 15,
-		 50, -5,-10,  0,  0,-10, -5, 50,
+		 30, 30, 35, 35, 35, 25, 30, 30,
+		 20, 20, 20, 20, 20, 20, 20, 20,
+		 15, 15, 15, 20, 20, 15, 15, 15,
+		  5, -5,-10,  0,  0,-10, -5,  5,
 		  5, 10, 10,-20,-20, 10, 10,  5,
 		  0,  0,  0,  0,  0,  0,  0,  0	  
 	};

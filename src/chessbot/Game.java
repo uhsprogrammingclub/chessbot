@@ -70,10 +70,10 @@ public class Game {
 		//g.setFEN("1k2r3/1pp2pp1/p6p/P2K3P/4r3/8/7q/8 b - - 0 36");
 		//g.setFEN("rnbqk2r/2p4p/1p2P1P1/7n/P2P4/P2P4/5P1P/RNBQKBNR b KQkq - 0 12");
 		//g.setFEN("rnbqkbnr/ppppppp1/7p/8/8/2N5/PPPPPPPP/R1BQKBNR w KQkq - 0 2");
-		g.setFEN("8/8/p4k2/2r5/4K3/8/8/8 w - - 0 1");
-		//g.setFEN("1k1r3q/1ppn3p/p4b2/4p3/8/P2N2P1/1PP1R1BP/2K1Q3 w - - 0 0");
-
+		//g.setFEN("8/8/p4k2/2r5/4K3/8/8/8 w - - 0 1");
+		//g.setFEN("8/8/4k1p1/7p/8/6P1/5K2/8 w - - 0 1");
 		//g.setFEN("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"); //Everything
+		g.setFEN("r2qkb1r/ppp2ppp/3ppn2/8/2P1P3/2N4P/PPP1QPP1/R1B1K2R b KQkq - 0 10"); //Dumb king move
 		g.setFEN(setup);
 		g.init();
 		g.start();
@@ -84,13 +84,6 @@ public class Game {
 		
 		loadBitboards();
 		setBoard(setup);
-		System.out.println(b);
-		//b.earlyPieceSquares(true);
-		//b.earlyPieceSquares(false);
-		b.latePieceSquares(true);
-		//b.latePieceSquares(false);
-		//b.evaluateBoard();
-		System.exit(0);
 		initGUI();
 		
 		playerMovesFirst = b.playerMove;

@@ -381,7 +381,7 @@ public class Board {
 	public int evaluateBoard() {
 		int score = scoreBoard(false) - scoreBoard(true);
 		score += evaluatePawnStructure() * (getPhase()/Evaluation.totalPhase);
-		//score += evaluateCastling();
+		score += evaluateCastling();
 		
 		if( isGameOver() ){
 			if (isCheck(playerMove) && allMoves().size() == 0){
@@ -412,8 +412,6 @@ public class Board {
 		
 		//Implement piece square scores
 		score += ((earlyPieceSquares(player) * (256 - getPhase() )) + (latePieceSquares(player) * getPhase() )) / 256;
-
-		System.out.println(score);
 		
 		//System.out.println("Weighted: " + score);
 		
@@ -614,7 +612,7 @@ public class Board {
 				}
 			}
 			
-			System.out.println("\nOriginal:");
+			/*System.out.println("\nOriginal:");
 			
 			for(int i = 0; i < 64; i+=8){
 				System.out.println("");
@@ -630,7 +628,7 @@ public class Board {
 				for(int j = 0; j < 8; j++){
 					System.out.print(" " + flippedGrid[i+j] + " ");
 				}
-			}
+			}*/
 			
 			return flippedGrid;
 		}
@@ -664,20 +662,19 @@ public class Board {
 				switch (index) {
 
 				case BB.PAWNS:
-					score += gridFromPerspective(Evaluation.pawnPieceSquaresL, player)[63 - i];
-					System.exit(0);
+					score += gridFromPerspective(Evaluation.pawnPieceSquaresL, player)[i];	
 					break;
 				case BB.BISHOPS:
-					score += gridFromPerspective(Evaluation.bishopPieceSquaresE, player)[63 - i];
+					score += gridFromPerspective(Evaluation.bishopPieceSquaresE, player)[i];
 					break;
 				case BB.KNIGHTS:
-					score += gridFromPerspective(Evaluation.knightPieceSquaresE, player)[63 - i];
+					score += gridFromPerspective(Evaluation.knightPieceSquaresE, player)[i];
 					break;
 				case BB.ROOKS:
-					score += gridFromPerspective(Evaluation.rookPieceSquaresE, player)[63 - i];
+					score += gridFromPerspective(Evaluation.rookPieceSquaresE, player)[i];
 					break;
 				case BB.KINGS:
-					score += gridFromPerspective(Evaluation.kingPieceSquaresL, player)[63 - i];
+					score += gridFromPerspective(Evaluation.kingPieceSquaresL, player)[i];
 
 				}
 
