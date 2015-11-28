@@ -123,7 +123,6 @@ public class Game {
 	
 	static void takePlayerMove(Board b) {
 		
-		b.fullMoveCounter++;
 		
 		//Clear GUI input
 		squareFrom = null;
@@ -213,6 +212,7 @@ public class Game {
 		System.out.println("\nBot: " +move);
 
 		move.move.execute();
+		b.fullMoveCounter++;
 		System.out.println("Pawn Structure Score: " + b.evaluatePawnStructure());
 		
 		gui.updateBoard(b);

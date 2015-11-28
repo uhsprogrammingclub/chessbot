@@ -491,6 +491,7 @@ public class Utils {
 			b.enPassantTarget = new Point(enPassantTarget);
 		}
 		
+		b.halfMoveClock = halfMoveClock;
 		b.fullMoveCounter = fullMoveCounter;
 		
 		return b;
@@ -554,7 +555,7 @@ public class Utils {
 		}
 		FEN += " ";
 		//Add the half move clock
-		FEN += Integer.toString(b.halfmoveClock) + " ";
+		FEN += Integer.toString(b.halfMoveClock) + " ";
 		
 		//Add the full move counter
 		FEN += Integer.toString(b.fullMoveCounter);

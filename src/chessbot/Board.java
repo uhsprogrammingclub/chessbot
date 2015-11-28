@@ -46,7 +46,7 @@ public class Board {
 	
 	List<String> moveHistory = new ArrayList<String>();
 	
-	int halfmoveClock = 0;
+	int halfMoveClock = 0;
 	int fullMoveCounter = 0;
 	
 	int isolatedPawnValue = 10;
@@ -387,6 +387,9 @@ public class Board {
 			System.out.println("ERROR: Executed illegal move!");
 		}
 		if (allMoves().size() == 0) {
+			return true;
+		}
+		if (halfMoveClock >= 100) {
 			return true;
 		}
 		// Base case
