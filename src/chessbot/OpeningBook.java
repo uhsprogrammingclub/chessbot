@@ -159,7 +159,7 @@ public class OpeningBook implements Runnable{
 		if (moves.size() == 1 || ply == MAX_PLY){
 			return;
 		}
-		long zobrist = Zobrist.getZobristHash(board);
+		long zobrist = board.currentZobrist;
 		
 		Move m = new Move(board, moves.get(0));
 		boolean win = false;
@@ -183,7 +183,7 @@ public class OpeningBook implements Runnable{
 	}
 	
 	public static OpeningMove getOpeningMove(Board b, String prefferedECO){
-		long zobrist = Zobrist.getZobristHash(b);
+		long zobrist = b.currentZobrist;
 		int index = Zobrist.getIndex(zobrist, hashSize);
 		OpeningHashEntry entry = book.get(index);
 		OpeningMove chosenMove = null;

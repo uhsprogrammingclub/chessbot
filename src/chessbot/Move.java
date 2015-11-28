@@ -25,6 +25,8 @@ public class Move implements Comparable<Move>{
 	boolean botKSideCastleO = false;
 	boolean botQSideCastleO = false;
 	Point enPassantTargetO = null;
+	int halfMoveClockO = 0;
+	long currentZobristO = 0;
 	
 	boolean castleMove = false;
 	Move castleRookMove = null;
@@ -47,6 +49,8 @@ public class Move implements Comparable<Move>{
 	    botKSideCastleO = board.botKSideCastle;
 		botQSideCastleO = board.botQSideCastle;
 		enPassantTargetO = board.enPassantTarget;
+		halfMoveClockO = board.halfMoveClock;
+		currentZobristO = board.currentZobrist;
 		
 		promotionMove = m.promotionMove;
 		castleMove = m.castleMove;
@@ -82,6 +86,8 @@ public class Move implements Comparable<Move>{
 	    botKSideCastleO = board.botKSideCastle;
 		botQSideCastleO = board.botQSideCastle;
 		enPassantTargetO = board.enPassantTarget;
+		halfMoveClockO = board.halfMoveClock;
+		currentZobristO = board.currentZobrist;
 		
 		if(promotionPiece != null && !promotionPiece.equals("")){
 			promotionMove = true;
@@ -243,6 +249,9 @@ public class Move implements Comparable<Move>{
 
 	void execute() {
 		if (!executed) {
+			if (!board.playerMove){
+				board.fullMoveCounter++;
+			}
 			board.moveHistory.add(this.toString());
 			if (castleMove){
 				if (castleRookMove == null){
@@ -258,7 +267,11 @@ public class Move implements Comparable<Move>{
 				}
 				castleRookMove.execute();
 				board.playerMove = !board.playerMove;
-				
+				if (!board.playerMove){
+					board.fullMoveCounter--;
+				}
+				board.halfMoveClock--;
+				board.zobristHistory.remove(board.zobristHistory.size()-1);
 			}
 			
 			if (board.isEmptySquare(destinationPc.position)){
@@ -354,6 +367,15 @@ public class Move implements Comparable<Move>{
 			destinationPc.alive = false;
 			executed = true;
 			board.playerMove = !board.playerMove;
+			
+			if (isCapture() || piece.symbol.equals("p")){
+				board.halfMoveClock = 0;
+			}else{
+				board.halfMoveClock++;
+			}
+			board.currentZobrist = Zobrist.getZobristHash(board);
+			board.zobristHistory.add(board.currentZobrist);
+			
 		}else{
 			System.out.println("ERROR: Trying to execute a move that is no longer viable.");
 			System.exit(0);
@@ -363,6 +385,9 @@ public class Move implements Comparable<Move>{
 	void reverse() {
 		if (executed) {
 			board.moveHistory.remove(board.moveHistory.size()-1);
+			if (!castleMove){
+				board.zobristHistory.remove(board.zobristHistory.size()-1);
+			}
 			
 			if(promotionMove){
 				board.pieceList.remove(promotionPiece);
@@ -392,10 +417,18 @@ public class Move implements Comparable<Move>{
 			//Check if it is a castling move...
 			if(castleMove){
 				castleRookMove.reverse();
+				if (!board.playerMove){
+					board.fullMoveCounter++;
+				}
 				board.playerMove = !board.playerMove;
 			}
 			
 			board.playerMove = !board.playerMove;
+			if (!board.playerMove){
+				board.fullMoveCounter--;
+			}
+			board.halfMoveClock = halfMoveClockO;
+			board.currentZobrist = currentZobristO;
 			
 		}else{
 			System.out.println("ERROR: Trying to reverse a move that was never called.");

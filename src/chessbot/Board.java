@@ -35,9 +35,12 @@ public class Board {
 	Point enPassantTarget = null;
 	
 	List<String> moveHistory = new ArrayList<String>();
+	List<Long> zobristHistory = new ArrayList<Long>();
 	
-	int halfmoveClock = 0;
+	int halfMoveClock = 0;
 	int fullMoveCounter = 0;
+
+	long currentZobrist = 0;
 
 	// Override java.lang.Object.toString method to create easier to read output
 	// in the form of a table
@@ -45,7 +48,7 @@ public class Board {
 	public String toString() {
 
 		// String variable to eventually return		
-		String aString = "FEN: " + Utils.boardToFEN(this) + " Board Zobrist Hash: " + Zobrist.getZobristHash(this) + "\n";
+		String aString = "FEN: " + Utils.boardToFEN(this) + " Board Zobrist Hash: " + currentZobrist + "\n";
 		//aString += "Piece List: "+pieceList +"\n";
 		aString += "Move History: "+moveHistory +"\n";
 		
@@ -202,6 +205,8 @@ public class Board {
 		playerMove = playerGoesFirst;
 		
 		bitboard = new BB(this);
+		
+		currentZobrist = Zobrist.getZobristHash(this);
 	}
 	
 	//Find all possible capture moves
@@ -372,6 +377,18 @@ public class Board {
 		if (allMoves().size() == 0) {
 			return true;
 		}
+		if (halfMoveClock >= 100) {
+			return true;
+		}
+		for (int i = zobristHistory.size()-halfMoveClock; i < zobristHistory.size()-1; i++){
+			if (currentZobrist == zobristHistory.get(i)){
+				for (int ii = i+1; i < zobristHistory.size()-1; ii++){
+					if (currentZobrist == zobristHistory.get(ii)){
+						return true;
+					}
+				}
+			}
+		}
 		// Base case
 		return false;
 	}
@@ -380,8 +397,10 @@ public class Board {
 	// are good for the player, low values good for the computer
 	public int evaluateBoard() {
 		int score = scoreBoard(false) - scoreBoard(true);
-		score += evaluatePawnStructure() * (getPhase()/Evaluation.totalPhase);
-		score += evaluateCastling();
+
+		if(AIController.usePawnEvaluations) score += evaluatePawnStructure();
+
+		//score += evaluateCastling();
 		
 		if( isGameOver() ){
 			if (isCheck(playerMove) && allMoves().size() == 0){

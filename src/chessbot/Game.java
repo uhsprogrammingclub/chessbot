@@ -125,7 +125,6 @@ public class Game {
 	
 	static void takePlayerMove(Board b) {
 		
-		b.fullMoveCounter++;
 		
 		//Clear GUI input
 		squareFrom = null;
