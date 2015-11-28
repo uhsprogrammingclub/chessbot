@@ -49,7 +49,7 @@ public class TournamentTesting {
 				//Check if the game is over...
 				if(b.isGameOver()){
 					System.out.println(b);
-					if(b.evaluateBoard() > 1000){
+					if(b.evaluateBoard() > 10000){
 						System.out.println("The player with the baseline settings lost a game!");
 						playerTwoWins++;
 					}else{
@@ -59,7 +59,7 @@ public class TournamentTesting {
 					break;
 				}
 			
-				b.contemptFactor = 10000;
+				b.contemptFactor = 9999;
 				playerOne.search();
 				if (playerOne.AIC.bestRootMove != null) {
 					
@@ -74,7 +74,7 @@ public class TournamentTesting {
 					System.out.println(b.evaluateBoard());
 					System.out.println(b);
 
-					if(b.evaluateBoard() < -1000){
+					if(b.evaluateBoard() < -10000){
 						System.out.println("The player with the experimental settings lost a game!");
 						playerOneWins++;
 						break;
@@ -88,7 +88,7 @@ public class TournamentTesting {
 
 				//For the experimental...
 				AIController.quiescenceSearch = true;
-				b.contemptFactor = -10000;
+				b.contemptFactor = -9999;
 				playerTwo.search();
 				if (playerTwo.AIC.bestRootMove != null) {
 					playerTwo.AIC.bestRootMove.move.execute();
