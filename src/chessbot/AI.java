@@ -150,7 +150,10 @@ public class AI {
 	
 	// Basic Quiescence Search
 	int qSearch(int alpha, int beta) {
-		AIC.checkTimeLimit();
+		
+		if ((AIC.totalNodes & 2047) == 0){ 
+			AIC.checkTimeLimit(); //check every 2048 nodes
+		}
 		// Increment the static computations
 		AIC.staticComputations++;
 		if (AIC.stopSearching){
@@ -243,7 +246,6 @@ public class AI {
 	int negaMax(int alpha, int beta, int depth, int maxDepth){
 		
 		AIC.totalNodes++;
-		AIC.checkTimeLimit();
 		
 		//Get hash of current board
 		long zHash = board.currentZobrist;
