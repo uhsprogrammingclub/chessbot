@@ -13,7 +13,7 @@ public class AIController {
 	
 	//Set the default time limit
 
-	static double timeLimit = 1000;
+	static double timeLimit = 5000;
 	
 	//Search stats
 	int usedTTCount = 0;

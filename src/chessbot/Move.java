@@ -13,8 +13,8 @@ public class Move implements Comparable<Move>{
 	Piece promotionPiece = null;
 	boolean promotionMove = false;
 	
-	boolean playerCastledO;
-	boolean computerCastledO;
+	boolean whiteCastledO;
+	boolean blackCastledO;
 	
 	boolean enPassantMove = false;
 	Piece enPassantCapture = null;
@@ -38,8 +38,8 @@ public class Move implements Comparable<Move>{
 			System.exit(0);
 		}
 		
-		playerCastledO = b.playerCastled;
-		computerCastledO = b.botCastled;
+		whiteCastledO = b.whiteCastled;
+		blackCastledO = b.blackCastled;
 		
 		castleRightsO = b.castleRights;
 		
@@ -246,6 +246,7 @@ public class Move implements Comparable<Move>{
 			}
 			board.moveHistory.add(this.toString());
 			if (castleMove){
+				
 				if (castleRookMove == null){
 				
 					//Check if it is a king-side castle move
@@ -259,9 +260,9 @@ public class Move implements Comparable<Move>{
 				}
 				
 				if(board.playerMove){
-					board.playerCastled = true;
+					board.whiteCastled = true;
 				}else{
-					board.botCastled = true;
+					board.blackCastled = true;
 				}
 				
 				castleRookMove.execute();
@@ -292,6 +293,13 @@ public class Move implements Comparable<Move>{
 			if(enPassantMove){
 				enPassantCapture.alive = false;
 				board.setSquare(enPassantCapture.position, new Empty());
+			}
+			
+			//Change the castling variables depending on the piece being moved
+			if(piece.symbol.equals("k")){
+				
+				board.castleRights &= board.playerMove ? ~(board.WKCA | board.WQCA) : ~(board.BKCA | board.BQCA);
+				
 			}
 			
 			board.enPassantTarget = null;
@@ -369,9 +377,6 @@ public class Move implements Comparable<Move>{
 			board.castleRights = castleRightsO;	
 			board.enPassantTarget = enPassantTargetO;
 			
-			board.botCastled = computerCastledO;
-			board.playerCastled = playerCastledO;
-			
 			board.setSquare(to,  destinationPc);
 			board.setSquare(from, piece);
 			destinationPc.alive = true;
@@ -379,6 +384,8 @@ public class Move implements Comparable<Move>{
 			
 			//Check if it is a castling move...
 			if(castleMove){
+				board.blackCastled = blackCastledO;
+				board.whiteCastled = whiteCastledO;
 				castleRookMove.reverse();
 				if (!board.playerMove){
 					board.fullMoveCounter++;

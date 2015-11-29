@@ -102,11 +102,11 @@ public class Game {
 	}
 	
 	public void start(){
-		if (AIController.useOpeningBook){
+		/*if (AIController.useOpeningBook){
 			OpeningBook book = new OpeningBook(Utils.boardFromFEN(defaultSetup));
 			Thread bookThread = new Thread(book, "Opening Book Thread");  
 			bookThread.start();  
-		}
+		}*/
 		if (botVBot){
 			botMakeMove(b);
 		}else{

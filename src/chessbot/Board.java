@@ -31,8 +31,8 @@ public class Board {
 	
 	int castleRights = 15;
 	
-	boolean playerCastled = false;
-	boolean botCastled = false;
+	boolean whiteCastled = false;
+	boolean blackCastled = false;
 	
 	Point enPassantTarget = null;
 	
@@ -99,22 +99,26 @@ public class Board {
 		}
 		long allBB = bitboard.combine();
 		
-		if (player && (castleRights & WKCA) == 0 && kSide){
+		if (player && (castleRights & WKCA) != 0 && kSide){
+			
 			if ((allBB & 0x60L) != 0 || bitboard.attacksTo(allBB, 5, player) != 0 || bitboard.attacksTo(allBB, 6, player) != 0){
 				return false;
 			}
 			return true;
-		}else if (!player && (castleRights & BKCA) == 0 && kSide){
+		}else if (!player && (castleRights & BKCA) != 0 && kSide){
+			
 			if ((allBB & 0x6000000000000000L) != 0 || bitboard.attacksTo(allBB, 61, player) != 0 || bitboard.attacksTo(allBB, 62, player) != 0){
 				return false;
 			}
 			return true;
-		}else if (player && (castleRights & WQCA) == 0 && !kSide){
+		}else if (player && (castleRights & WQCA) != 0 && !kSide){
+			
 			if ((allBB & 0xEL) != 0 || bitboard.attacksTo(allBB, 3, player) != 0 || bitboard.attacksTo(allBB, 2, player) != 0){
 				return false;
 			}
 			return true;
-		}else if (!player && (castleRights & WKCA) == 0 && !kSide){
+		}else if (!player && (castleRights & BKCA) != 0 && !kSide){
+			
 			if ((allBB & 0x0E00000000000000L) != 0 || bitboard.attacksTo(allBB, 59, player) != 0 || bitboard.attacksTo(allBB, 58, player) != 0){
 				return false;
 			}
@@ -401,6 +405,12 @@ public class Board {
 		int score = scoreBoard(false) - scoreBoard(true);
 
 		if(AIController.usePawnEvaluations) score += evaluatePawnStructure();
+		
+		if(blackCastled){
+			System.out.println("WABAM");
+			System.out.println(this);
+			score -= 20000000;
+		}
 
 		//score += evaluateCastling();
 		
@@ -417,8 +427,10 @@ public class Board {
 	
 	public int evaluateCastling(){
 		int score = 0;
-		if(this.playerCastled) score -= 45;
-		if(this.botCastled) score += 45;
+		//if(whiteCastled) score -= 0;
+		//if(!whiteCastled && (castleRights & (WQCA | WKCA)) == 0) score += 45;
+		//if(!blackCastled && (castleRights & (BQCA | BKCA)) == 0) score -= 45;
+		if(blackCastled) score += 2000;
 		return score;
 	}
 	
@@ -723,19 +735,19 @@ public class Board {
 				switch (index) {
 
 				case BB.PAWNS:
-					score += gridFromPerspective(Evaluation.pawnPieceSquaresE, player)[63 - i];
+					score += gridFromPerspective(Evaluation.pawnPieceSquaresE, player)[i];
 					break;
 				case BB.BISHOPS:
-					score += gridFromPerspective(Evaluation.bishopPieceSquaresE, player)[63 - i];
+					score += gridFromPerspective(Evaluation.bishopPieceSquaresE, player)[i];
 					break;
 				case BB.KNIGHTS:
-					score += gridFromPerspective(Evaluation.knightPieceSquaresE, player)[63 - i];
+					score += gridFromPerspective(Evaluation.knightPieceSquaresE, player)[i];
 					break;
 				case BB.ROOKS:
-					score += gridFromPerspective(Evaluation.rookPieceSquaresE, player)[63 - i];
+					score += gridFromPerspective(Evaluation.rookPieceSquaresE, player)[i];
 					break;
 				case BB.KINGS:
-					score += gridFromPerspective(Evaluation.kingPieceSquaresE, player)[63 - i];
+					score += gridFromPerspective(Evaluation.kingPieceSquaresE, player)[i];
 
 				}
 
