@@ -15,6 +15,7 @@ public class AIController {
 	static double timeLimit = 2000;
 	
 	//Search stats
+	int usedTTCount = 0;
 	int totalNodes = 1;
 	int quiescentNodes = 0;
 	int fh = 1;
@@ -38,6 +39,7 @@ public class AIController {
 	static boolean aspirationWindow = false;
 	static boolean useOpeningBook = false;
 	static boolean useBitBoards = true;
+	public static boolean usePawnEvaluations = true;
 	
 	//Hashtable to store number of computations at each depth (serves no functional purpose)
 	Hashtable<Integer, Integer> computationsAtDepth = new Hashtable<Integer, Integer>(100);
@@ -71,11 +73,11 @@ public class AIController {
 		
 		);
 		System.out.println("─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────");
-		System.out.format("%-22s | %-11s | %-18s | %-7s | %s",
-				"Quiescent Node Percent", "Re-searches", "Total Computations", "TT Size", "Computations at Depths\n"
+		System.out.format("%-22s | %-11s | %-18s | %-7s | %-13s | %s",
+				"Quiescent Node Percent", "Re-searches", "Total Computations", "TT Size", "TT Evals Used", "Computations at Depths\n"
 		);
-		System.out.format("%-22s | %-11s | %-18s | %-7s | %s",
-				info.get(8), info.get(9), info.get(10), info.get(11), info.get(12)+ "\n"
+		System.out.format("%-22s | %-11s | %-18s | %-7s | %-13s | %s",
+				info.get(8), info.get(9), info.get(10), info.get(11), info.get(12), info.get(13) + "\n"
 		);
 		
 	}
@@ -104,6 +106,7 @@ public class AIController {
 				Integer.toString(researches),
 				Integer.toString(staticComputations),
 				TranspositionTable.trans.size() + "",
+				Integer.toString(usedTTCount),
 				computationsAtDepth.toString()
 		};
 	

@@ -1,14 +1,5 @@
 package chessbot;
 
-import static org.junit.Assert.*;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,12 +9,15 @@ public class TournamentTesting {
 	public void init() {
 		Zobrist.zobristFillArray();
 		Game.loadBitboards();
+		OpeningBook book = new OpeningBook(Utils.boardFromFEN(Game.defaultSetup));
+		Thread bookThread = new Thread(book, "Opening Book Thread");  
+		bookThread.start(); 
 	}
 	
 	@Test
 	public void TestAgainstSelf(){
 		
-		AIController.timeLimit = 100;
+		AIController.timeLimit = 500;
 		AIController.useOpeningBook = true;
 		int numGames = 10;
 		
@@ -35,12 +29,11 @@ public class TournamentTesting {
 			TranspositionTable.trans.clear();
 			
 			Board b = Utils.boardFromFEN(Game.defaultSetup);
-			//for(int l = 0; l < 2048; l++){
-				//b.history[l] = new HistoryEntry();
-			//}
 			
 			// playerTwo has experimental features, playerOne does not
 			while(true){
+				
+				TranspositionTable.trans.clear();
 				
 				AI playerOne = new AI(b);
 				
@@ -54,6 +47,7 @@ public class TournamentTesting {
 						playerTwoWins++;
 					}else{
 						System.out.println("Stalemate.");
+						System.exit(0);
 					}
 					
 					break;
@@ -80,15 +74,22 @@ public class TournamentTesting {
 						break;
 					}else{
 						System.out.println("Stalemate.");
+						System.exit(0);
 					}
 					
 				}
 				
+				TranspositionTable.trans.clear();
+				
 				AI playerTwo = new AI(b);
-
+				
 				//For the experimental...
+				AIController.useTTEvals = true;
+				AIController.killerHeuristic = true;
 				AIController.quiescenceSearch = true;
 				b.contemptFactor = -9999;
+
+				AIController.iterativeDeepeningMoveReordering = true;
 				playerTwo.search();
 				if (playerTwo.AIC.bestRootMove != null) {
 					playerTwo.AIC.bestRootMove.move.execute();
@@ -96,9 +97,11 @@ public class TournamentTesting {
 				
 				System.out.println(b);
 				System.out.println(playerTwo.AIC.bestRootMove + " " + b.evaluateBoard());
-				//System.out.println("Fifty Moves: " + b.fiftyMove + " Half Moves: " + b.halfMoves);
 				
+				AIController.useTTEvals = false;
+				AIController.killerHeuristic = false;
 				AIController.quiescenceSearch = false;
+				AIController.iterativeDeepeningMoveReordering = false;
 		
 			}
 			

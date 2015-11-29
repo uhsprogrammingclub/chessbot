@@ -2,8 +2,6 @@ package chessbot;
 
 import java.util.List;
 
-import chessbot.Board.CastleState;
-
 public class Move implements Comparable<Move>{
 
 	Point from;
@@ -14,16 +12,15 @@ public class Move implements Comparable<Move>{
 	Board board;
 	Piece promotionPiece = null;
 	boolean promotionMove = false;
-	CastleState playerCastleO = null;
-	CastleState computerCastleO = null;
+	
+	boolean whiteCastledO;
+	boolean blackCastledO;
 	
 	boolean enPassantMove = false;
 	Piece enPassantCapture = null;
 	
-	boolean playerKSideCastleO = false;
-	boolean playerQSideCastleO = false;
-	boolean botKSideCastleO = false;
-	boolean botQSideCastleO = false;
+	int castleRightsO = 0;
+	
 	Point enPassantTargetO = null;
 	int halfMoveClockO = 0;
 	long currentZobristO = 0;
@@ -41,13 +38,11 @@ public class Move implements Comparable<Move>{
 			System.exit(0);
 		}
 		
-		playerCastleO = b.playerCastle;
-		computerCastleO = b.computerCastle;
+		whiteCastledO = b.whiteCastled;
+		blackCastledO = b.blackCastled;
 		
-		playerKSideCastleO = board.playerKSideCastle;
-	    playerQSideCastleO = board.playerQSideCastle;
-	    botKSideCastleO = board.botKSideCastle;
-		botQSideCastleO = board.botQSideCastle;
+		castleRightsO = b.castleRights;
+		
 		enPassantTargetO = board.enPassantTarget;
 		halfMoveClockO = board.halfMoveClock;
 		currentZobristO = board.currentZobrist;
@@ -81,10 +76,7 @@ public class Move implements Comparable<Move>{
 	
 	private void makeMove(String promotionPiece){
 		destinationPc = board.getPiece(to);
-		playerKSideCastleO = board.playerKSideCastle;
-	    playerQSideCastleO = board.playerQSideCastle;
-	    botKSideCastleO = board.botKSideCastle;
-		botQSideCastleO = board.botQSideCastle;
+		castleRightsO = board.castleRights;
 		enPassantTargetO = board.enPassantTarget;
 		halfMoveClockO = board.halfMoveClock;
 		currentZobristO = board.currentZobrist;
@@ -254,6 +246,7 @@ public class Move implements Comparable<Move>{
 			}
 			board.moveHistory.add(this.toString());
 			if (castleMove){
+				
 				if (castleRookMove == null){
 				
 					//Check if it is a king-side castle move
@@ -265,6 +258,13 @@ public class Move implements Comparable<Move>{
 						castleRookMove = new Move(board, new Point(3, from.y), board.getPiece(new Point(0, from.y)), null);
 					}
 				}
+				
+				if(board.playerMove){
+					board.whiteCastled = true;
+				}else{
+					board.blackCastled = true;
+				}
+				
 				castleRookMove.execute();
 				board.playerMove = !board.playerMove;
 				if (!board.playerMove){
@@ -294,48 +294,22 @@ public class Move implements Comparable<Move>{
 				enPassantCapture.alive = false;
 				board.setSquare(enPassantCapture.position, board.emptySquare);
 			}
-		
+			
 			//Change the castling variables depending on the piece being moved
 			if(piece.symbol.equals("k")){
 				
-				if(!castleMove){
-					if(piece.player) board.playerCastle = CastleState.CASTLE_RUINED; else board.computerCastle = CastleState.CASTLE_RUINED; 
-				}
+				board.castleRights &= board.playerMove ? ~(board.WKCA | board.WQCA) : ~(board.BKCA | board.BQCA);
 				
-				if(piece.player){
-					board.playerKSideCastle = board.playerQSideCastle = false;
-				}else{
-					board.botKSideCastle = board.botQSideCastle = false;
-				}
 			}
 			
 			board.enPassantTarget = null;
 			if(piece.symbol.equals("r")){
 				if (from.x == 0){
-					if(piece.player){
-						if(!board.playerKSideCastle){
-							board.playerCastle = CastleState.CASTLE_RUINED;
-						}
-						board.playerQSideCastle = false;
-					}else{
-						if(!board.botKSideCastle){
-							board.computerCastle = CastleState.CASTLE_RUINED;
-						}
-						board.botQSideCastle = false;
-					}
+					board.castleRights &= board.playerMove ? ~board.WQCA : ~board.BQCA;
 				}else if (from.x == 7){
-					if(piece.player){
-						if(!board.playerQSideCastle){
-							board.playerCastle = CastleState.CASTLE_RUINED;
-						}
-						board.playerKSideCastle = false;
-					}else{
-						if(!board.botQSideCastle){
-							board.computerCastle = CastleState.CASTLE_RUINED;
-						}
-						board.botKSideCastle = false;
-					}
+					board.castleRights &= board.playerMove ? ~board.WKCA : ~board.BKCA;
 				}
+				
 			}else if(piece.symbol.equals("p")){
 				if (from.y == 1 && to.y == 3){
 					board.enPassantTarget = new Point(to.x, 2);
@@ -350,14 +324,14 @@ public class Move implements Comparable<Move>{
 				//If it belongs to the player...
 				if(destinationPc.player){
 					if (destinationPc.position.y == 0){
-						if(destinationPc.position.x == 0) board.playerQSideCastle = false;
-						if(destinationPc.position.x == 7) board.playerKSideCastle = false;
+						if(destinationPc.position.x == 0) board.castleRights &= ~board.WQCA;
+						if(destinationPc.position.x == 7) board.castleRights &= ~board.WKCA;
 					}
 					
 				}else{
 					if (destinationPc.position.y == 7){
-						if(destinationPc.position.x == 0) board.botQSideCastle = false;
-						if(destinationPc.position.x == 7) board.botKSideCastle = false;
+						if(destinationPc.position.x == 0) board.castleRights &= ~board.BQCA;
+						if(destinationPc.position.x == 7) board.castleRights &= ~board.BKCA;
 					}
 					
 				}
@@ -400,14 +374,8 @@ public class Move implements Comparable<Move>{
 				board.setSquare(enPassantCapture.position, enPassantCapture);
 			}
 			
-			board.playerKSideCastle = playerKSideCastleO;
-			board.playerQSideCastle = playerQSideCastleO;
-			board.botKSideCastle = botKSideCastleO;
-			board.botQSideCastle = botQSideCastleO;	
+			board.castleRights = castleRightsO;	
 			board.enPassantTarget = enPassantTargetO;
-			
-			board.computerCastle = computerCastleO;
-			board.playerCastle = playerCastleO;
 			
 			board.setSquare(to,  destinationPc);
 			board.setSquare(from, piece);
@@ -416,6 +384,8 @@ public class Move implements Comparable<Move>{
 			
 			//Check if it is a castling move...
 			if(castleMove){
+				board.blackCastled = blackCastledO;
+				board.whiteCastled = whiteCastledO;
 				castleRookMove.reverse();
 				if (!board.playerMove){
 					board.fullMoveCounter++;

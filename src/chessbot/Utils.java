@@ -464,26 +464,23 @@ public class Utils {
 		Board b = new Board(list, playerMove);
 		
 		//Default the castling rights to false
-		b.botKSideCastle = false;
-		b.botQSideCastle = false; 
-		b.playerKSideCastle = false;
-		b.playerQSideCastle = false;
+		b.castleRights = 0;
 		
 		//Map the castling rights to an individual array
 		char[] rightsArray = castlingRights.toCharArray();
 		
 		for(char c : rightsArray){
 			if(c == 'K'){
-				b.playerKSideCastle = true;
+				b.castleRights |= b.WKCA;
 			}
 			else if(c == 'Q'){
-				b.playerQSideCastle = true;
+				b.castleRights |= b.WQCA;
 			}
 			else if(c == 'k'){
-				b.botKSideCastle = true;
+				b.castleRights |= b.BKCA;
 			}
 			else if(c == 'q'){
-				b.botQSideCastle = true;
+				b.castleRights |= b.BKCA;
 			}
 		}
 		
@@ -538,11 +535,12 @@ public class Utils {
 		FEN += " ";
 		
 		//Adding castling abilities
-		FEN += b.playerKSideCastle ? "K" : "";
-		FEN += b.playerQSideCastle ? "Q" : "";
-		FEN += b.botKSideCastle ? "k" : "";
-		FEN += b.botQSideCastle ? "q" : "";
-		if (!b.playerKSideCastle && !b.playerQSideCastle && !b.botKSideCastle && !b.botQSideCastle){
+		
+		FEN += (b.castleRights & b.WKCA) == 0 ? "K" : "";
+		FEN += (b.castleRights & b.WQCA) == 0 ? "Q" : "";
+		FEN += (b.castleRights & b.BKCA) == 0 ? "k" : "";
+		FEN += (b.castleRights & b.BQCA) == 0 ? "q" : "";
+		if (b.castleRights == 0){
 			FEN += "-";
 		}
 		FEN += " ";
