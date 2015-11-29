@@ -303,9 +303,10 @@ public class AI {
 		if(oldEntry != null //if there is an old entry
 			&& oldEntry.zobrist == zHash){  //and the boards are the same
 			
-			if (AIC.useTTEvals && oldEntry.depthLeft >= (maxDepth - depth) && (oldEntry.depthLeft+board.halfMoveClock) < 100 && !pvCausesRepetition()){
+			if (AIController.useTTEvals && oldEntry.depthLeft >= (maxDepth - depth) && (oldEntry.depthLeft+board.halfMoveClock) < 100 && !pvCausesRepetition()){
 
 				if(oldEntry.nodeType == HashEntry.PV_NODE){ //the evaluated node is PV
+					AIC.usedTTCount++;
 					if (depth != 0){
 						return oldEntry.eval; //passes up the pre-computed evaluation
 					}else{
@@ -313,8 +314,10 @@ public class AI {
 						return oldEntry.eval;
 					}
 				}else if(depth != 0 && oldEntry.nodeType == HashEntry.CUT_NODE && oldEntry.eval >= beta){ //beta cutoff
+					AIC.usedTTCount++;
 					return oldEntry.eval;
 				}else if(depth != 0 && oldEntry.nodeType == HashEntry.ALL_NODE && oldEntry.eval <= alpha){ //beta cutoff
+					AIC.usedTTCount++;
 					return oldEntry.eval;
 				}else{
 					if (!orderedMoves.contains(oldEntry.move) && allAvailible.contains(oldEntry.move)){

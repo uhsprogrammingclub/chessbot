@@ -9,8 +9,6 @@ public class Board {
 	 * Note about board: the 7th and 8th rows are for the Player, the 1st and
 	 * 2nd rows are for the computer.
 	 **/
-	
-	public enum CastleState { CASTLED, CASTLE_RUINED, CAN_CASTLE };
 
 	// One-dimensional array to hold the locations of all of the pieces
 	Piece[] locations = new Piece[64];
@@ -23,14 +21,18 @@ public class Board {
 	//Boolean that stores whether it is the player's move
 	boolean playerMove;
 	
-	//Variables determining whether castling is still valid
-	boolean playerKSideCastle;
-	boolean playerQSideCastle;
-	boolean botKSideCastle;
-	boolean botQSideCastle;
+	//Array to store castling information
 	
-	CastleState playerCastle = CastleState.CAN_CASTLE; 
-	CastleState computerCastle = CastleState.CAN_CASTLE;
+	// Castling bits
+	final byte WKCA = 1;
+	final byte WQCA = 2;
+	final byte BKCA = 4;
+	final byte BQCA = 8;
+	
+	int castleRights = 15;
+	
+	boolean playerCastled = false;
+	boolean botCastled = false;
 	
 	Point enPassantTarget = null;
 	
@@ -97,22 +99,22 @@ public class Board {
 		}
 		long allBB = bitboard.combine();
 		
-		if (player && playerKSideCastle && kSide){
+		if (player && (castleRights & WKCA) == 0 && kSide){
 			if ((allBB & 0x60L) != 0 || bitboard.attacksTo(allBB, 5, player) != 0 || bitboard.attacksTo(allBB, 6, player) != 0){
 				return false;
 			}
 			return true;
-		}else if (!player && botKSideCastle && kSide){
+		}else if (!player && (castleRights & BKCA) == 0 && kSide){
 			if ((allBB & 0x6000000000000000L) != 0 || bitboard.attacksTo(allBB, 61, player) != 0 || bitboard.attacksTo(allBB, 62, player) != 0){
 				return false;
 			}
 			return true;
-		}else if (player && playerQSideCastle && !kSide){
+		}else if (player && (castleRights & WQCA) == 0 && !kSide){
 			if ((allBB & 0xEL) != 0 || bitboard.attacksTo(allBB, 3, player) != 0 || bitboard.attacksTo(allBB, 2, player) != 0){
 				return false;
 			}
 			return true;
-		}else if (!player && botQSideCastle && !kSide){
+		}else if (!player && (castleRights & WKCA) == 0 && !kSide){
 			if ((allBB & 0x0E00000000000000L) != 0 || bitboard.attacksTo(allBB, 59, player) != 0 || bitboard.attacksTo(allBB, 58, player) != 0){
 				return false;
 			}
@@ -415,10 +417,8 @@ public class Board {
 	
 	public int evaluateCastling(){
 		int score = 0;
-		if(this.playerCastle == CastleState.CASTLED) score -= 45;
-		if(this.playerCastle == CastleState.CASTLE_RUINED) score += 15;
-		if(this.computerCastle == CastleState.CASTLED) score += 45;
-		if(this.computerCastle == CastleState.CASTLE_RUINED) score -= 15;
+		if(this.playerCastled) score -= 45;
+		if(this.botCastled) score += 45;
 		return score;
 	}
 	
