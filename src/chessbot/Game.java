@@ -5,6 +5,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import chessbot.Board.Side;
+
 public class Game {
 
 
@@ -16,8 +18,10 @@ public class Game {
 	static Scanner s = new Scanner(System.in);
 	
 	//Boolean that determines whether the AI plays itself
-	static boolean botVBot = false;
-	static boolean playerMovesFirst = true;
+	static Side firstSideToMove = Side.W;
+	
+	static boolean whiteIsBot = true;
+	static boolean blackIsBot = false;
 	
 	//Initialize the grid GUI layout
 	static GridLayoutManager gui;
@@ -73,7 +77,7 @@ public class Game {
 		//g.setFEN("8/8/p4k2/2r5/4K3/8/8/8 w - - 0 1");
 		//g.setFEN("8/8/4k1p1/7p/8/6P1/5K2/8 w - - 0 1");
 		//g.setFEN("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"); //Everything
-		//g.setFEN("r2qkb1r/ppp2ppp/3ppn2/8/2P1P3/2N4P/PPP1QPP1/R1B1K2R b KQkq - 0 10");
+		g.setFEN("r3k2r/8/8/8/8/8/PPPPPPPP/4K3 b kq - 0 1");
 		g.setFEN(setup);
 		g.init();
 		g.start();
@@ -86,7 +90,7 @@ public class Game {
 		setBoard(setup);
 		initGUI();
 		
-		playerMovesFirst = b.playerMove;
+		firstSideToMove = b.sideMove;
 		
 	}
 	
@@ -102,25 +106,49 @@ public class Game {
 	}
 	
 	public void start(){
-		/*if (AIController.useOpeningBook){
+		if (AIController.useOpeningBook){
 			OpeningBook book = new OpeningBook(Utils.boardFromFEN(defaultSetup));
 			Thread bookThread = new Thread(book, "Opening Book Thread");  
 			bookThread.start();  
-		}*/
-		if (botVBot){
-			botMakeMove(b);
+		}
+		if (firstSideToMove == Side.W){
+			whiteMove(b);
 		}else{
-			if (playerMovesFirst){
-				takePlayerMove(b);
-			}else{
-				botMakeMove(b);
-			}
+			blackMove(b);
 		}
 	}
 	
 	public void initGUI(){
 		gui = new GridLayoutManager();
 		gui.updateBoard(b);
+	}
+	
+	static void whiteMove(Board b) {
+		if (whiteIsBot){
+			botMakeMove(b);
+		}else{
+			takePlayerMove(b);
+		}
+		if (!b.isGameOver()) {
+			blackMove(b);
+		} else {
+			System.out.println(b);
+			System.out.println("Game Over!");
+		}
+	}
+	
+	static void blackMove(Board b) {
+		if (blackIsBot){
+			botMakeMove(b);
+		}else{
+			takePlayerMove(b);
+		}
+		if (!b.isGameOver()) {
+			whiteMove(b);
+		} else {
+			System.out.println(b);
+			System.out.println("Game Over!");
+		}
 	}
 	
 	static void takePlayerMove(Board b) {
@@ -183,13 +211,6 @@ public class Game {
 		
 		gui.updateBoard(b);
 		
-		if (!b.isGameOver()) {
-			botMakeMove(b);
-		} else {
-			System.out.println(b);
-			System.out.println("Game Over!");
-		}
-		
 	}
 	
 
@@ -218,16 +239,6 @@ public class Game {
 		
 		gui.updateBoard(b);
 		
-		if (!b.isGameOver()) {
-			if (botVBot){
-				botMakeMove(b);
-			}else{
-				takePlayerMove(b);
-			}
-		} else {
-			System.out.println(b);
-			System.out.println("Game Over!");
-		}
 	}
 	
 	

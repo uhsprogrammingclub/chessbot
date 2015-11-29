@@ -1,5 +1,7 @@
 package chessbot;
 
+import chessbot.Board.Side;
+
 public class BB {
 	long[] pieceBitBoards = new long[8];
 	static long[] setMask = new long[64];
@@ -75,15 +77,14 @@ public class BB {
 
 	void setBitFromPiece(Piece p) {
 		if (p.worth != 0) {
-			if (p.player) {
+			if (p.side == Side.W) {
 				pieceBitBoards[WHITE] = setBit(pieceBitBoards[WHITE], p.position.getIndex());
-			} else {
+			} else if (p.side == Side.B) {
 				pieceBitBoards[BLACK] = setBit(pieceBitBoards[BLACK], p.position.getIndex());
 			}
 			int pieceBoard = getBitBoard(p.symbol);
 			pieceBitBoards[pieceBoard] = setBit(pieceBitBoards[pieceBoard], p.position.getIndex());
 		}
-
 	}
 
 	static long setBit(long b, int index) {
@@ -120,16 +121,16 @@ public class BB {
 		return combinedBitboard;
 	}
 
-	long pawnPush(long pawns, boolean player) {
-		long rank4;
+	long pawnPush(long pawns, Side side) {
+		long rank4 = 0;
 		long pushBB = 0;
-		if (player) {
+		if (side == Side.W) {
 			rank4 = up(3, RANK_1);
 			pawns = up(pawns);
 			pawns &= ~combine();
 			pushBB |= pawns;
 			pawns = up(pawns);
-		} else {
+		} else if (side == Side.B){
 			rank4 = down(3, RANK_8);
 			pawns = down(pawns);
 			pawns &= ~combine();
@@ -141,20 +142,20 @@ public class BB {
 		return (pushBB);
 	}
 
-	long pawnsAttack(long pawns, boolean player, long enPassant) {
+	long pawnsAttack(long pawns, Side side, long enPassant) {
 		long rightAttack = 0;
 		long leftAttack = 0;
-		if (player) {
+		if (side == Side.W) {
 			rightAttack = upRight(pawns);
 			leftAttack = upLeft(pawns);
-		} else {
+		} else if (side == Side.B) {
 			rightAttack = downRight(pawns);
 			leftAttack = downLeft(pawns);
 		}
-		long enemy;
-		if (player) {
+		long enemy = 0;
+		if (side == Side.W) {
 			enemy = pieceBitBoards[BLACK];
-		} else {
+		} else if (side == Side.B)  {
 			enemy = pieceBitBoards[WHITE];
 		}
 		enemy |= enPassant;
@@ -162,8 +163,8 @@ public class BB {
 		return attack;
 	}
 
-	long rookAttack(long consideredPiecesBB, int from, boolean player) {
-		long friendlyBB = getFriendlyBB(player);
+	long rookAttack(long consideredPiecesBB, int from, Side side) {
+		long friendlyBB = getFriendlyBB(side);
 		long bbBlockers = consideredPiecesBB & MagicBitboards.occupancyMaskRook[from];
 		int databaseIndex = (int) (bbBlockers
 				* MagicBitboards.magicNumberRook[from] >>> MagicBitboards.magicNumberShiftsRook[from]);
@@ -173,8 +174,8 @@ public class BB {
 		return possibleMoves;
 	}
 
-	long bishopAttack(long consideredPiecesBB, int from, boolean player) {
-		long friendlyBB = getFriendlyBB(player);
+	long bishopAttack(long consideredPiecesBB, int from, Side side) {
+		long friendlyBB = getFriendlyBB(side);
 		long bbBlockers = consideredPiecesBB & MagicBitboards.occupancyMaskBishop[from];
 		int databaseIndex = (int) (bbBlockers
 				* MagicBitboards.magicNumberBishop[from] >>> MagicBitboards.magicNumberShiftsBishop[from]);
@@ -184,15 +185,15 @@ public class BB {
 		return possibleMoves;
 	}
 
-	long attacksTo(long consideredPiecesBB, int to, boolean player) {
+	long attacksTo(long consideredPiecesBB, int to, Side side) {
 		long knights, kings, bishopsQueens, rooksQueens, pawns;
-		long enemyBB = getFriendlyBB(!player);
+		long enemyBB = getFriendlyBB(side.getOtherSide());
 		knights = knightAttacks[to] & pieceBitBoards[KNIGHTS];
 		kings = kingAttacks[to] & pieceBitBoards[KINGS];
-		bishopsQueens = bishopAttack(consideredPiecesBB, to, player)
+		bishopsQueens = bishopAttack(consideredPiecesBB, to, side)
 				& (pieceBitBoards[BISHOPS] | pieceBitBoards[QUEENS]);
-		rooksQueens = rookAttack(consideredPiecesBB, to, player) & (pieceBitBoards[ROOKS] | pieceBitBoards[QUEENS]);
-		pawns = pawnsAttack(1L << to, player, 0) & pieceBitBoards[PAWNS];
+		rooksQueens = rookAttack(consideredPiecesBB, to, side) & (pieceBitBoards[ROOKS] | pieceBitBoards[QUEENS]);
+		pawns = pawnsAttack(1L << to, side, 0) & pieceBitBoards[PAWNS];
 
 		long allPieces = knights | kings | bishopsQueens | rooksQueens | pawns;
 		return enemyBB & allPieces;
@@ -216,12 +217,12 @@ public class BB {
 		return 0;
 	}
 
-	int SEE(int to, int from, boolean player) {
-		player = !player;
+	int SEE(int to, int from, Side side) {
+		side = side.getOtherSide();
 		int[] gain = new int[32];
 		int d = 0;
 		long occ = combine();
-		long attacks = attacksTo(occ, to, player);
+		long attacks = attacksTo(occ, to, side);
 		long fromSet = 1L << from;
 		if (fromSet == 0) {
 			return 0;
@@ -233,8 +234,8 @@ public class BB {
 			if (Math.max(-gain[d - 1], gain[d]) < 0)
 				break; // pruning does not influence the result
 			occ ^= fromSet; // reset bit in temporary occupancy (for x-Rays)
-			player = !player;
-			attacks = attacksTo(occ, to, player);
+			side = side.getOtherSide();
+			attacks = attacksTo(occ, to, side);
 			attacks &= occ;
 			fromSet = getLeastValuablePiece(attacks);
 		}
@@ -294,11 +295,11 @@ public class BB {
 		return 0; // empty set
 	}
 	
-	long getFriendlyBB(boolean player){
-		long friendlyBB;
-		if(player){
+	long getFriendlyBB(Side side){
+		long friendlyBB = 0;
+		if(side == Side.W){
 			friendlyBB = pieceBitBoards[BB.WHITE];
-		}else{
+		}else if (side == Side.B){
 			friendlyBB =  pieceBitBoards[BB.BLACK];
 		}
 		return friendlyBB;

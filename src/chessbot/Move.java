@@ -2,6 +2,8 @@ package chessbot;
 
 import java.util.List;
 
+import chessbot.Board.Side;
+
 public class Move implements Comparable<Move>{
 
 	Point from;
@@ -54,16 +56,16 @@ public class Move implements Comparable<Move>{
 		
 		if (promotionMove){
 			if(m.promotionPiece.symbol.equals("q")){
-				this.promotionPiece = new Queen(m.to.x, m.to.y, m.promotionPiece.player);
+				this.promotionPiece = new Queen(m.to.x, m.to.y, m.promotionPiece.side);
 			}
 			else if(m.promotionPiece.symbol.equals("n")){
-				this.promotionPiece = new Knight(m.to.x, m.to.y, m.promotionPiece.player);
+				this.promotionPiece = new Knight(m.to.x, m.to.y, m.promotionPiece.side);
 			}
 			else if(m.promotionPiece.symbol.equals("r")){
-				this.promotionPiece = new Rook(m.to.x, m.to.y, m.promotionPiece.player);
+				this.promotionPiece = new Rook(m.to.x, m.to.y, m.promotionPiece.side);
 			}
 			else if(m.promotionPiece.symbol.equals("b")){
-				this.promotionPiece = new Bishop(m.to.x, m.to.y, m.promotionPiece.player);
+				this.promotionPiece = new Bishop(m.to.x, m.to.y, m.promotionPiece.side);
 			}
 			this.promotionPiece.alive = false;
 		}else{
@@ -84,16 +86,16 @@ public class Move implements Comparable<Move>{
 		if(promotionPiece != null && !promotionPiece.equals("")){
 			promotionMove = true;
 			if(promotionPiece.equals("q")){
-				this.promotionPiece = new Queen(to.x, to.y, piece.player);
+				this.promotionPiece = new Queen(to.x, to.y, piece.side);
 			}
 			else if(promotionPiece.equals("n")){
-				this.promotionPiece = new Knight(to.x, to.y, piece.player);
+				this.promotionPiece = new Knight(to.x, to.y, piece.side);
 			}
 			else if(promotionPiece.equals("r")){
-				this.promotionPiece = new Rook(to.x, to.y, piece.player);
+				this.promotionPiece = new Rook(to.x, to.y, piece.side);
 			}
 			else if(promotionPiece.equals("b")){
-				this.promotionPiece = new Bishop(to.x, to.y, piece.player);
+				this.promotionPiece = new Bishop(to.x, to.y, piece.side);
 			}
 			else{
 				promotionMove = false;
@@ -145,13 +147,13 @@ public class Move implements Comparable<Move>{
 		String pieceString = "";
 		
 		if (SAN.contains("O-O-O")){
-			piece = board.getKing(board.playerMove);
+			piece = board.getKing(board.sideMove);
 			to = new Point(piece.getX() - 2, piece.getY());
 			from = new Point(piece.position.x, piece.position.y);
 			makeMove(promotionPiece);
 			return;
 		}else if (SAN.contains("O-O")){
-			piece = board.getKing(board.playerMove);
+			piece = board.getKing(board.sideMove);
 			to = new Point(piece.getX() + 2, piece.getY());
 			from = new Point(piece.position.x, piece.position.y);
 			makeMove(promotionPiece);
@@ -182,7 +184,7 @@ public class Move implements Comparable<Move>{
 		
 		//pawn forwards
 		if (SAN.length() == 0){
-			int dir = board.playerMove ? 1 : -1;
+			int dir = board.sideMove.evalFactor();
 			Piece p = board.getPiece(new Point(to.x, to.y-dir));
 			if (p.symbol.equals("p")){
 				piece = p;
@@ -201,9 +203,9 @@ public class Move implements Comparable<Move>{
 		}
 		
 		if (SAN.length() == 1 && Character.isLowerCase(SAN.charAt(0))){
-			int dir = board.playerMove ? 1 : -1;
+			int dir = board.sideMove.evalFactor();
 			Piece p = board.getPiece(new Point(SAN+(to.y-dir+1)));
-			if (p.symbol.equals("p") && p.player == b.playerMove){
+			if (p.symbol.equals("p") && p.side == b.sideMove){
 				piece = p;
 				from = new Point(piece.position.x, piece.position.y);
 				makeMove(promotionPiece);
@@ -223,7 +225,7 @@ public class Move implements Comparable<Move>{
 		}
 		
 		for(Piece p : board.pieceList){
-			if (p.alive && p.player == board.playerMove && p.symbol.equals(pieceString) && (fromFile == 0 || ((int)fromFile - 97) == p.getX())  && (fromRank == 0 || ((int)fromRank - 49) == p.getY())){
+			if (p.alive && p.side == board.sideMove && p.symbol.equals(pieceString) && (fromFile == 0 || ((int)fromFile - 97) == p.getX())  && (fromRank == 0 || ((int)fromRank - 49) == p.getY())){
 				List<Move> potentialMoves = p.findMoves(b);
 				for(Move m : potentialMoves){
 					if (m.to.equals(to) && b.isLegal(m)){
@@ -241,7 +243,7 @@ public class Move implements Comparable<Move>{
 
 	void execute() {
 		if (!executed) {
-			if (!board.playerMove){
+			if (board.sideMove == Side.B){
 				board.fullMoveCounter++;
 			}
 			board.moveHistory.add(this.toString());
@@ -259,15 +261,15 @@ public class Move implements Comparable<Move>{
 					}
 				}
 				
-				if(board.playerMove){
+				if(board.sideMove == Side.W){
 					board.whiteCastled = true;
-				}else{
+				}else if (board.sideMove == Side.B){
 					board.blackCastled = true;
 				}
 				
 				castleRookMove.execute();
-				board.playerMove = !board.playerMove;
-				if (!board.playerMove){
+				board.sideMove = board.sideMove.getOtherSide();
+				if (board.sideMove == Side.B){
 					board.fullMoveCounter--;
 				}
 				board.halfMoveClock--;
@@ -298,16 +300,16 @@ public class Move implements Comparable<Move>{
 			//Change the castling variables depending on the piece being moved
 			if(piece.symbol.equals("k")){
 				
-				board.castleRights &= board.playerMove ? ~(board.WKCA | board.WQCA) : ~(board.BKCA | board.BQCA);
+				board.castleRights &= (board.sideMove == Side.W) ? ~(board.WKCA | board.WQCA) : ~(board.BKCA | board.BQCA);
 				
 			}
 			
 			board.enPassantTarget = null;
 			if(piece.symbol.equals("r")){
 				if (from.x == 0){
-					board.castleRights &= board.playerMove ? ~board.WQCA : ~board.BQCA;
+					board.castleRights &= (board.sideMove == Side.W) ? ~board.WQCA : ~board.BQCA;
 				}else if (from.x == 7){
-					board.castleRights &= board.playerMove ? ~board.WKCA : ~board.BKCA;
+					board.castleRights &= (board.sideMove == Side.W) ? ~board.WKCA : ~board.BKCA;
 				}
 				
 			}else if(piece.symbol.equals("p")){
@@ -322,13 +324,13 @@ public class Move implements Comparable<Move>{
 			if(destinationPc.symbol.equals("r")){
 				
 				//If it belongs to the player...
-				if(destinationPc.player){
+				if(destinationPc.side == Side.W){
 					if (destinationPc.position.y == 0){
 						if(destinationPc.position.x == 0) board.castleRights &= ~board.WQCA;
 						if(destinationPc.position.x == 7) board.castleRights &= ~board.WKCA;
 					}
 					
-				}else{
+				}else if(destinationPc.side == Side.B){
 					if (destinationPc.position.y == 7){
 						if(destinationPc.position.x == 0) board.castleRights &= ~board.BQCA;
 						if(destinationPc.position.x == 7) board.castleRights &= ~board.BKCA;
@@ -340,7 +342,7 @@ public class Move implements Comparable<Move>{
 			
 			destinationPc.alive = false;
 			executed = true;
-			board.playerMove = !board.playerMove;
+			board.sideMove = board.sideMove.getOtherSide();
 			
 			if (isCapture() || piece.symbol.equals("p")){
 				board.halfMoveClock = 0;
@@ -387,14 +389,14 @@ public class Move implements Comparable<Move>{
 				board.blackCastled = blackCastledO;
 				board.whiteCastled = whiteCastledO;
 				castleRookMove.reverse();
-				if (!board.playerMove){
+				if (board.sideMove == Side.B){
 					board.fullMoveCounter++;
 				}
-				board.playerMove = !board.playerMove;
+				board.sideMove = board.sideMove.getOtherSide();
 			}
 			
-			board.playerMove = !board.playerMove;
-			if (!board.playerMove){
+			board.sideMove = board.sideMove.getOtherSide();
+			if (board.sideMove == Side.B){
 				board.fullMoveCounter--;
 			}
 			board.halfMoveClock = halfMoveClockO;
@@ -423,7 +425,7 @@ public class Move implements Comparable<Move>{
 	boolean isCheck(){
 		boolean result = false;
 		execute();	
-		if (board.isCheck(board.playerMove)) {
+		if (board.isCheck(board.sideMove)) {
 			result = true;
 		} 
 		reverse();

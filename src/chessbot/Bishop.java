@@ -3,6 +3,8 @@ package chessbot;
 import java.util.ArrayList;
 import java.util.List;
 
+import chessbot.Board.Side;
+
 public class Bishop extends Piece {
 
 	static  final int WORTH = 330;
@@ -14,7 +16,7 @@ public class Bishop extends Piece {
 		List<Move> moves = new ArrayList<Move>();
 
 		if(AIController.useBitBoards){
-			moves.addAll(getMovesFromBitboard(b, 1L << position.getIndex(), player));
+			moves.addAll(getMovesFromBitboard(b, 1L << position.getIndex(), side));
 		}else{
 			// Get Diagonal moves
 			moves.addAll(Utils.getDiagonalMoves(b, this));
@@ -23,12 +25,12 @@ public class Bishop extends Piece {
 		return moves;
 	}
 	
-	static List<Move> getMovesFromBitboard(Board b, long bishops, boolean player){
+	static List<Move> getMovesFromBitboard(Board b, long bishops, Side side){
 		List<Move> moves = new ArrayList<Move>();
 		while (bishops != 0){
 			int from = BB.bitScanForward(bishops);
 
-			long possibleMoves = b.bitboard.bishopAttack(b.bitboard.combine(), from, player);
+			long possibleMoves = b.bitboard.bishopAttack(b.bitboard.combine(), from, side);
 
 			while (possibleMoves != 0){
 				int to = BB.bitScanForward(possibleMoves);
@@ -41,11 +43,11 @@ public class Bishop extends Piece {
 	}
 
 	// Constructor
-	public Bishop(int x, int y, boolean p) {
+	public Bishop(int x, int y, Side s) {
 
 		// Setting base values for the Queen piece
 		worth = WORTH;
-		player = p;
+		side = s;
 		symbol = "b";
 
 		// Using accessory method for clarity; not strictly necessary

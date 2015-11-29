@@ -2,6 +2,8 @@ package chessbot;
 
 import java.util.*;
 
+import chessbot.Board.Side;
+
 //Methods for the Queen Piece
 public class Queen extends Piece {
 	
@@ -17,7 +19,7 @@ public class Queen extends Piece {
 		List<Move> moves = new ArrayList<Move>();
 
 		if(AIController.useBitBoards){
-			moves.addAll(getMovesFromBitboard(b, 1L << position.getIndex(), player));
+			moves.addAll(getMovesFromBitboard(b, 1L << position.getIndex(), side));
 		}else{
 			// Gets vertical moves
 			moves.addAll(Utils.getVerticalMoves(b, this));
@@ -30,13 +32,13 @@ public class Queen extends Piece {
 		return moves;
 	}
 	
-	static List<Move> getMovesFromBitboard(Board b, long queens, boolean player){
+	static List<Move> getMovesFromBitboard(Board b, long queens, Side side){
 		List<Move> moves = new ArrayList<Move>();
 		while (queens != 0){
 			int from = BB.bitScanForward(queens);
 			
-			long possibleMoves = b.bitboard.bishopAttack(b.bitboard.combine(), from, player);
-			possibleMoves |= b.bitboard.rookAttack(b.bitboard.combine(), from, player);
+			long possibleMoves = b.bitboard.bishopAttack(b.bitboard.combine(), from, side);
+			possibleMoves |= b.bitboard.rookAttack(b.bitboard.combine(), from, side);
 			
 			while (possibleMoves != 0){
 				int to = BB.bitScanForward(possibleMoves);
@@ -49,11 +51,11 @@ public class Queen extends Piece {
 	}
 
 	// Constructor
-	public Queen(int x, int y, boolean p) {
+	public Queen(int x, int y, Side s) {
 
 		// Setting base values for the Queen piece
 		worth = WORTH;
-		player = p;
+		side = s;
 		symbol = "q";
 
 		// Using accessory method for clarity; not strictly necessary

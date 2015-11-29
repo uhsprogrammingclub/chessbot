@@ -9,6 +9,8 @@ import java.util.*;
 import java.util.regex.*;
 import org.hamcrest.Matcher;
 
+import chessbot.Board.Side;
+
 
 public class OpeningBook implements Runnable{
 
@@ -163,9 +165,9 @@ public class OpeningBook implements Runnable{
 		
 		Move m = new Move(board, moves.get(0));
 		boolean win = false;
-		if ((info.get("Result").equals("1-0") && board.playerMove) || (info.get("Result").equals("0-1") && !board.playerMove)){
+		if ((info.get("Result").equals("1-0") && (board.sideMove == Side.W)) || (info.get("Result").equals("0-1") && (board.sideMove == Side.B))){
 			win = true;
-		}else if ((info.get("Result").equals("1-0") && !board.playerMove) || info.get("Result").equals("0-1") && board.playerMove){
+		}else if ((info.get("Result").equals("1-0") && (board.sideMove == Side.B)) || info.get("Result").equals("0-1") && (board.sideMove == Side.W)){
 			//loss
 		}else{
 			//tie

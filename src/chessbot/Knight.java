@@ -2,6 +2,8 @@ package chessbot;
 
 import java.util.*;
 
+import chessbot.Board.Side;
+
 public class Knight extends Piece {
 	
 	static  final int WORTH = 320;
@@ -17,13 +19,13 @@ public class Knight extends Piece {
 		if (!AIController.useBitBoards){
 			moves.addAll(Utils.getKnightMoves(b, this));
 		}else{
-			moves.addAll(getMovesFromBitboard(b, 1L << position.getIndex(), player));
+			moves.addAll(getMovesFromBitboard(b, 1L << position.getIndex(), side));
 		}
 
 		return moves;
 	}
 	
-	static List<Move> getMovesFromBitboard(Board b, long knights, boolean player){
+	static List<Move> getMovesFromBitboard(Board b, long knights, Side side){
 		List<Move> moves = new ArrayList<Move>();
 		
 		while (knights != 0){
@@ -31,7 +33,7 @@ public class Knight extends Piece {
 					
 			long possibleMoves = BB.knightAttacks[from];
 			
-			long friendlyBB = b.bitboard.getFriendlyBB(player);
+			long friendlyBB = b.bitboard.getFriendlyBB(side);
 			possibleMoves &= ~friendlyBB;
 			
 			while (possibleMoves != 0){
@@ -46,11 +48,11 @@ public class Knight extends Piece {
 	}
 
 	// Constructor
-	public Knight(int x, int y, boolean p) {
+	public Knight(int x, int y, Side s) {
 
 		// Setting base values for the Queen piece
 		worth = 320;
-		player = p;
+		side = s;
 		symbol = "n";
 
 		// Using accessory method for clarity; not strictly necessary

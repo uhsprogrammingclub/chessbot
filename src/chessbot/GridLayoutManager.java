@@ -8,6 +8,8 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 
+import chessbot.Board.Side;
+
 public class GridLayoutManager extends JFrame{
 	
 	/**
@@ -94,7 +96,7 @@ public class GridLayoutManager extends JFrame{
 				int newJ = 7-j;
 				int newI = i;
 				
-				if(!p.player){
+				if(p.side == Side.B){
 					
 					switch(p.symbol){
 					case "-": squares[newJ][newI].setIcon(null);
@@ -113,7 +115,7 @@ public class GridLayoutManager extends JFrame{
 							break;
 					}
 					
-				}else{
+				}else if(p.side == Side.W){
 					
 					switch(p.symbol){
 					case "-": squares[newJ][newI].setIcon(null);
@@ -131,7 +133,9 @@ public class GridLayoutManager extends JFrame{
 					case "k": squares[newJ][newI].setIcon(WKing);
 							break;
 					}		
-				}	
+				} else {
+					squares[newJ][newI].setIcon(null);
+				}
 			}
 		}
 	}

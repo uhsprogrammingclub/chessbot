@@ -3,6 +3,8 @@ package chessbot;
 import java.util.ArrayList;
 import java.util.List;
 
+import chessbot.Board.Side;
+
 public class King extends Piece {
 
 	
@@ -18,10 +20,10 @@ public class King extends Piece {
 
 		if (!AIController.useBitBoards){
 			// Get castling moves
-			if(b.canCastle(player, true)){
+			if(b.canCastle(side, true)){
 				moves.add(new Move(b, new Point(this.getX() + 2, this.getY()), this, null));
 			}
-			if(b.canCastle(player, false)){
+			if(b.canCastle(side, false)){
 				moves.add(new Move(b, new Point(this.getX() - 2, this.getY()), this, null));
 			}
 			// Gets vertical moves
@@ -31,20 +33,20 @@ public class King extends Piece {
 			// Get Diagonal moves
 			moves.addAll(Utils.getDiagonalMoves(b, this));
 		}else{
-			moves.addAll(getMovesFromBitboard(b, 1L << position.getIndex(), player));
+			moves.addAll(getMovesFromBitboard(b, 1L << position.getIndex(), side));
 		}
 		
 		return moves;
 	}
 	
-	static List<Move> getMovesFromBitboard(Board b, long king, boolean player){
+	static List<Move> getMovesFromBitboard(Board b, long king, Side side){
 		List<Move> moves = new ArrayList<Move>();
 		
-		Piece kingPiece = b.getKing(player);
-		if(b.canCastle(player, true)){
+		Piece kingPiece = b.getKing(side);
+		if(b.canCastle(side, true)){
 			moves.add(new Move(b, new Point(kingPiece.getX() + 2, kingPiece.getY()), kingPiece, null));
 		}
-		if(b.canCastle(player, false)){
+		if(b.canCastle(side, false)){
 			moves.add(new Move(b, new Point(kingPiece.getX() - 2, kingPiece.getY()), kingPiece, null));
 		}
 		
@@ -52,7 +54,7 @@ public class King extends Piece {
 		
 		long possibleMoves = BB.kingAttacks[from];
 		
-		long friendlyBB = b.bitboard.getFriendlyBB(player);
+		long friendlyBB = b.bitboard.getFriendlyBB(side);
 		possibleMoves &= ~friendlyBB;
 		
 		while (possibleMoves != 0){
@@ -65,11 +67,11 @@ public class King extends Piece {
 	}
 
 	// Constructor
-	public King(int x, int y, boolean p) {
+	public King(int x, int y, Side s) {
 
 		// Setting base values for the Queen piece
 		worth = WORTH;
-		player = p;
+		side = s;
 		symbol = "k";
 
 		// Using accessory method for clarity; not strictly necessary

@@ -2,6 +2,8 @@ package chessbot;
 
 import java.util.*;
 
+import chessbot.Board.Side;
+
 public class Pawn extends Piece {
 	
 	static  final int WORTH = 100;
@@ -23,13 +25,13 @@ public class Pawn extends Piece {
 			moves.addAll(Utils.getDiagonalMoves(b, this));
 		
 		}else{
-			moves.addAll(getMovesFromBitboard(b, 1L << position.getIndex(), player));
+			moves.addAll(getMovesFromBitboard(b, 1L << position.getIndex(), side));
 		}
 		// Return moves
 		return moves;
 	}
 	
-	static List<Move> getMovesFromBitboard(Board b, long pawns, boolean player){
+	static List<Move> getMovesFromBitboard(Board b, long pawns, Side side){
 		List<Move> moves = new ArrayList<Move>();
 		while (pawns != 0){
 			int from = BB.bitScanForward(pawns);
@@ -40,8 +42,8 @@ public class Pawn extends Piece {
 			if (b.enPassantTarget != null){
 				enPassantBit = (long)1 << b.enPassantTarget.getIndex();
 			}
-			possibleMoves |= b.bitboard.pawnsAttack(pawn, player, enPassantBit);
-			possibleMoves |= b.bitboard.pawnPush(pawn, player);
+			possibleMoves |= b.bitboard.pawnsAttack(pawn, side, enPassantBit);
+			possibleMoves |= b.bitboard.pawnPush(pawn, side);
 			
 			while (possibleMoves != 0){
 				int to = BB.bitScanForward(possibleMoves);
@@ -64,11 +66,11 @@ public class Pawn extends Piece {
 	
 
 	// Constructor
-	public Pawn(int x, int y, boolean p) {
+	public Pawn(int x, int y, Side s) {
 
 		// Setting base values for the Pawn piece
 		worth = WORTH;
-		player = p;
+		side = s;
 		symbol = "p";
 
 		// Using accessory method for clarity; not strictly necessary

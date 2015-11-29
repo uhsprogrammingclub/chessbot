@@ -159,7 +159,7 @@ public class AI {
 			return 0;
 		}
 
-		int standPat = board.evaluateBoard() * (board.playerMove ? -1 : 1);
+		int standPat = board.evaluateBoard() * board.sideMove.evalFactor();
 		
 		long zHash = board.currentZobrist;
 		boolean newAlpha = false;
@@ -175,7 +175,7 @@ public class AI {
 		int moveNum = 0;
 		Move bestMove = null;
 		List<Move> moves = new ArrayList<Move>();
-		if (board.isCheck(board.playerMove)){
+		if (board.isCheck(board.sideMove)){
 			moves = board.allMoves();
 			if (AIController.sortMoves){
 				Collections.sort(moves);
@@ -201,7 +201,7 @@ public class AI {
 			moveNum++;
 			
 			if (AIController.useBitBoards){
-				int captureValue = board.bitboard.SEE(m.to.getIndex(), m.from.getIndex(), board.playerMove);
+				int captureValue = board.bitboard.SEE(m.to.getIndex(), m.from.getIndex(), board.sideMove);
 				if (captureValue < 0){
 					continue; //Unbeneficial move
 				}
@@ -254,10 +254,10 @@ public class AI {
 		HashEntry oldEntry = TranspositionTable.trans.get(index);
 	
 		if (isRepetition()){
-			return Evaluation.contemptFactor * ( board.playerMove ? -1 : 1 );
+			return Evaluation.contemptFactor * board.sideMove.evalFactor();
 		}
 		if (board.isGameOver() == true){
-			return board.evaluateBoard() * ( board.playerMove ? -1 : 1 );
+			return board.evaluateBoard() * board.sideMove.evalFactor();
 		}
 		
 		//Test if it is the final depth or the game is over
@@ -280,7 +280,7 @@ public class AI {
 						return 0;
 					}
 
-					return board.evaluateBoard() * ( board.playerMove ? -1 : 1 );
+					return board.evaluateBoard() * board.sideMove.evalFactor();
 				}
 				
 			}

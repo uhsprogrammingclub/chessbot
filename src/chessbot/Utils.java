@@ -2,6 +2,8 @@ package chessbot;
 
 import java.util.*;
 
+import chessbot.Board.Side;
+
 public class Utils {
 
 	static List<Move> getVerticalMoves(Board b, Piece p) {
@@ -12,7 +14,7 @@ public class Utils {
 		if (p.symbol.equals("p")) {
 			
 			// get direction of the pawn
-			int dir = p.player ? 1 : -1;
+			int dir = p.side.evalFactor();;
 			Point move = new Point(pos.x, pos.y + dir);
 
 			if (move.squareExists()) {
@@ -27,7 +29,7 @@ public class Utils {
 					}
 					
 					// check if pawn can move 2 squares.
-					if ((p.player && pos.y == 1) || (!p.player && pos.y == 6)) {
+					if (((p.side == Side.W) && pos.y == 1) || ((p.side == Side.B) && pos.y == 6)) {
 						Point move2 = new Point(pos.x, pos.y + dir * 2);
 						if (move2.squareExists() && b.isEmptySquare(move2)) {
 							moves.add(new Move(b, move2, p, null));
@@ -42,7 +44,7 @@ public class Utils {
 				if (b.isEmptySquare(move)) {
 					moves.add(new Move(b, move, p, null));
 				} else {
-					if (b.getTeam(move) != p.player) {
+					if (b.getSide(move) != p.side) {
 						moves.add(new Move(b, move, p, null));
 					}
 					break;
@@ -56,7 +58,7 @@ public class Utils {
 				if (b.isEmptySquare(move)) {
 					moves.add(new Move(b, move, p, null));
 				} else {
-					if (b.getTeam(move) != p.player) {
+					if (b.getSide(move) != p.side) {
 						moves.add(new Move(b, move, p, null));
 					}
 					break;
@@ -78,7 +80,7 @@ public class Utils {
 			if (b.isEmptySquare(move)) {
 				moves.add(new Move(b, move, p, null));
 			} else {
-				if (b.getTeam(move) != p.player) {
+				if (b.getSide(move) != p.side) {
 					moves.add(new Move(b, move, p, null));
 				}
 				break;
@@ -92,7 +94,7 @@ public class Utils {
 			if (b.isEmptySquare(move)) {
 				moves.add(new Move(b, move, p, null));
 			} else {
-				if (b.getTeam(move) != p.player) {
+				if (b.getSide(move) != p.side) {
 					moves.add(new Move(b, move, p, null));
 				}
 				break;
@@ -110,11 +112,11 @@ public class Utils {
 		// evaluate moves if it's a pawn
 		if (p.symbol.equals("p")) {
 			// get direction of the pawn
-			int dir = p.player ? 1 : -1;
+			int dir = p.side.evalFactor();;
 
 			// check if spot diagonally to the right
 			Point move = new Point(pos.x + 1, pos.y + dir);
-			if (move.squareExists() && (!b.isEmptySquare(move) && b.getTeam(move) != p.player|| move.equals(b.enPassantTarget))) {
+			if (move.squareExists() && (!b.isEmptySquare(move) && b.getSide(move) != p.side|| move.equals(b.enPassantTarget))) {
 				if(move.y == 0 || move.y == 7){
 					moves.add(new Move(b, move, p, "q"));
 					moves.add(new Move(b, move, p, "b"));
@@ -128,7 +130,7 @@ public class Utils {
 			// check if spot diagonally to the left
 			Point move2 = new Point(pos.x - 1, pos.y + dir);
 
-			if (move2.squareExists() && (!b.isEmptySquare(move2) && b.getTeam(move2) != p.player || move2.equals(b.enPassantTarget))) {
+			if (move2.squareExists() && (!b.isEmptySquare(move2) && b.getSide(move2) != p.side || move2.equals(b.enPassantTarget))) {
 				if(move2.y == 0 || move2.y == 7){
 					moves.add(new Move(b, move2, p, "q"));
 					moves.add(new Move(b, move2, p, "n"));
@@ -148,7 +150,7 @@ public class Utils {
 				if (b.isEmptySquare(move)) {
 					moves.add(new Move(b, move, p, null));
 				} else {
-					if (b.getTeam(move) != p.player) {
+					if (b.getSide(move) != p.side) {
 						moves.add(new Move(b, move, p, null));
 					}
 					break;
@@ -166,7 +168,7 @@ public class Utils {
 				if (b.isEmptySquare(move)) {
 					moves.add(new Move(b, move, p, null));
 				} else {
-					if (b.getTeam(move) != p.player) {
+					if (b.getSide(move) != p.side) {
 						moves.add(new Move(b, move, p, null));
 					}
 					break;
@@ -183,7 +185,7 @@ public class Utils {
 				if (b.isEmptySquare(move)) {
 					moves.add(new Move(b, move, p, null));
 				} else {
-					if (b.getTeam(move) != p.player) {
+					if (b.getSide(move) != p.side) {
 						moves.add(new Move(b, move, p, null));
 					}
 					break;
@@ -200,7 +202,7 @@ public class Utils {
 				if (b.isEmptySquare(move)) {
 					moves.add(new Move(b, move, p, null));
 				} else {
-					if (b.getTeam(move) != p.player) {
+					if (b.getSide(move) != p.side) {
 						moves.add(new Move(b, move, p, null));
 					}
 					break;
@@ -218,11 +220,11 @@ public class Utils {
 		for (int i = -1; i <= 1; i = i + 2) {
 			for (int j = -2; j <= 2; j = j + 4) {
 				Point move = new Point(p.position.x + i, p.position.y + j);
-				if (move.squareExists() && (b.getTeam(move) != p.player || b.isEmptySquare(move))) {
+				if (move.squareExists() && (b.getSide(move) != p.side || b.isEmptySquare(move))) {
 					moves.add(new Move(b, move, p, null));
 				}
 				Point move2 = new Point(p.position.x + j, p.position.y + i);
-				if (move2.squareExists() && (b.getTeam(move2) != p.player || b.isEmptySquare(move2))) {
+				if (move2.squareExists() && (b.getSide(move2) != p.side || b.isEmptySquare(move2))) {
 					moves.add(new Move(b, move2, p, null));
 				}
 			}
@@ -233,13 +235,13 @@ public class Utils {
 	static boolean isChecked(Board b, Piece king) {
 		
 		Point pos = king.position;
-		boolean pl = king.player;
+		Side si = king.side;
 		
 		//up the board
 		for (int y = pos.y + 1; y < 8; y++) { 
 			Point move = new Point(pos.x, y);
 			if (!b.isEmptySquare(move)) {
-				if (b.getTeam(move) != pl 
+				if (b.getSide(move) != si 
 						&&(b.getPiece(move).symbol == "q" 
 						|| b.getPiece(move).symbol == "r" 
 						|| (b.getPiece(move).symbol == "k" && y == pos.y + 1))){
@@ -254,7 +256,7 @@ public class Utils {
 		for (int y = pos.y - 1; y >= 0; y--) {
 			Point move = new Point(pos.x, y);
 			if (!b.isEmptySquare(move)) {
-				if (b.getTeam(move) != pl 
+				if (b.getSide(move) != si 
 						&&(b.getPiece(move).symbol == "q" 
 						|| b.getPiece(move).symbol == "r" 
 						|| (b.getPiece(move).symbol == "k" && y == pos.y - 1))){
@@ -269,7 +271,7 @@ public class Utils {
 		for (int x = pos.x + 1; x < 8; x++) {
 			Point move = new Point(x, pos.y);
 			if (!b.isEmptySquare(move)) {
-				if (b.getTeam(move) != pl 
+				if (b.getSide(move) != si 
 						&&(b.getPiece(move).symbol == "q" 
 						|| b.getPiece(move).symbol == "r" 
 						|| (b.getPiece(move).symbol == "k" && x == pos.x + 1))){
@@ -284,7 +286,7 @@ public class Utils {
 		for (int x = pos.x - 1; x >= 0; x--) {
 			Point move = new Point(x, pos.y);
 			if (!b.isEmptySquare(move)) {
-				if (b.getTeam(move) != pl 
+				if (b.getSide(move) != si 
 						&&(b.getPiece(move).symbol == "q" 
 						|| b.getPiece(move).symbol == "r" 
 						|| (b.getPiece(move).symbol == "k" && x == pos.x - 1))){
@@ -302,11 +304,11 @@ public class Utils {
 				break;
 
 			if (!b.isEmptySquare(move)) {
-				if (b.getTeam(move) != pl 
+				if (b.getSide(move) != si 
 						&&(b.getPiece(move).symbol == "q" 
 						|| b.getPiece(move).symbol == "b" 
 						|| (b.getPiece(move).symbol == "k" && i == 1)
-						|| (b.getPiece(move).symbol == "p" && i == 1 && pl))){
+						|| (b.getPiece(move).symbol == "p" && i == 1 && (si == Side.W)))){
 						return true; //if king queen or rook on opposing team.
 				}else{
 					break;
@@ -320,11 +322,11 @@ public class Utils {
 				break;
 
 			if (!b.isEmptySquare(move)) {
-				if (b.getTeam(move) != pl 
+				if (b.getSide(move) != si 
 						&&(b.getPiece(move).symbol == "q" 
 						|| b.getPiece(move).symbol == "b" 
 						|| (b.getPiece(move).symbol == "k" && i == 1)
-						|| (b.getPiece(move).symbol == "p" && i == 1 && pl))){
+						|| (b.getPiece(move).symbol == "p" && i == 1 && (si == Side.W)))){
 						return true; //if king queen or rook on opposing team.
 				}else{
 					break;
@@ -338,11 +340,11 @@ public class Utils {
 				break;
 
 			if (!b.isEmptySquare(move)) {
-				if (b.getTeam(move) != pl 
+				if (b.getSide(move) != si 
 						&&(b.getPiece(move).symbol == "q" 
 						|| b.getPiece(move).symbol == "b" 
 						|| (b.getPiece(move).symbol == "k" && i == 1)
-						|| (b.getPiece(move).symbol == "p" && i == 1 && !pl))){
+						|| (b.getPiece(move).symbol == "p" && i == 1 && (si == Side.B)))){
 						return true; //if king queen or rook on opposing team.
 				}else{
 					break;
@@ -356,11 +358,11 @@ public class Utils {
 				break;
 
 			if (!b.isEmptySquare(move)) {
-				if (b.getTeam(move) != pl 
+				if (b.getSide(move) != si 
 						&&(b.getPiece(move).symbol == "q" 
 						|| b.getPiece(move).symbol == "b" 
 						|| (b.getPiece(move).symbol == "k" && i == 1)
-						|| (b.getPiece(move).symbol == "p" && i == 1 && !pl))){
+						|| (b.getPiece(move).symbol == "p" && i == 1 && (si == Side.B)))){
 						return true; //if king queen or rook on opposing team.
 				}else{
 					break;
@@ -372,11 +374,11 @@ public class Utils {
 			for (int j = -2; j <= 2; j = j + 4) {
 				
 				Point move = new Point(pos.x + i, pos.y + j);
-				if (move.squareExists() && !b.isEmptySquare(move) && b.getTeam(move) != pl && b.getPiece(move).symbol == "n") {
+				if (move.squareExists() && !b.isEmptySquare(move) && b.getSide(move) != si && b.getPiece(move).symbol == "n") {
 					return true;
 				}
 				Point move2 = new Point(pos.x + j, pos.y + i);
-				if (move2.squareExists() && !b.isEmptySquare(move2) && b.getTeam(move2) != pl && b.getPiece(move2).symbol == "n") {
+				if (move2.squareExists() && !b.isEmptySquare(move2) && b.getSide(move2) != si && b.getPiece(move2).symbol == "n") {
 					return true;
 				}
 			}
@@ -425,22 +427,22 @@ public class Utils {
 				}else{
 					
 					if(Character.toUpperCase(c) == 'P'){
-						p = new Pawn(x, y, Character.isUpperCase(c));
+						p = new Pawn(x, y, Character.isUpperCase(c)? Side.W : Side.B);
 					}
 					else if(Character.toUpperCase(c) == 'B'){
-						p = new Bishop(x, y, Character.isUpperCase(c));
+						p = new Bishop(x, y, Character.isUpperCase(c)? Side.W : Side.B);
 					}
 					else if(Character.toUpperCase(c) == 'N'){
-						p = new Knight(x, y, Character.isUpperCase(c));
+						p = new Knight(x, y, Character.isUpperCase(c)? Side.W : Side.B);
 					}
 					else if(Character.toUpperCase(c) == 'R'){
-						p = new Rook(x, y, Character.isUpperCase(c));
+						p = new Rook(x, y, Character.isUpperCase(c)? Side.W : Side.B);
 					}
 					else if(Character.toUpperCase(c) == 'Q'){
-						p = new Queen(x, y, Character.isUpperCase(c));
+						p = new Queen(x, y, Character.isUpperCase(c)? Side.W : Side.B);
 					}
 					else if(Character.toUpperCase(c) == 'K'){
-						p = new King(x, y, Character.isUpperCase(c));
+						p = new King(x, y, Character.isUpperCase(c)? Side.W : Side.B);
 					}
 					
 				}
@@ -458,10 +460,10 @@ public class Utils {
 		}
 		
 		//Assign the player to move
-		Boolean playerMove = sideToMove.equals("w") ? true : false;
+		Side firstSideToMove = sideToMove.equals("w") ? Side.W : Side.B;
 		
 		//Create the board
-		Board b = new Board(list, playerMove);
+		Board b = new Board(list, firstSideToMove);
 		
 		//Default the castling rights to false
 		b.castleRights = 0;
@@ -512,7 +514,7 @@ public class Utils {
 						FEN += Integer.toString(adjEmpty);
 					}
 					
-					FEN += p.player ? p.symbol.toUpperCase() : p.symbol;
+					FEN += (p.side == Side.W) ? p.symbol.toUpperCase() : p.symbol;
 					
 					adjEmpty = 0;
 					
@@ -531,7 +533,7 @@ public class Utils {
 		FEN = FEN.substring(0, FEN.length()-1) + " ";
 		
 		//Adding side to move
-		FEN += b.playerMove ? "w" : "b";
+		FEN += (b.sideMove == Side.W) ? "w" : "b";
 		FEN += " ";
 		
 		//Adding castling abilities

@@ -2,6 +2,8 @@ package chessbot;
 
 import java.util.*;
 
+import chessbot.Board.Side;
+
 //General
 public abstract class Piece {
 
@@ -14,7 +16,7 @@ public abstract class Piece {
 	boolean alive = true;
 
 	// Variable indicates whether or not the piece belongs to the player
-	Boolean player = false;
+	Side side = Side.NONE;
 
 	// Abstract methods
 	public abstract List<Move> findMoves(Board b);
@@ -39,7 +41,7 @@ public abstract class Piece {
 	@Override
 	public String toString() {
 		String s = "";
-		s += player ? symbol.toUpperCase() : symbol;
+		s += (side == Side.W) ? symbol.toUpperCase() : symbol;
 		//if (!alive) s = "("+s+")";
 		return s;
 	}
@@ -53,7 +55,7 @@ public abstract class Piece {
 			return false;
 		}
 		final Piece other = (Piece) obj;
-		if (this.position.equals(other.position) && this.symbol.equals(other.symbol) && this.player == other.player && this.alive == other.alive) {
+		if (this.position.equals(other.position) && this.symbol.equals(other.symbol) && this.side == other.side && this.alive == other.alive) {
 			return true;
 		} else {
 			return false;

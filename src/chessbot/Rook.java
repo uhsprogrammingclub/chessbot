@@ -3,6 +3,8 @@ package chessbot;
 import java.util.ArrayList;
 import java.util.List;
 
+import chessbot.Board.Side;
+
 public class Rook extends Piece {
 	
 	static  final int WORTH = 500;
@@ -15,7 +17,7 @@ public class Rook extends Piece {
 		List<Move> moves = new ArrayList<Move>();
 		
 		if(AIController.useBitBoards){
-			moves.addAll(getMovesFromBitboard(b, 1L << position.getIndex(), player));
+			moves.addAll(getMovesFromBitboard(b, 1L << position.getIndex(), side));
 		}else{
 
 			// Gets vertical moves
@@ -28,12 +30,12 @@ public class Rook extends Piece {
 	}
 
 	
-	static List<Move> getMovesFromBitboard(Board b, long rooks, boolean player){
+	static List<Move> getMovesFromBitboard(Board b, long rooks, Side side){
 		List<Move> moves = new ArrayList<Move>();
 		while (rooks != 0){
 			int from = BB.bitScanForward(rooks);
 
-			long possibleMoves = b.bitboard.rookAttack(b.bitboard.combine(), from, player);
+			long possibleMoves = b.bitboard.rookAttack(b.bitboard.combine(), from, side);
 			
 			while (possibleMoves != 0){
 				int to = BB.bitScanForward(possibleMoves);
@@ -46,11 +48,11 @@ public class Rook extends Piece {
 	}
 	
 	// Constructor
-	public Rook(int x, int y, boolean p) {
+	public Rook(int x, int y, Side s) {
 
 		// Setting base values for the Queen piece
 		worth = WORTH;
-		player = p;
+		side = s;
 		symbol = "r";
 
 		// Using accessory method for clarity; not strictly necessary

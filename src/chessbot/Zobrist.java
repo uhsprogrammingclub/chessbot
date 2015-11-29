@@ -2,6 +2,8 @@ package chessbot;
 
 import java.security.*;
 
+import chessbot.Board.Side;
+
 public class Zobrist {
 	static long zArray[][][] = new long [2][6][64];
 	static long zEnPassant[] = new long[8];
@@ -43,55 +45,55 @@ public class Zobrist {
 		for(int i = 0; i < 64; i++){
 				
 			//Computer Pawn
-			if(b.locations[i].symbol == "p" && b.locations[i].player == false){
+			if(b.locations[i].symbol == "p" && b.locations[i].side == Side.B){
 				zKey ^= zArray[0][0][i];
 			}
 			//Player Pawn
-			else if(b.locations[i].symbol == "p" && b.locations[i].player == true){
+			else if(b.locations[i].symbol == "p" && b.locations[i].side == Side.W){
 				zKey ^= zArray[1][0][i];
 			}
 			//Computer Knight
-			else if(b.locations[i].symbol == "n" && b.locations[i].player == false){
+			else if(b.locations[i].symbol == "n" && b.locations[i].side == Side.B){
 				zKey ^= zArray[0][1][i];
 			}
 			//Player Knight
-			else if(b.locations[i].symbol == "n" && b.locations[i].player == true){
+			else if(b.locations[i].symbol == "n" && b.locations[i].side == Side.W){
 				zKey ^= zArray[1][1][i];
 			}
 			//Computer Bishop
-			else if(b.locations[i].symbol == "b" && b.locations[i].player == false){
+			else if(b.locations[i].symbol == "b" && b.locations[i].side == Side.B){
 				zKey ^= zArray[0][2][i];
 			}
 			//Player Bishop
-			else if(b.locations[i].symbol == "b" && b.locations[i].player == true){
+			else if(b.locations[i].symbol == "b" && b.locations[i].side == Side.W){
 				zKey ^= zArray[1][2][i];
 			}
 			//Computer Rook
-			else if(b.locations[i].symbol == "r" && b.locations[i].player == false){
+			else if(b.locations[i].symbol == "r" && b.locations[i].side == Side.B){
 				zKey ^= zArray[0][3][i];
 			}
 			//Player Rook
-			else if(b.locations[i].symbol == "r" && b.locations[i].player == true){
+			else if(b.locations[i].symbol == "r" && b.locations[i].side == Side.W){
 				zKey ^= zArray[1][3][i];
 			}
 			//Computer Queen
-			else if(b.locations[i].symbol == "q" && b.locations[i].player == false){
+			else if(b.locations[i].symbol == "q" && b.locations[i].side == Side.B){
 				zKey ^= zArray[0][4][i];
 			}
 			//Player Queen
-			else if(b.locations[i].symbol == "q" && b.locations[i].player == true){
+			else if(b.locations[i].symbol == "q" && b.locations[i].side == Side.W){
 				zKey ^= zArray[1][4][i];
 			}
 			//Computer King
-			else if(b.locations[i].symbol == "k" && b.locations[i].player == false){
+			else if(b.locations[i].symbol == "k" && b.locations[i].side == Side.B){
 				zKey ^= zArray[0][5][i];
 			}
 			//Player King
-			else if(b.locations[i].symbol == "k" && b.locations[i].player == true){
+			else if(b.locations[i].symbol == "k" && b.locations[i].side == Side.W){
 				zKey ^= zArray[1][5][i];
 			}
 		}
-		if (b.playerMove){
+		if (b.sideMove == Side.W){
 			zKey ^= zPlayerMove;
 		}
 		if((b.castleRights & b.WKCA) == 0){
@@ -114,11 +116,11 @@ public class Zobrist {
 		long zKey = 0;
 		for(int i = 0; i < 64; i++){
 			//Computer Pawn
-			if(b.locations[i].symbol == "p" && b.locations[i].player == false){
+			if(b.locations[i].symbol == "p" && b.locations[i].side == Side.B){
 				zKey ^= zArray[0][0][i];
 			}
 			//Player Pawn
-			else if(b.locations[i].symbol == "p" && b.locations[i].player == true){
+			else if(b.locations[i].symbol == "p" && b.locations[i].side == Side.W){
 				zKey ^= zArray[1][0][i];
 			}
 		}
