@@ -78,7 +78,11 @@ public class Move implements Comparable<Move>{
 	
 	private void makeMove(String promotionPiece){
 		destinationPc = board.getPiece(to);
+		
+		whiteCastledO = board.whiteCastled;
+		blackCastledO = board.blackCastled;
 		castleRightsO = board.castleRights;
+		
 		enPassantTargetO = board.enPassantTarget;
 		halfMoveClockO = board.halfMoveClock;
 		currentZobristO = board.currentZobrist;

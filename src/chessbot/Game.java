@@ -20,8 +20,8 @@ public class Game {
 	//Boolean that determines whether the AI plays itself
 	static Side firstSideToMove = Side.W;
 	
-	static boolean whiteIsBot = true;
-	static boolean blackIsBot = false;
+	static boolean whiteIsBot = false;
+	static boolean blackIsBot = true;
 	
 	//Initialize the grid GUI layout
 	static GridLayoutManager gui;
@@ -77,7 +77,7 @@ public class Game {
 		//g.setFEN("8/8/p4k2/2r5/4K3/8/8/8 w - - 0 1");
 		//g.setFEN("8/8/4k1p1/7p/8/6P1/5K2/8 w - - 0 1");
 		//g.setFEN("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"); //Everything
-		g.setFEN("r3k2r/8/8/8/8/8/PPPPPPPP/4K3 b kq - 0 1");
+		//g.setFEN("r3k2r/8/8/8/8/8/PPPPPPPP/4K3 b kq - 0 1");
 		g.setFEN(setup);
 		g.init();
 		g.start();
