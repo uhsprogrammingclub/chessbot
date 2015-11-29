@@ -17,6 +17,7 @@ public class Evaluation {
 	static int pawnChainValue = 5;
 	static int holeValue = 0;
 	static int passedPawnValue = 30;
+	static int contemptFactor = 0;
 	
 	final static int CHECKMATE = 1000000;
 	

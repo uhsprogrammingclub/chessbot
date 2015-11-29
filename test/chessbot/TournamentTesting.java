@@ -53,7 +53,7 @@ public class TournamentTesting {
 					break;
 				}
 			
-				b.contemptFactor = 9999;
+				Evaluation.contemptFactor = 9999;
 				playerOne.search();
 				if (playerOne.AIC.bestRootMove != null) {
 					
@@ -87,7 +87,7 @@ public class TournamentTesting {
 				AIController.useTTEvals = true;
 				AIController.killerHeuristic = true;
 				AIController.quiescenceSearch = true;
-				b.contemptFactor = -9999;
+				Evaluation.contemptFactor = -9999;
 
 				AIController.iterativeDeepeningMoveReordering = true;
 				playerTwo.search();

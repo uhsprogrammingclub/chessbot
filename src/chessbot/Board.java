@@ -43,9 +43,7 @@ public class Board {
 	int fullMoveCounter = 0;
 
 	long currentZobrist = 0;
-	
-	int contemptFactor = 0;
-	
+		
 	Piece emptySquare = new Empty();
 
 	// Override java.lang.Object.toString method to create easier to read output
@@ -419,7 +417,7 @@ public class Board {
 			if (isCheck(playerMove) && allMoves().size() == 0){
 				score = Evaluation.CHECKMATE * (playerMove ? 1 : -1);
 			}else{
-				score = contemptFactor;
+				score = Evaluation.contemptFactor;
 			}
 		}
 		
