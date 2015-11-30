@@ -29,7 +29,15 @@ public class AI {
 				AIC.currentECO = opening.ECO;
 				return;
 			}
+		
 		}
+		
+		if(AIController.useTimeControls){
+			AIController.plyFromOpening += 1;
+			AIController.timeLimit = AIC.getAllottedTime();
+			AIController.timeLeft -= AIController.timeLimit;
+		}
+		
 		for (currentDepth = 1; currentDepth <= AIC.DEPTH_LIMIT; currentDepth++) {
 
 			int previousNodes = AIC.totalNodes;
@@ -46,7 +54,7 @@ public class AI {
 			}
 			AIC.researches += AIC.totalNodes - nodesBeforeResearch;
 			
-			if (AIC.aspirationWindow){
+			if (AIController.aspirationWindow){
 				alpha = result - 10;
 				beta = result + 10;
 			}
@@ -269,7 +277,7 @@ public class AI {
 			
 			AIC.computationsAtDepth.put(depth, AIC.computationsAtDepth.get(depth) + 1);
 			
-			if (AIC.useTTEvals && oldEntry != null && oldEntry.zobrist == zHash && oldEntry.nodeType == HashEntry.PV_NODE && (oldEntry.depthLeft+board.halfMoveClock) < 100 && !pvCausesRepetition()){
+			if (AIController.useTTEvals && oldEntry != null && oldEntry.zobrist == zHash && oldEntry.nodeType == HashEntry.PV_NODE && (oldEntry.depthLeft+board.halfMoveClock) < 100 && !pvCausesRepetition()){
 				return oldEntry.eval; //passes up the pre-computed evaluation
 			}else{
 				if(AIController.quiescenceSearch){

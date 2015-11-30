@@ -78,6 +78,7 @@ public class Game {
 		//g.setFEN("8/8/4k1p1/7p/8/6P1/5K2/8 w - - 0 1");
 		//g.setFEN("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"); //Everything
 		//g.setFEN("r3k2r/8/8/8/8/8/PPPPPPPP/4K3 b kq - 0 1");
+		//g.setFEN("8/8/8/2p5/1p1bk3/1P2n1K1/1PP5/2B1R3 b KQkq- - 0 57");
 		g.setFEN(setup);
 		g.init();
 		g.start();
@@ -111,6 +112,13 @@ public class Game {
 			Thread bookThread = new Thread(book, "Opening Book Thread");  
 			bookThread.start();  
 		}
+		
+		try {
+		    Thread.sleep(10000);                 //1000 milliseconds is one second.
+		} catch(InterruptedException ex) {
+		    Thread.currentThread().interrupt();
+		}
+		
 		if (firstSideToMove == Side.W){
 			whiteMove(b);
 		}else{
