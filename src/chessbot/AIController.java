@@ -11,8 +11,20 @@ public class AIController {
 	final int DEPTH_LIMIT = 64;
 	final int INFINITY = 1000000000;
 	
-	//Set the default time limit
-	static double timeLimit = 5000;
+	// Time controller variables
+	static int timeLeft = 300000;
+	static int plyFromOpening = -1;
+	
+	//Set the default time limit - if using standard moves/second
+	static double timeLimit = 0;
+	
+	//Variables for time function
+	double dampeningFactor = 0.03; // Must be positive - negated in function
+	int upperGameBound = 130; // Try 207 or 171 if issues persist, 171 is 98% confidence
+	static double extensionConstant = 1.3;
+	
+	
+	
 	
 	//Search stats
 	int usedTTCount = 0;
@@ -37,9 +49,10 @@ public class AIController {
 	static boolean quiescenceSearch = true; // Complete basic quiescence search after finishing main search to counter horizon effect
 	static boolean sortMoves = true;
 	static boolean aspirationWindow = false;
-	static boolean useOpeningBook = false;
+	static boolean useOpeningBook = true;
 	static boolean useBitBoards = true;
-	public static boolean usePawnEvaluations = true;
+	static boolean usePawnEvaluations = true;
+	static boolean useTimeControls = true;
 	
 	//Hashtable to store number of computations at each depth (serves no functional purpose)
 	Hashtable<Integer, Integer> computationsAtDepth = new Hashtable<Integer, Integer>(100);
@@ -49,6 +62,18 @@ public class AIController {
 
 	public AIController() {
 		startTime = System.currentTimeMillis();
+	}
+	
+	int getAllottedTime(){
+		
+		if(plyFromOpening < 0){ return -1;}
+		
+		// for n != 0
+		// https://www.wolframalpha.com/input/?i=ke%5E%28-n*l%29%2F%28-n%29-ke%5E%28-n*x%29%2F%28-n%29%3D+z+solve+for+k
+		double scalar = (dampeningFactor * timeLeft * Math.pow(Math.E, dampeningFactor * (upperGameBound + plyFromOpening))) / (Math.pow(Math.E, upperGameBound * dampeningFactor) - Math.pow(Math.E, dampeningFactor * plyFromOpening));
+		int answer = (int)(scalar * Math.pow(Math.E, -dampeningFactor * plyFromOpening));
+		System.out.println("Ply: " + plyFromOpening + " Allowed Time: " + answer + " Time Left: " + timeLeft);
+		return answer;
 	}
 	
 	void checkTimeLimit(){
