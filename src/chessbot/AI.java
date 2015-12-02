@@ -39,18 +39,17 @@ public class AI {
 		}
 		
 		for (currentDepth = 1; currentDepth <= AIC.DEPTH_LIMIT; currentDepth++) {
-
 			int previousNodes = AIC.totalNodes;
 			AIC.evaluateToDepth = currentDepth;
-			int result = negaMax(alpha, beta, 0, currentDepth);
+			int result = negaMax(alpha, beta, currentDepth);
 			int nodesBeforeResearch = AIC.totalNodes;
 			if (result <= alpha){
 				alpha = -INFINITY;
-				result = negaMax(alpha, beta, 0, currentDepth);
+				result = negaMax(alpha, beta, currentDepth);
 			}
 			if (result >= beta){
 				beta = INFINITY;
-				result = negaMax(alpha, beta, 0, currentDepth);
+				result = negaMax(alpha, beta, currentDepth);
 			}
 			AIC.researches += AIC.totalNodes - nodesBeforeResearch;
 			
@@ -166,6 +165,12 @@ public class AI {
 		if (AIC.stopSearching){
 			return 0;
 		}
+		
+		if (AIC.computationsAtPly.get(board.ply) == null){
+			AIC.computationsAtPly.put(board.ply, 0);
+		}
+		
+		AIC.computationsAtPly.put(board.ply, AIC.computationsAtPly.get(board.ply) + 1);
 
 		int standPat = board.evaluateBoard() * board.sideMove.evalFactor();
 		
@@ -176,6 +181,13 @@ public class AI {
 		if (alpha < standPat) {
 			newAlpha = true;
 			alpha = standPat;
+		}
+		
+		// Look for a beta cutoff
+		if (standPat >= beta) {
+			return standPat; // Fail-soft
+		}else{
+			board.ply++;
 		}
 
 		int maxValue = standPat;
@@ -189,10 +201,6 @@ public class AI {
 				Collections.sort(moves);
 			}
 		}else{
-			// Look for a beta cutoff
-			if (standPat >= beta) {
-				return standPat; // Fail-soft
-			}
 			
 			List<Move> captureMoves = board.captureMoves();
 			List<Move> checkMoves = board.checkMoves();
@@ -219,6 +227,7 @@ public class AI {
 			m.reverse();
 			
 			if (AIC.stopSearching){
+				board.ply--;
 				return 0;
 			}
 
@@ -246,14 +255,14 @@ public class AI {
 			TranspositionTable.addEntry(newEntry); //add the move entry. only gets placed if eval is higher than previous entry
 		}
 
+		board.ply--;
 		return maxValue;
 
 	}
 	
-	int negaMax(int alpha, int beta, int depth, int maxDepth){
+	int negaMax(int alpha, int beta, int depth){
 		
 		AIC.totalNodes++;
-		
 		//Get hash of current board
 		long zHash = board.currentZobrist;
 		int index = Zobrist.getIndex(zHash, TranspositionTable.hashSize);
@@ -269,15 +278,9 @@ public class AI {
 		}
 		
 		//Test if it is the final depth or the game is over
-		if (depth == maxDepth) {
-			
-			if (AIC.computationsAtDepth.get(depth) == null){
-				AIC.computationsAtDepth.put(depth, 0);
-			}
-			
-			AIC.computationsAtDepth.put(depth, AIC.computationsAtDepth.get(depth) + 1);
-			
-			if (AIController.useTTEvals && oldEntry != null && oldEntry.zobrist == zHash && oldEntry.nodeType == HashEntry.PV_NODE && (oldEntry.depthLeft+board.halfMoveClock) < 100 && !pvCausesRepetition()){
+		if (depth == 0) {
+						
+			if (AIController.useTTEvals && oldEntry != null && oldEntry.zobrist == zHash && oldEntry.nodeType == HashEntry.PV_NODE && (oldEntry.depth+board.halfMoveClock) < 100 && !pvCausesRepetition()){
 				return oldEntry.eval; //passes up the pre-computed evaluation
 			}else{
 				if(AIController.quiescenceSearch){
@@ -300,7 +303,7 @@ public class AI {
 			Collections.sort(allAvailible);
 		}
 		
-		if(depth == 0){
+		if(board.ply == 0){
 			if (AIController.iterativeDeepeningMoveReordering) {
 				if (AIC.bestRootMove != null && allAvailible.contains(AIC.bestRootMove.move)){
 					orderedMoves.add(new Move(board, AIC.bestRootMove.move));
@@ -311,20 +314,20 @@ public class AI {
 		if(oldEntry != null //if there is an old entry
 			&& oldEntry.zobrist == zHash){  //and the boards are the same
 			
-			if (AIController.useTTEvals && oldEntry.depthLeft >= (maxDepth - depth) && (oldEntry.depthLeft+board.halfMoveClock) < 100 && !pvCausesRepetition()){
+			if (AIController.useTTEvals && oldEntry.depth >= (depth) && (oldEntry.depth+board.halfMoveClock) < 100 && !pvCausesRepetition()){
 
 				if(oldEntry.nodeType == HashEntry.PV_NODE){ //the evaluated node is PV
 					AIC.usedTTCount++;
-					if (depth != 0){
+					if (board.ply != 0){
 						return oldEntry.eval; //passes up the pre-computed evaluation
 					}else{
 						AIC.bestRootMove = new MoveAndScore(new Move(board, oldEntry.move), oldEntry.eval);
 						return oldEntry.eval;
 					}
-				}else if(depth != 0 && oldEntry.nodeType == HashEntry.CUT_NODE && oldEntry.eval >= beta){ //beta cutoff
+				}else if(board.ply != 0 && oldEntry.nodeType == HashEntry.CUT_NODE && oldEntry.eval >= beta){ //beta cutoff
 					AIC.usedTTCount++;
 					return oldEntry.eval;
-				}else if(depth != 0 && oldEntry.nodeType == HashEntry.ALL_NODE && oldEntry.eval <= alpha){ //beta cutoff
+				}else if(board.ply != 0 && oldEntry.nodeType == HashEntry.ALL_NODE && oldEntry.eval <= alpha){ //beta cutoff
 					AIC.usedTTCount++;
 					return oldEntry.eval;
 				}else{
@@ -341,7 +344,7 @@ public class AI {
 		}
 		
 		if (AIController.killerHeuristic){
-			for (Move m: getKillerMoves(depth)){
+			for (Move m: getKillerMoves(board.ply)){
 				if (!orderedMoves.contains(m) && allAvailible.contains(m)){
 					orderedMoves.add(new Move(board, allAvailible.get(allAvailible.indexOf(m))));
 				}
@@ -366,13 +369,18 @@ public class AI {
 			move.execute();
 			int currentScore;
 			if (!newAlpha || !AIController.PVSearch){
-				currentScore = -negaMax( -beta, -alpha, depth + 1, maxDepth);
+				board.ply++;
+				currentScore = -negaMax( -beta, -alpha, depth-1);
+				board.ply--;
 			}else{
-				currentScore = -negaMax( -alpha-1, -alpha, depth + 1, maxDepth); //Do a null window search
-				
+				board.ply++;
+				currentScore = -negaMax( -alpha-1, -alpha, depth-1); //Do a null window search
+				board.ply--;
 				if (currentScore > alpha && currentScore < beta){ //if move has the possibility of increasing alpha 
 					int previousTotalNodes = AIC.totalNodes;
-					currentScore = -negaMax( -beta, -alpha, depth + 1, maxDepth); //do a full-window search
+					board.ply++;
+					currentScore = -negaMax( -beta, -alpha, depth-1); //do a full-window search
+					board.ply--;
 					AIC.researches += AIC.totalNodes-previousTotalNodes;
 				}
 				
@@ -388,8 +396,8 @@ public class AI {
 			
 			if (currentScore > maxValue) {
 				bestMove = move;
-				if (depth == 0){
-					HashEntry newEntry = new HashEntry(zHash, maxDepth - depth, currentScore, HashEntry.PV_NODE, new Move(board, move));
+				if (board.ply == 0){
+					HashEntry newEntry = new HashEntry(zHash, depth, currentScore, HashEntry.PV_NODE, new Move(board, move));
 					TranspositionTable.addEntry(newEntry);
 					AIC.bestRootMove = new MoveAndScore(new Move(board, bestMove), currentScore);
 				}
@@ -405,7 +413,7 @@ public class AI {
 					AIC.fhf++;
 				}
 				AIC.fh++;
-				addKillerMove(depth, new Move(board, move));
+				addKillerMove(board.ply, new Move(board, move));
 				break;
 			}
 			
@@ -416,15 +424,15 @@ public class AI {
 		//Push entry to the TranspositionTable
 		HashEntry newEntry = null;
 		if(maxValue >= beta){
-			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.CUT_NODE, new Move(board, bestMove));
+			newEntry = new HashEntry(zHash, depth, maxValue, HashEntry.CUT_NODE, new Move(board, bestMove));
 		}else if (!newAlpha){
-			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.ALL_NODE, new Move(board, bestMove));
+			newEntry = new HashEntry(zHash, depth, maxValue, HashEntry.ALL_NODE, new Move(board, bestMove));
 		}else{
-			newEntry = new HashEntry(zHash, maxDepth - depth, maxValue, HashEntry.PV_NODE, new Move(board, bestMove));
+			newEntry = new HashEntry(zHash, depth, maxValue, HashEntry.PV_NODE, new Move(board, bestMove));
 		}
 		TranspositionTable.addEntry(newEntry); //add the move entry. only gets placed if eval is higher than previous entry
 
-		if (orderedMoves.size() == 1 && depth == 0){
+		if (orderedMoves.size() == 1 && board.ply == 0){
 			AIC.stopSearching = true;
 		}
 		return maxValue;

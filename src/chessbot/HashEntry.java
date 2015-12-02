@@ -3,7 +3,7 @@ package chessbot;
 public class HashEntry {
 	
 	public long zobrist;
-	public int depthLeft;
+	public int depth;
 	public int eval;
 	public int nodeType;
 	public Move move;
@@ -12,9 +12,9 @@ public class HashEntry {
 	static int CUT_NODE = 2;
 	static int ALL_NODE = 3;
 	
-	public HashEntry(long zobrist, int depthLeft, int eval, int nodeType, Move move){
+	public HashEntry(long zobrist, int depth, int eval, int nodeType, Move move){
 		this.zobrist = zobrist;
-		this.depthLeft = depthLeft;
+		this.depth = depth;
 		this.eval = eval;
 		this.nodeType = nodeType;
 		this.move = move;
@@ -22,6 +22,6 @@ public class HashEntry {
 	
 	@Override
 	public String toString(){
-		return "Zobrist: " + zobrist + " Depth Left: " + depthLeft + " Eval: " + eval + " Node: " + nodeType + " Move:" + move;
+		return "Zobrist: " + zobrist + " Depth: " + depth + " Eval: " + eval + " Node: " + nodeType + " Move:" + move;
 	}
 }

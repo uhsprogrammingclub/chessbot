@@ -113,12 +113,6 @@ public class Game {
 			bookThread.start();  
 		}
 		
-		try {
-		    Thread.sleep(10000);                 //1000 milliseconds is one second.
-		} catch(InterruptedException ex) {
-		    Thread.currentThread().interrupt();
-		}
-		
 		if (firstSideToMove == Side.W){
 			whiteMove(b);
 		}else{

@@ -2,6 +2,7 @@ package chessbot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -55,7 +56,7 @@ public class AIController {
 	static boolean useTimeControls = true;
 	
 	//Hashtable to store number of computations at each depth (serves no functional purpose)
-	Hashtable<Integer, Integer> computationsAtDepth = new Hashtable<Integer, Integer>(100);
+	Hashtable<Integer, Integer> computationsAtPly = new Hashtable<Integer, Integer>(100);
 
 	// To hold the principal variation at each depth (serves no functional purpose)
 	List<String> depthsPV = new ArrayList<>();
@@ -117,7 +118,7 @@ public class AIController {
 	
 	public List<String> searchInfo(){
 		List<String> info = new ArrayList<>();
-	
+
 		String[] infoList = new String[] {
 				bestRootMove.toString(),
 				(System.currentTimeMillis() - startTime)/1000.0 +"s",
@@ -132,7 +133,7 @@ public class AIController {
 				Integer.toString(staticComputations),
 				TranspositionTable.trans.size() + "",
 				Integer.toString(usedTTCount),
-				computationsAtDepth.toString()
+				computationsAtPly.toString()
 		};
 	
 		info.addAll(Arrays.asList(infoList));

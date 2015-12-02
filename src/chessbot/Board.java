@@ -63,6 +63,7 @@ public class Board {
 	
 	int halfMoveClock = 0;
 	int fullMoveCounter = 0;
+	int ply = 0;
 
 	long currentZobrist = 0;
 		
