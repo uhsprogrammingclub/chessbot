@@ -196,7 +196,7 @@ public class AI {
 		Move bestMove = null;
 		List<Move> moves = new ArrayList<Move>();
 		if (board.isCheck(board.sideMove)){
-			moves = board.allMoves();
+			moves = board.rawMoves();
 			if (AIController.sortMoves){
 				Collections.sort(moves);
 			}
@@ -214,8 +214,10 @@ public class AI {
 		AIC.totalNodes++;
 		AIC.quiescentNodes++;
 		for (Move m : moves) {
+			if (!board.isLegal(m)){
+				continue;
+			}
 			moveNum++;
-			
 			if (AIController.useBitBoards){
 				int captureValue = board.bitboard.SEE(m.to.getIndex(), m.from.getIndex(), board.sideMove);
 				if (captureValue < 0){
@@ -298,7 +300,7 @@ public class AI {
 		}
 		
 		List<Move> orderedMoves = new ArrayList<Move>();
-		List<Move> allAvailible = board.allMoves();
+		List<Move> allAvailible = board.rawMoves();
 		if (AIController.sortMoves){
 			Collections.sort(allAvailible);
 		}
@@ -365,6 +367,9 @@ public class AI {
 		int moveNum = 0;
 		
 		for (Move move: orderedMoves) {
+			if (!board.isLegal(move)){
+				continue;
+			}
 			moveNum++;	
 			move.execute();
 			int currentScore;
