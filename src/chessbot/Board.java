@@ -387,12 +387,10 @@ public class Board {
 		return bitboard.attacksTo(bitboard.combine(), kingIndex, side);
 	}
 	
-	// Function that identifies whether it's a checkmate
-	public boolean isCheckmate() {
-
+	public List<Move> checkEvasions(){
 		long kingAttacks = attacksToKing(sideMove);
 		if (!isCheck(kingAttacks)){
-			return false;
+			return null;
 		}
 		long friendlyBB = bitboard.getFriendlyBB(sideMove);
 		List <Move> potentialMoves = new ArrayList<Move>();
@@ -413,6 +411,17 @@ public class Board {
 				}
 			}
 		}
+		return potentialMoves;
+	}
+	
+	// Function that identifies whether it's a checkmate
+	public boolean isCheckmate() {
+
+		long kingAttacks = attacksToKing(sideMove);
+		if (!isCheck(kingAttacks)){
+			return false;
+		}
+		List <Move> potentialMoves = checkEvasions();
 		
 		if (legalMoves(potentialMoves).size() == 0) {
 			return true;
