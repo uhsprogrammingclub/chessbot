@@ -164,7 +164,7 @@ public class Game {
 		GridLayoutManager.setActive(true);
 		
 		Move move = null;
-		List<Move> validMoves = b.allMoves();
+		List<Move> validMoves = b.legalMoves(b.rawMoves());
 
 		OpeningBook.getOpeningMove(b, currentECO);
 		

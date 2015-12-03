@@ -429,7 +429,7 @@ public class Move implements Comparable<Move>{
 	boolean isCheck(){
 		boolean result = false;
 		execute();	
-		if (board.isCheck(board.sideMove)) {
+		if (board.isCheck(board.attacksToKing(board.sideMove))) {
 			result = true;
 		} 
 		reverse();

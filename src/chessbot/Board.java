@@ -120,7 +120,7 @@ public class Board {
 	
 	public boolean canCastle(Side side, boolean kSide){
 		
-		if (isCheck(side)){
+		if (isCheck(attacksToKing(side))){
 			return false;
 		}
 		long allBB = bitboard.combine();
@@ -242,7 +242,7 @@ public class Board {
 	public List<Move> captureMoves(){
 		
 		List<Move> captureMoves = new ArrayList<Move>();
-		List<Move> allMoves = allMoves();
+		List<Move> allMoves = legalMoves(rawMoves());
 		
 		for(Move m : allMoves){
 			
@@ -259,7 +259,7 @@ public class Board {
 	public List<Move> checkMoves(){
 		
 		List<Move> checkMoves = new ArrayList<Move>();
-		List<Move> allMoves = allMoves();
+		List<Move> allMoves = legalMoves(rawMoves());
 		
 		for(Move m : allMoves){
 			
@@ -273,8 +273,7 @@ public class Board {
 	}
 
 	// Find all possible moves
-	public List<Move> allMoves() {
-		List<Move> rawMoves = rawMoves();
+	public List<Move> legalMoves(List<Move> rawMoves) {
 		// Remove moves that are illegal because of rules regarding check
 		for (Iterator<Move> iterator = rawMoves.iterator(); iterator.hasNext();) {
 			if (!isLegal(iterator.next())) {
@@ -288,7 +287,7 @@ public class Board {
 	// Find all possible moves
 	public boolean isLegal(Move m) {
 		m.execute();
-		if (this.isCheck(sideMove.getOtherSide())) {
+		if (this.isCheck(attacksToKing(sideMove.getOtherSide()))) {
 			m.reverse();
 			return false;
 		} else {
@@ -347,9 +346,9 @@ public class Board {
 	}
 
 	// Function that identifies whether the king is directly threatened
-	public boolean isCheck(Side side) {
+	public boolean isCheck(long attacksToKing) {
 
-		if (!AIController.useBitBoards){
+		/*if (!AIController.useBitBoards){
 			// Load the King's position
 			Piece king = getKing(side);
 	
@@ -361,14 +360,77 @@ public class Board {
 				System.out.println(this);
 				System.exit(0);
 			}
-		}else{
-			long friendlyBB = bitboard.getFriendlyBB(side);
-			int kingIndex = BB.bitScanForward(bitboard.pieceBitBoards[BB.KINGS] & friendlyBB);
-
-			if (bitboard.attacksTo(bitboard.combine(), kingIndex, side) != 0){
-				return true;
-			}
+		}else{*/
+	
+		if (attacksToKing != 0){
+			return true;
 		}
+		
+		//}
+		return false;
+	}
+	
+	// Function that identifies whether the king is in double check
+	public boolean isDoubleCheck(long attacksToKing) {
+		if (BB.countSetBits(attacksToKing) > 1){
+			return true;
+		}
+		return false;
+	}
+	
+	// Function that gets all attacks on king
+	public long attacksToKing(Side side) {
+
+		long friendlyBB = bitboard.getFriendlyBB(side);
+		int kingIndex = BB.bitScanForward(bitboard.pieceBitBoards[BB.KINGS] & friendlyBB);
+
+		return bitboard.attacksTo(bitboard.combine(), kingIndex, side);
+	}
+	
+	// Function that identifies whether it's a checkmate
+	public boolean isCheckmate() {
+
+		long kingAttacks = attacksToKing(sideMove);
+		if (!isCheck(kingAttacks)){
+			return false;
+		}
+		long friendlyBB = bitboard.getFriendlyBB(sideMove);
+		List <Move> potentialMoves = new ArrayList<Move>();
+		
+		//king's moves
+		potentialMoves.addAll(King.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.KINGS], sideMove));
+		if (!isDoubleCheck(kingAttacks)){
+			//TODO capture attacker
+			
+			//TODO if not knight, block attack
+		}
+		
+		if (legalMoves(potentialMoves).size() == 0) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean isStalemate() {
+
+		long kingAttacks = attacksToKing(sideMove);
+		if (isCheck(kingAttacks)){
+			return false;
+		}
+		long friendlyBB = bitboard.getFriendlyBB(sideMove);
+		List <Move> potentialMoves = new ArrayList<Move>();
+		
+		//king's moves
+		potentialMoves.addAll(King.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.KINGS], sideMove));
+		
+		//TODO check if all pawns are rammed
+		//TODO check if all other pieces are pinned
+		
+		if (legalMoves(potentialMoves).size() == 0) {
+			return true;
+		}
+		
 		return false;
 	}
 
@@ -400,10 +462,10 @@ public class Board {
 
 	// Function that identifies whether the game is over
 	public boolean isGameOver() {
-		if (isCheck(sideMove.getOtherSide())){
+		if (isCheck(attacksToKing(sideMove.getOtherSide()))){
 			System.out.println("ERROR: Executed illegal move!");
 		}
-		if (allMoves().size() == 0) {
+		if (isCheckmate() || isStalemate() || legalMoves(rawMoves()).size() == 0) {
 			return true;
 		}
 		if (halfMoveClock >= 100) {
@@ -432,7 +494,7 @@ public class Board {
 		score += evaluateCastling();
 		
 		if( isGameOver() ){
-			if (isCheck(sideMove) && allMoves().size() == 0){
+			if (isCheck(attacksToKing(sideMove)) && legalMoves(rawMoves()).size() == 0){
 				score = Evaluation.CHECKMATE * -sideMove.evalFactor();
 			}else{
 				score = Evaluation.contemptFactor;

@@ -195,7 +195,7 @@ public class AI {
 		int moveNum = 0;
 		Move bestMove = null;
 		List<Move> moves = new ArrayList<Move>();
-		if (board.isCheck(board.sideMove)){
+		if (board.isCheck(board.attacksToKing(board.sideMove))){
 			moves = board.rawMoves();
 			if (AIController.sortMoves){
 				Collections.sort(moves);

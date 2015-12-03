@@ -68,7 +68,7 @@ public class Perft {
 					System.out.println("Starting Test To Depth: " + i);
 					leafNodes = 0;
 					
-					List<Move> moves = b.allMoves();
+					List<Move> moves = b.legalMoves(b.rawMoves());
 	
 					Collections.sort(moves);
 	
@@ -101,7 +101,7 @@ public class Perft {
 			return;
 		}
 
-		List<Move> moves = b.allMoves();
+		List<Move> moves = b.legalMoves(b.rawMoves());
 
 		Collections.sort(moves);
 
