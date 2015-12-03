@@ -1,5 +1,8 @@
 package chessbot;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import chessbot.Board.Side;
 
 public class BB {
@@ -197,6 +200,27 @@ public class BB {
 
 		long allPieces = knights | kings | bishopsQueens | rooksQueens | pawns;
 		return enemyBB & allPieces;
+	}
+	
+	List<Move> attacksTo(Board b, int to, Side side) {
+		long knights, kings, bishopsQueens, rooksQueens, pawns;
+		long enemyBB = getFriendlyBB(side.getOtherSide());
+		knights = knightAttacks[to] & pieceBitBoards[KNIGHTS];
+		kings = kingAttacks[to] & pieceBitBoards[KINGS];
+		bishopsQueens = bishopAttack(combine(), to, side)
+				& (pieceBitBoards[BISHOPS] | pieceBitBoards[QUEENS]);
+		rooksQueens = rookAttack(combine(), to, side) & (pieceBitBoards[ROOKS] | pieceBitBoards[QUEENS]);
+		pawns = pawnsAttack(1L << to, side, 0) & pieceBitBoards[PAWNS];
+
+		long allPieces = enemyBB & (knights | kings | bishopsQueens | rooksQueens | pawns);
+		
+		List<Move> captureMoves = new ArrayList<Move>();
+		
+		for (int from : getSetBits(allPieces)){
+			captureMoves.add(new Move(b, new Point(from), new Point(to), null));
+		}
+		
+		return captureMoves;
 	}
 
 	int getValue(int index) {

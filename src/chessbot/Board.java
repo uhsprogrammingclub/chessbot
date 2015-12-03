@@ -400,9 +400,18 @@ public class Board {
 		//king's moves
 		potentialMoves.addAll(King.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.KINGS], sideMove));
 		if (!isDoubleCheck(kingAttacks)){
-			//TODO capture attacker
+			potentialMoves.addAll(bitboard.attacksTo(this, BB.bitScanForward(kingAttacks), sideMove.getOtherSide()));
 			
-			//TODO if not knight, block attack
+			if ((kingAttacks & bitboard.pieceBitBoards[BB.KNIGHTS]) == 0){
+				long attackerPath = 0;
+				//TODO find attacker path
+				
+				while(attackerPath != 0){
+					int i = BB.bitScanForward(attackerPath);
+					potentialMoves.addAll(bitboard.attacksTo(this, i, sideMove.getOtherSide()));
+					attackerPath = BB.clearBit(attackerPath, i);
+				}
+			}
 		}
 		
 		if (legalMoves(potentialMoves).size() == 0) {
