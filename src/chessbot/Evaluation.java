@@ -1,5 +1,7 @@
 package chessbot;
 
+import chessbot.Board.Side;
+
 public class Evaluation {
 	
 	public static enum Value { 

@@ -2,6 +2,8 @@ package chessbot;
 
 import java.util.*;
 
+import chessbot.Board.Side;
+
 //Class to hold board variables and methods
 public class Board {
 
@@ -651,66 +653,6 @@ public class Board {
 		return (BB.countSetBits(whiteResult) - BB.countSetBits(blackResult)) * Evaluation.passedPawnValue;
 	}
 	
-	
-	/*Deprecated Functions 
-	public boolean isIsolatedPawn(Piece pawn)
-	{
-				
-		for(Piece p: pieceList)
-		{
-			if(p.symbol.equals("p") && p.player == pawn.player && (p.getX() == pawn.getX()+1 || p.getX() == pawn.getX()-1))
-			{
-				return false;
-			}
-		}
-
-		return false;
-		
-	}
-	
-	public boolean isDoubledPawn(Piece pawn)
-	{
-		for(Piece p: pieceList)
-		{
-			if(p.symbol.equals("p") && p.player == pawn.player && p.getX() == pawn.getX())
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public boolean isHalfOpenFile(Piece pawn)
-	{
-		for(Piece p: pieceList)
-		{
-			if(p.symbol.equals("p") && p.player != pawn.player && p.getX() == pawn.getX())
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	public boolean isInPawnChain(Piece pawn)
-	{
-		for(Piece p: pieceList)
-		{
-			int dir = p.player ? 1 : -1; //make sure it doesn't include base of pawn chain.
-			if(p.symbol.equals("p") && p.player == pawn.player && 
-			(
-					(p.getX()-1 == pawn.getX() && p.getY()+dir == pawn.getY()) ||
-					(p.getX()+1 == pawn.getX() && p.getY()+dir == pawn.getY())
-				))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-	*/
-	
-	
 	public void setValues(Map<Evaluation.Value, Integer> valuesMap){
 		
 		for (Map.Entry<Evaluation.Value, Integer> entry : valuesMap.entrySet())
@@ -728,43 +670,6 @@ public class Board {
 			}else if (entry.getKey() == Evaluation.Value.PASSED_PAWN){
 				Evaluation.passedPawnValue = entry.getValue();
 			}
-		}
-	}
-	
-	public int[] gridFromPerspective(int[] grid, Side side){
-		
-		if(side == Side.B){
-			return grid;
-		}else{
-			
-			int[] flippedGrid = new int[64];
-			
-			for(int i = 7; i < 32; i += 8){
-				for(int j = 0; j < 8; j++){
-					flippedGrid[i-j] = grid[63-(i-j)];
-					flippedGrid[63-(i-j)] = grid[i-j];
-				}
-			}
-			
-			/*System.out.println("\nOriginal:");
-			
-			for(int i = 0; i < 64; i+=8){
-				System.out.println("");
-				for(int j = 0; j < 8; j++){
-					System.out.print(" " + grid[i+j] + " ");
-				}
-			}
-			
-			System.out.println("\nFlipped: ");
-			
-			for(int i = 0; i < 64; i+=8){
-				System.out.println("");
-				for(int j = 0; j < 8; j++){
-					System.out.print(" " + flippedGrid[i+j] + " ");
-				}
-			}*/
-			
-			return flippedGrid;
 		}
 	}
 
@@ -788,6 +693,8 @@ public class Board {
 
 			int colorIndex = (side == Side.W) ? BB.WHITE : BB.BLACK;
 			long pieces = bitboard.pieceBitBoards[index] & bitboard.pieceBitBoards[colorIndex];
+			
+			if(side == Side.B){ pieces = BB.flip(pieces); }
 
 			int[] positions = BB.getSetBits(pieces);
 			
@@ -796,19 +703,22 @@ public class Board {
 				switch (index) {
 
 				case BB.PAWNS:
-					score += gridFromPerspective(Evaluation.pawnPieceSquaresL, side)[i];	
+					score += Evaluation.pawnPieceSquaresE[i]; // Not certain whether late game pawn bonuses should eb different
 					break;
 				case BB.BISHOPS:
-					score += gridFromPerspective(Evaluation.bishopPieceSquaresE, side)[i];
+					score += Evaluation.bishopPieceSquaresE[i];
 					break;
 				case BB.KNIGHTS:
-					score += gridFromPerspective(Evaluation.knightPieceSquaresE, side)[i];
+					score += Evaluation.knightPieceSquaresE[i];
 					break;
 				case BB.ROOKS:
-					score += gridFromPerspective(Evaluation.rookPieceSquaresE, side)[i];
+					score += Evaluation.rookPieceSquaresE[i];
+					break;
+				case BB.QUEENS:
+					score += Evaluation.queenPieceSquaresE[i];
 					break;
 				case BB.KINGS:
-					score += gridFromPerspective(Evaluation.kingPieceSquaresL, side)[i];
+					score += Evaluation.kingPieceSquaresL[i];
 
 				}
 
@@ -838,19 +748,22 @@ public class Board {
 				switch (index) {
 
 				case BB.PAWNS:
-					score += gridFromPerspective(Evaluation.pawnPieceSquaresE, side)[i];
+					score += Evaluation.pawnPieceSquaresE[i];
 					break;
 				case BB.BISHOPS:
-					score += gridFromPerspective(Evaluation.bishopPieceSquaresE, side)[i];
+					score += Evaluation.bishopPieceSquaresE[i];
 					break;
 				case BB.KNIGHTS:
-					score += gridFromPerspective(Evaluation.knightPieceSquaresE, side)[i];
+					score += Evaluation.knightPieceSquaresE[i];
 					break;
 				case BB.ROOKS:
-					score += gridFromPerspective(Evaluation.rookPieceSquaresE, side)[i];
+					score += Evaluation.rookPieceSquaresE[i];
+					break;
+				case BB.QUEENS:
+					score += Evaluation.queenPieceSquaresE[i];
 					break;
 				case BB.KINGS:
-					score += gridFromPerspective(Evaluation.kingPieceSquaresE, side)[i];
+					score += Evaluation.kingPieceSquaresE[i];
 
 				}
 
@@ -860,6 +773,42 @@ public class Board {
 
 		return score;
 
+	}
+	
+	// Lever information
+	
+	public long eastLevers(Side side){
+		long eastAttacks;
+		if(side == Side.W){ 
+			eastAttacks = BB.up(BB.right(bitboard.pieceBitBoards[BB.PAWNS] & bitboard.pieceBitBoards[BB.WHITE]));
+		}else{
+			eastAttacks = BB.down(BB.right(bitboard.pieceBitBoards[BB.PAWNS] & bitboard.pieceBitBoards[BB.BLACK]));
+		}
+		return eastAttacks & bitboard.getFriendlyBB(side.getOtherSide());
+	}
+	
+	public long westLevers(Side side){
+		long westAttacks;
+		if(side == Side.W){ 
+			westAttacks = BB.up(BB.left(bitboard.pieceBitBoards[BB.PAWNS] & bitboard.pieceBitBoards[BB.WHITE]));
+		}else{
+			westAttacks = BB.down(BB.left(bitboard.pieceBitBoards[BB.PAWNS] & bitboard.pieceBitBoards[BB.BLACK]));
+		}
+		return westAttacks & bitboard.getFriendlyBB(side.getOtherSide());
+	}
+
+	public long innerLever(Side side){
+		long abcFiles = 0x0707070707070707L;
+		long fghFiles = 0xE0E0E0E0E0E0E0E0L;
+		return ( eastLevers(side) & abcFiles )
+		     | ( westLevers(side) & fghFiles );
+	}
+	
+	public long outerLevel(Side side){
+		long bcdFiles = 0x0E0E0E0E0E0E0E0EL;
+		long fghFiles = 0xE0E0E0E0E0E0E0E0L;
+		return ( eastLevers(side) & bcdFiles )
+		     | ( westLevers(side) & fghFiles );
 	}
 	
 }
