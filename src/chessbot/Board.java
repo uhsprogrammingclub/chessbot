@@ -2,15 +2,8 @@ package chessbot;
 
 import java.util.*;
 
-import chessbot.Board.Side;
-
 //Class to hold board variables and methods
 public class Board {
-
-	/**
-	 * Note about board: the 7th and 8th rows are for the Player, the 1st and
-	 * 2nd rows are for the computer.
-	 **/
 
 	// One-dimensional array to hold the locations of all of the pieces
 	Piece[] locations = new Piece[64];
@@ -44,8 +37,6 @@ public class Board {
 	
 	//Boolean that stores whether it is the player's move
 	Side sideMove;
-	
-	//Array to store castling information
 	
 	// Castling bits
 	final byte WKCA = 1;
@@ -156,7 +147,6 @@ public class Board {
 		return false;
 	}
 
-
 	// Function that returns true if a certain square is empty
 	public boolean isEmptySquare(Point p) {
 		if (p.squareExists()){
@@ -176,12 +166,6 @@ public class Board {
 	}
 
 	// Function that returns the team of the piece at the specified locations.
-	// True = player; False = computer
-	/**
-	 * Function does not validate square, so it MUST EXIST OR WILL THROW ARRAY
-	 * INDEX OUT OF BOUNDS
-	 **/
-	
 	public Side getSide(Point pos) {
 		if (pos.squareExists()){
 			Piece p = getPiece(pos);
@@ -240,38 +224,22 @@ public class Board {
 		currentZobrist = Zobrist.getZobristHash(this);
 	}
 	
-	//Find all possible capture moves
-	public List<Move> captureMoves(){
+	public List<Move> loudMoves(){
+		List<Move> loudMoves = new ArrayList<Move>();
 		
-		List<Move> captureMoves = new ArrayList<Move>();
-		List<Move> allMoves = legalMoves(rawMoves());
-		
-		for(Move m : allMoves){
+		for(Move m : loudMoves){
 			
 			if(m.isLoud()){
-				captureMoves.add(m);
+				loudMoves.add(m);
 			}
-			
-		}
-		
-		return captureMoves;
-	}
-	
-	//Find all possible check moves
-	public List<Move> checkMoves(){
-		
-		List<Move> checkMoves = new ArrayList<Move>();
-		List<Move> allMoves = legalMoves(rawMoves());
-		
-		for(Move m : allMoves){
-			
 			if(m.isCheck()){
-				checkMoves.add(m);
+				//loudMoves.add(m);
 			}
 			
 		}
 		
-		return checkMoves;
+		return loudMoves;
+		
 	}
 
 	// Find all possible moves
@@ -403,7 +371,32 @@ public class Board {
 			potentialMoves.addAll(bitboard.attacksTo(this, BB.bitScanForward(kingAttacks), sideMove.getOtherSide()));
 			
 			if ((kingAttacks & bitboard.pieceBitBoards[BB.KNIGHTS]) == 0){
+				
+				long kingPosition = bitboard.pieceBitBoards[BB.KINGS] & bitboard.getFriendlyBB(sideMove);
+				
+				int kingIndex = BB.bitScanForward(kingPosition);
+				int attackerIndex = BB.bitScanForward(kingAttacks);
+				
+				System.out.println("King index: " + kingIndex + " Attacker index: " + attackerIndex);
+				System.exit(0);
+				
 				long attackerPath = 0;
+				
+				if((kingAttacks & bitboard.pieceBitBoards[BB.ROOKS]) != 0){
+					long rookPosition = kingAttacks & bitboard.pieceBitBoards[BB.ROOKS];
+					if(rookPosition > kingPosition){
+						while(rookPosition != BB.up(kingPosition)){
+							rookPosition = BB.down(rookPosition);
+							attackerPath |= rookPosition;
+						}
+					}
+				}else if((kingAttacks & bitboard.pieceBitBoards[BB.BISHOPS]) != 0){
+					long bishopPosition = kingAttacks & bitboard.pieceBitBoards[BB.ROOKS];
+					if(bishopPosition > kingPosition){
+					
+					}
+				}
+				
 				//TODO find attacker path
 				
 				while(attackerPath != 0){
@@ -423,6 +416,7 @@ public class Board {
 		if (!isCheck(kingAttacks)){
 			return false;
 		}
+		
 		List <Move> potentialMoves = checkEvasions();
 		
 		if (legalMoves(potentialMoves).size() == 0) {
@@ -433,7 +427,44 @@ public class Board {
 	}
 	
 	public boolean isStalemate() {
-
+		
+		List<Move> rawMoves = new ArrayList<>();
+		long friendlyBB = bitboard.getFriendlyBB(sideMove);
+		
+		rawMoves = Queen.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.QUEENS], sideMove);
+		for(Move m : rawMoves){
+			if(isLegal(m)){ return false; }
+		}
+		
+		rawMoves = King.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.KINGS], sideMove);
+		for(Move m : rawMoves){
+			if(isLegal(m)){ return false; }
+		}
+		
+		rawMoves = Pawn.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.PAWNS], sideMove);
+		for(Move m : rawMoves){
+			if(isLegal(m)){ return false; }
+		}
+		
+		rawMoves = Rook.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.ROOKS], sideMove);
+		for(Move m : rawMoves){
+			if(isLegal(m)){ return false; }
+		}
+		
+		rawMoves = Bishop.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.BISHOPS], sideMove);
+		for(Move m : rawMoves){
+			if(isLegal(m)){ return false; }
+		}
+		
+		rawMoves = Knight.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.KNIGHTS], sideMove);
+		for(Move m : rawMoves){
+			if(isLegal(m)){ return false; }
+		}
+		
+		return true;
+		
+		/*
+		
 		long kingAttacks = attacksToKing(sideMove);
 		if (isCheck(kingAttacks)){
 			return false;
@@ -444,7 +475,13 @@ public class Board {
 		//king's moves
 		potentialMoves.addAll(King.getMovesFromBitboard(this, friendlyBB & bitboard.pieceBitBoards[BB.KINGS], sideMove));
 		
-		//TODO check if all pawns are rammed
+		long pawnsAttack = bitboard.pawnsAttack(BB.PAWNS & bitboard.getFriendlyBB(sideMove) , sideMove, enPassantTarget.getIndex());
+		
+		if(BB.countSetBits(pawnsAttack) != 0){
+			potentialMoves.addAll(Pawn.getMovesFromBitboard(this, pawnsAttack, sideMove)); // Check pawn attacks
+		}
+		
+		//TODO check if all pawns are rammed and have no diagonal attacks
 		//TODO check if all other pieces are pinned
 		
 		if (legalMoves(potentialMoves).size() == 0) {
@@ -452,6 +489,8 @@ public class Board {
 		}
 		
 		return false;
+		
+		*/
 	}
 
 	// Function that finds the King's position on the board
@@ -775,7 +814,7 @@ public class Board {
 
 	}
 	
-	// Lever information
+	// Lever information - not currently implemented
 	
 	public long eastLevers(Side side){
 		long eastAttacks;

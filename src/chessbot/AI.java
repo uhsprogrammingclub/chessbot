@@ -202,14 +202,13 @@ public class AI {
 			}
 		}else{
 			
-			List<Move> captureMoves = board.captureMoves();
-			List<Move> checkMoves = board.checkMoves();
+			List<Move> loudMoves = board.loudMoves();
 			if (AIController.sortMoves){
-				Collections.sort(captureMoves);
-				Collections.sort(checkMoves);
+				Collections.sort(loudMoves);
 			}
-			moves.addAll(captureMoves);
-			//moves.addAll(checkMoves);
+			
+			moves.addAll(loudMoves);
+
 		}
 		AIC.totalNodes++;
 		AIC.quiescentNodes++;

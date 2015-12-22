@@ -16,6 +16,7 @@ public class BB {
 	static final long RANK_8 = 0xFF00000000000000L;
 	static final long FILE_A = 0x0101010101010101L;
 	static final long FILE_H = 0x8080808080808080L;
+	static final long LEFT_HALF = 0xF0F0F0F0F0F0F0F0L;
 
 	static final int WHITE = 0;
 	static final int BLACK = 1;
@@ -369,6 +370,7 @@ public class BB {
 	static long downLeft(long bb) {
 		return down(left(bb));
 	}
+	
 	static long upFill(long bb){
 		bb |= (bb << 8);
 		bb |= (bb << 16);
@@ -386,4 +388,10 @@ public class BB {
 	static long fillFile(long bb){
 		return downFill(bb) | upFill(bb);
 	}
+	
+	static long flip(long bb){
+		return bb ^ 56;
+	}
 }
+
+
