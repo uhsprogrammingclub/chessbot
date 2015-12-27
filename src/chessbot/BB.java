@@ -3,6 +3,7 @@ package chessbot;
 import java.util.ArrayList;
 import java.util.List;
 
+import chessbot.Board.Direction;
 import chessbot.Board.Side;
 
 public class BB {
@@ -350,9 +351,19 @@ public class BB {
 	static long right(long bb) {
 		return bb << 1 & ~FILE_A;
 	}
+	
+	static long right(int num, long bb) {
+		if(num == 0){ return bb; }
+		return bb << num & ~FILE_A;
+	}
 
 	static long left(long bb) {
 		return bb >> 1 & ~FILE_H;
+	}
+	
+	static long left(int num, long bb) {
+		if(num == 0){ return bb; }
+		return bb >> num & ~FILE_H;
 	}
 
 	static long upRight(long bb) {
@@ -389,8 +400,36 @@ public class BB {
 		return downFill(bb) | upFill(bb);
 	}
 	
+	static long directionalShift(Direction d, long bb){
+		switch(d){
+			case N: return up(bb);
+			case NE: return upRight(bb);
+			case E: return right(bb);
+			case SE: return downRight(bb);
+			case S: return down(bb);
+			case SW: return downLeft(bb);
+			case W: return left(bb);
+			case NW: return upLeft(bb);	
+		}
+		System.out.println("Invalid direction inputted");
+		System.exit(0);
+		return bb;	 
+	}
+	
 	static long flip(long bb){
 		return bb ^ 56;
+	}
+	
+	static int getBBX(long bb){
+
+		for(int i = 0; i < 8; i++){
+			if( (BB.right(i, FILE_A) & bb) != 0){
+				return i;
+			}
+		}
+		System.out.println("Bitboard inputed to getBBX is blank");
+		System.exit(0);
+		return -1;
 	}
 }
 

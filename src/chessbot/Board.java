@@ -13,6 +13,8 @@ public class Board {
 	
 	BB bitboard;
 	
+	enum Direction { N, NE, E, SE, S, SW, W, NW };
+	
 	enum Side { W, B, NONE, BOTH;
 		Side getOtherSide(){
 			if (this == W){
@@ -373,28 +375,21 @@ public class Board {
 			if ((kingAttacks & bitboard.pieceBitBoards[BB.KNIGHTS]) == 0){
 				
 				long kingPosition = bitboard.pieceBitBoards[BB.KINGS] & bitboard.getFriendlyBB(sideMove);
+			
+				int attackerX = BB.getBBX(kingAttacks);
+				int attackerY = (BB.getSetBits(kingAttacks)[0] - attackerX) / 8;
+				int kingX = BB.getBBX(kingPosition);
+				int kingY = (BB.getSetBits(kingPosition)[0] - kingX) / 8;
+								
+				double radians = Math.atan2( (attackerY - kingY), (attackerX - kingX));
+
+				Direction d = Utils.getDirection(radians);
+				System.out.println("Radians: " + radians + " Degrees: " + radians * (180/Math.PI) + " Direction: " + d);						
 				
-				int kingIndex = BB.bitScanForward(kingPosition);
-				int attackerIndex = BB.bitScanForward(kingAttacks);
+				long attackerPath = (BB.directionalShift(d, kingPosition) & kingAttacks) == 0 ? BB.directionalShift(d, kingPosition) : 0;
 				
-				System.out.println("King index: " + kingIndex + " Attacker index: " + attackerIndex);
-				System.exit(0);
-				
-				long attackerPath = 0;
-				
-				if((kingAttacks & bitboard.pieceBitBoards[BB.ROOKS]) != 0){
-					long rookPosition = kingAttacks & bitboard.pieceBitBoards[BB.ROOKS];
-					if(rookPosition > kingPosition){
-						while(rookPosition != BB.up(kingPosition)){
-							rookPosition = BB.down(rookPosition);
-							attackerPath |= rookPosition;
-						}
-					}
-				}else if((kingAttacks & bitboard.pieceBitBoards[BB.BISHOPS]) != 0){
-					long bishopPosition = kingAttacks & bitboard.pieceBitBoards[BB.ROOKS];
-					if(bishopPosition > kingPosition){
-					
-					}
+				while((BB.directionalShift(d, attackerPath) & kingAttacks) == 0 && attackerPath != 0){
+					attackerPath |= BB.directionalShift(d, attackerPath);
 				}
 				
 				//TODO find attacker path
@@ -418,6 +413,9 @@ public class Board {
 		}
 		
 		List <Move> potentialMoves = checkEvasions();
+		for(Move m : potentialMoves){
+			System.out.println(m);
+		}
 		
 		if (legalMoves(potentialMoves).size() == 0) {
 			return true;
@@ -742,7 +740,7 @@ public class Board {
 				switch (index) {
 
 				case BB.PAWNS:
-					score += Evaluation.pawnPieceSquaresE[i]; // Not certain whether late game pawn bonuses should eb different
+					score += Evaluation.pawnPieceSquaresE[i]; // Not certain whether late game pawn bonuses should be different
 					break;
 				case BB.BISHOPS:
 					score += Evaluation.bishopPieceSquaresE[i];

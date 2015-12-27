@@ -2,6 +2,7 @@ package chessbot;
 
 import java.util.*;
 
+import chessbot.Board.Direction;
 import chessbot.Board.Side;
 
 public class Utils {
@@ -605,7 +606,27 @@ public class Utils {
 		return edp.replace(edp.split (" ", 5) [4], "") + "0" + " 0";
 	}
 	
-	
+	static Direction getDirection(double radians){
+		
+		int num = (int) Math.round(radians / (Math.PI/4));
+		
+		switch(num){
+			case 0: return Direction.E;
+			case 1: return Direction.NE;
+			case 2: return Direction.N;
+			case 3: return Direction.NW;
+			case 4: return Direction.W;
+			case -1: return Direction.SE;
+			case -2: return Direction.S;
+			case -3: return Direction.SW;
+			
+		}		
+		
+		System.out.println("Cannot convert radians to a direction");
+		System.exit(0);
+		return null;
+		
+	}
 	
 
 }
