@@ -79,7 +79,7 @@ public class Game {
 		//g.setFEN("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"); //Everything
 		//g.setFEN("r3k2r/8/8/8/8/8/PPPPPPPP/4K3 b kq - 0 1");
 		//g.setFEN("8/8/8/2p5/1p1bk3/1P2n1K1/1PP5/2B1R3 b KQkq- - 0 57");
-		g.setFEN("5K2/Q7/1B6/5n2/8/8/5k2/3r4 b - - 0 1");
+		//g.setFEN("5K2/Q7/1B6/5n2/8/8/5k2/3r4 b - - 0 1");
 		//g.setFEN("7K/8/1B6/8/8/4k3/8/8 b - - 0 1");
 		g.setFEN(setup);
 		g.init();

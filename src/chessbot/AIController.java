@@ -13,7 +13,7 @@ public class AIController {
 	final int INFINITY = 1000000000;
 	
 	// Time controller variables
-	static int timeLeft = 300000;
+	static int timeLeft = 60000;
 	static int plyFromOpening = -1;
 	
 	//Set the default time limit - if using standard moves/second
@@ -22,10 +22,7 @@ public class AIController {
 	//Variables for time function
 	double dampeningFactor = 0.03; // Must be positive - negated in function
 	int upperGameBound = 130; // Try 207 or 171 if issues persist, 171 is 98% confidence
-	static double extensionConstant = 1.3;
-	
-	
-	
+	static double extensionConstant = 1.3;	
 	
 	//Search stats
 	int usedTTCount = 0;
@@ -50,10 +47,10 @@ public class AIController {
 	static boolean quiescenceSearch = true; // Complete basic quiescence search after finishing main search to counter horizon effect
 	static boolean sortMoves = true;
 	static boolean aspirationWindow = false;
-	static boolean useOpeningBook = false;
+	static boolean useOpeningBook = true;
 	static boolean useBitBoards = true;
 	static boolean usePawnEvaluations = true;
-	static boolean useTimeControls = false;
+	static boolean useTimeControls = true;
 	
 	//Hashtable to store number of computations at each depth (serves no functional purpose)
 	Hashtable<Integer, Integer> computationsAtPly = new Hashtable<Integer, Integer>(100);
