@@ -70,7 +70,8 @@ public class AI {
 	}
 	
 	boolean isRepetition(){
-		for (int i = board.zobristHistory.size()-board.halfMoveClock; i < board.zobristHistory.size()-1; i++){
+		int totalHalfMoves = board.zobristHistory.size();
+		for (int i = totalHalfMoves - board.halfMoveClock; i < totalHalfMoves-1; i++){
 			if (board.currentZobrist == board.zobristHistory.get(i)){
 				return true;
 			}

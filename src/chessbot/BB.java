@@ -420,6 +420,7 @@ public class BB {
 		return bb ^ 56;
 	}
 	
+	/* DEPRECATED - Function was used in early implementation of direction
 	static int getBBX(long bb){
 
 		for(int i = 0; i < 8; i++){
@@ -431,6 +432,7 @@ public class BB {
 		System.exit(0);
 		return -1;
 	}
+	*/
 }
 
 

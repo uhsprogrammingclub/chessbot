@@ -79,8 +79,10 @@ public class Game {
 		//g.setFEN("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"); //Everything
 		//g.setFEN("r3k2r/8/8/8/8/8/PPPPPPPP/4K3 b kq - 0 1");
 		//g.setFEN("8/8/8/2p5/1p1bk3/1P2n1K1/1PP5/2B1R3 b KQkq- - 0 57");
-		//g.setFEN("5K2/Q7/1B6/5n2/8/8/5k2/3r4 b - - 0 1");
-		//g.setFEN("7K/8/1B6/8/8/4k3/8/8 b - - 0 1");
+		//g.setFEN("5K2/8/8/5n2/8/8/1k4R1/3r4 b - - 0 1");
+		//g.setFEN("2K5/4N3/6N1/1B6/8/8/1R2k3/8 b - - 0 1"); //Check evasions
+		//g.setFEN("rnbqkb1r/pppppppp/1n6/4P3/2B5/3P4/PPP2PPP/RNBQK1NR b KQkq - 0 4");
+		//g.setFEN("r1bq1b1r/pppppkpp/1nn5/4P3/8/3P1Q2/PPP2PPP/RNB1K1NR b KQ - 0 1"); // Problem EP situation
 		g.setFEN(setup);
 		g.init();
 		g.start();
@@ -99,7 +101,13 @@ public class Game {
 	
 	static void loadBitboards(){
 		if (AIController.useBitBoards){
+			
 			BB.initPresets();
+			long startTime = System.currentTimeMillis();
+			Utils.generateDirectionMap();	
+			long endTime = System.currentTimeMillis();
+			long duration = (endTime - startTime);  
+			System.out.println("Generated Direction map in " + duration + " milliseconds.");
 			MagicBitboards.generateOccupancyVariations(true);
 			MagicBitboards.generateMoveDatabase(true);
 			MagicBitboards.generateOccupancyVariations(false);

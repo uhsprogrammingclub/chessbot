@@ -355,7 +355,12 @@ public class Board {
 
 		long friendlyBB = bitboard.getFriendlyBB(side);
 		int kingIndex = BB.bitScanForward(bitboard.pieceBitBoards[BB.KINGS] & friendlyBB);
-
+		if(kingIndex < 0){
+			System.out.println("HOLY FUCKING SHIT");
+			System.out.println("Side: " + side);
+			System.out.println(this);
+			//System.exit(0);
+		}
 		return bitboard.attacksTo(bitboard.combine(), kingIndex, side);
 	}
 	
@@ -373,18 +378,12 @@ public class Board {
 			potentialMoves.addAll(bitboard.attacksTo(this, BB.bitScanForward(kingAttacks), sideMove.getOtherSide()));
 			
 			if ((kingAttacks & bitboard.pieceBitBoards[BB.KNIGHTS]) == 0){
-				
-				long kingPosition = bitboard.pieceBitBoards[BB.KINGS] & bitboard.getFriendlyBB(sideMove);
-			
-				int attackerX = BB.getBBX(kingAttacks);
-				int attackerY = (BB.getSetBits(kingAttacks)[0] - attackerX) / 8;
-				int kingX = BB.getBBX(kingPosition);
-				int kingY = (BB.getSetBits(kingPosition)[0] - kingX) / 8;
 								
-				double radians = Math.atan2( (attackerY - kingY), (attackerX - kingX));
+				long kingPosition = bitboard.pieceBitBoards[BB.KINGS] & bitboard.getFriendlyBB(sideMove);
+				int king64Position = BB.bitScanForward(kingPosition);
+				int attacker64Position = BB.bitScanForward(kingAttacks);
 
-				Direction d = Utils.getDirection(radians);
-				System.out.println("Radians: " + radians + " Degrees: " + radians * (180/Math.PI) + " Direction: " + d);						
+				Direction d = Utils.directionMap.get( Utils.combine((short)attacker64Position, (short)king64Position));
 				
 				long attackerPath = (BB.directionalShift(d, kingPosition) & kingAttacks) == 0 ? BB.directionalShift(d, kingPosition) : 0;
 				
@@ -392,13 +391,21 @@ public class Board {
 					attackerPath |= BB.directionalShift(d, attackerPath);
 				}
 				
-				//TODO find attacker path
+				// TODO: This function will also return king moves that go to attackerPath squares. It would save time to remove those, even though they later get weeded out.
 				
 				while(attackerPath != 0){
 					int i = BB.bitScanForward(attackerPath);
 					potentialMoves.addAll(bitboard.attacksTo(this, i, sideMove.getOtherSide()));
 					attackerPath = BB.clearBit(attackerPath, i);
 				}
+			}
+		}
+		
+		Iterator<Move> i = potentialMoves.iterator();
+		while(i.hasNext()){
+			Move m = i.next();
+			if(m.enPassantMove && m.to != this.enPassantTarget){
+				i.remove();
 			}
 		}
 		return potentialMoves;
@@ -413,10 +420,7 @@ public class Board {
 		}
 		
 		List <Move> potentialMoves = checkEvasions();
-		for(Move m : potentialMoves){
-			System.out.println(m);
-		}
-		
+
 		if (legalMoves(potentialMoves).size() == 0) {
 			return true;
 		}

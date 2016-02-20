@@ -606,10 +606,34 @@ public class Utils {
 		return edp.replace(edp.split (" ", 5) [4], "") + "0" + " 0";
 	}
 	
+	static Map<Integer, Direction> directionMap; // Make map accessible through Utils.directionMap
+	static void generateDirectionMap(){ // Function run at start-up that loads the map and key values
+		directionMap = new HashMap<Integer, Direction>();
+		for(int king64 = 0; king64 < 64; king64++){
+			for(int attacker64 = 0; attacker64 < 64; attacker64++){
+				int key = Utils.combine((short)attacker64, (short)king64);
+				if(directionMap.get(key) == null || king64 == attacker64){ // If the index has not yet been calculated
+					int attackerX = attacker64 % 8;
+					int attackerY = (attacker64 - attackerX)/8;
+					int kingX = king64 % 8;
+					int kingY = (king64 - kingX)/8;
+					double radians = Math.atan2( (attackerY - kingY), (attackerX - kingX));
+					Direction d = Utils.getDirection(radians);
+					// System.out.println("K: " + king64 + " A: " + attacker64 + " KX: " + kingX + " KY: " + kingY + " AX: " + attackerX + " AY: " + attackerY + " D:" + d + " Dif: " + key + " Radians: " + radians);
+					directionMap.put(key, d);
+				}
+			}
+		}
+	}
+	
+	// Generates an unique key based on the input of two shorts
+	static int combine(short A, short B){ 
+		return (A << 16) | B;
+	}
+	
 	static Direction getDirection(double radians){
 		
 		int num = (int) Math.round(radians / (Math.PI/4));
-		
 		switch(num){
 			case 0: return Direction.E;
 			case 1: return Direction.NE;
@@ -619,7 +643,7 @@ public class Utils {
 			case -1: return Direction.SE;
 			case -2: return Direction.S;
 			case -3: return Direction.SW;
-			
+			case -4: return Direction.W;
 		}		
 		
 		System.out.println("Cannot convert radians to a direction");
@@ -627,6 +651,4 @@ public class Utils {
 		return null;
 		
 	}
-	
-
 }
